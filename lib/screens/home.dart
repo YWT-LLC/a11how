@@ -6,9 +6,10 @@
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
+import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:open_ui/open_ui.dart';
+import 'package:file_picker/file_picker.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,8 +20,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   // Define the build data //
-
-  int count = 0;
 
   // Set the page title //
 
@@ -34,34 +33,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EzCP>(builder: (_, EzCP config, __) => A11howScaffold(
+    return Consumer<EzCP>(
+      builder: (_, EzCP config, __) => A11howScaffold(
         config,
         body: EzScreen(
           config,
           child: Center(
-            child: EzCol(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  l10n(config).hsCounterLabel,
-                  style: ezSubTitleStyle(config.styles),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  count.toString(),
-                  style: config.headlineStyle,
-                  textAlign: TextAlign.center,
-                ),
-              ],
+            child: EzTextIconButton(
+              config,
+              label: 'Open project',
+              icon: EzIcon(config, Icons.folder_open),
+              onPressed: () async {
+                final String? selectedDirectory = await FilePicker.getDirectoryPath();
+                if (selectedDirectory == null) return;
+
+                // TODO
+              },
             ),
           ),
         ),
-        title: appName,
-        fabs: <Widget>[
-          config.spacer,
-          CountFAB(config, () => setState(() => count += 1)),
-        ],
         isHome: true,
       ),
     );
