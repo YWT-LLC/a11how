@@ -10,10 +10,9 @@ import 'package:provider/provider.dart';
 import 'package:open_ui/open_ui.dart';
 
 class SettingsHubScreen extends StatelessWidget {
-  /// Optionally override the starting position
   final int? targetPass;
 
-  const SettingsHubScreen({super.key, this.targetPass}) ;
+  const SettingsHubScreen({super.key, this.targetPass});
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +104,6 @@ class SettingsHubScreen extends StatelessWidget {
               ],
               target: targetPass,
             )),
-        title: config.ezL10n.gSettings,
-        showSettings: false,
         fabs: <Widget>[
           // Rebuild (conditional)
           if (config.needsRebuild) ...<Widget>[
