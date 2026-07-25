@@ -1,0 +1,35 @@
+name: a11how
+description: "Localization management for .arb based projects."
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Flutter (Google)
+  go_router: ^17.2.3
+  intl: ^0.20.2
+  shared_preferences: ^2.5.5
+
+  # Community
+  provider: ^6.1.5+1
+
+  # YWT
+  oui_bios:
+    path: ../oui_bios
+  open_ui:
+    path: ../open_ui
+
+dev_dependencies:
+  dependency_validator: ^5.0.5
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true

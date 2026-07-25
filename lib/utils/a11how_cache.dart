@@ -1,0 +1,33 @@
+/* a11how
+ * Copyright (c) 2026 YWT. All rights reserved.
+ * See LICENSE for distribution and usage details.
+ */
+
+import './export.dart';
+
+import 'package:flutter/material.dart';
+import 'package:open_ui/open_ui.dart';
+
+class A11howCache extends EzAppCache {
+  Locale _locale;
+  Lang _l10n;
+
+  A11howCache(Locale locale, Lang l10n)
+      : _locale = locale,
+        _l10n = l10n;
+
+  @override
+  void init(_) {}
+
+  @override
+  Future<void> rebuild(EzCP config) async {
+    if (_locale != config.locale) {
+      _l10n = await Lang.delegate.load(config.locale);
+      _locale = config.locale;
+    }
+  }
+}
+
+A11howCache _cache(EzCP config) => config.appCache! as A11howCache;
+
+Lang l10n(EzCP config) => _cache(config)._l10n;
