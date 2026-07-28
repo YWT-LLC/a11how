@@ -684,10 +684,10 @@ packages:
       relative: true
     source: path
     version: "13.0.0"
-  oui_bios:
+  ywt_private:
     dependency: "direct main"
     description:
-      path: "../oui_bios"
+      path: "../ywt_private"
       relative: true
     source: path
     version: "1.0.0"
