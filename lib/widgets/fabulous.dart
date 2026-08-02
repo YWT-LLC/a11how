@@ -24,14 +24,13 @@ class CountFAB extends StatelessWidget {
       );
 }
 
-// TODO: Complete link placeholders (_PH)
+// todo: Complete link placeholders and include in scripts
 EzUpdaterFAB updater(EzCP config) => EzUpdaterFAB(
-    config,
-    appVersion: '1.0.0', // TODO: (recommended to) include a check for this in your release scripts
-    versionSource:
-        'https://raw.githubusercontent.com/USER_PH/REPO_PH/refs/heads/main/APP_VERSION',
-    gPlay:
-        'https://play.google.com/store/apps/details?id=llc.ywt.a11how',
-    appStore: 'https://apps.apple.com/us/app/a11how/APP_ID_PH',
-    github: 'https://github.com/USER_PH/REPO_PH/releases',
-  );
+      config,
+      appVersion: '1.0.0',
+      versionSource:
+          'https://raw.githubusercontent.com/USER_PH/REPO_PH/refs/heads/main/APP_VERSION',
+      gPlay: 'https://play.google.com/store/apps/details?id=llc.ywt.a11how',
+      appStore: 'https://apps.apple.com/us/app/a11how/APP_ID_PH',
+      github: 'https://github.com/USER_PH/REPO_PH/releases',
+    );
