@@ -39,7 +39,24 @@ class SettingsHubScreen extends StatelessWidget {
                   ),
                   subSettings: <EzSubSetting>[],
                   fromStorage: () => EzSubSetting.blank,
-                  build: (_) => EzGlobalSettings(config),
+                  build: (_) => EzGlobalSettings(
+                    config,
+                    skipLocales: <Locale>{
+                      arabic,
+                      egyptianArabic,
+                      english, // Dupe
+                      filipino,
+                      chinese,
+                      hindi,
+                      creole,
+                      japanese,
+                      korean,
+                      russian,
+                      swahili,
+                      ukrainian,
+                      simplifiedChinese,
+                    }, // Will hopefully catch up soon
+                  ),
                 ),
 
                 // Color //
