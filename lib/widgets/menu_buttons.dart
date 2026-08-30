@@ -38,18 +38,20 @@ class OUICredits extends StatelessWidget {
   /// Honor system: keep a version of this in your app
   /// Remove iff appropriate contributions have been made to YWT
   /// https://www.ywt.llc/#/contribute
-  OUICredits(this.config, {super.key}) : _label = config.isLefty ? config.ezL10n.gMadeBy : config.ezL10n.gCreator;
+  OUICredits(this.config, {super.key})
+      : _label = config.isLefty ? config.ezL10n.gMadeBy : config.ezL10n.gCreator;
 
   @override
   Widget build(BuildContext context) => Tooltip(
-      message: config.ezL10n.gOpenYWT,
-      excludeFromSemantics: true,
-      child: EzMenuLink(config,
-        uri: Uri.parse('https://www.ywt.llc/#/products/open-ui'),
-        icon: EzIcon(config, Icons.settings),
-        label: _label,
-        semanticsLabel:
-            '${config.isLefty ? '${config.ezL10n.gSettings} $_label' : '$_label ${config.ezL10n.gSettings}'}. ${config.ezL10n.gOpenYWT}',
-      ),
-    );
+        message: config.ezL10n.gOpenYWT,
+        excludeFromSemantics: true,
+        child: EzMenuLink(
+          config,
+          uri: Uri.parse('https://www.ywt.llc/#/products/open-ui'),
+          icon: EzIcon(config, Icons.settings),
+          label: _label,
+          semanticsLabel:
+              '${config.isLefty ? '${config.ezL10n.gSettings} $_label' : '$_label ${config.ezL10n.gSettings}'}. ${config.ezL10n.gOpenYWT}',
+        ),
+      );
 }
