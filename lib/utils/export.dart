@@ -3,7 +3,7 @@
  * See LICENSE for distribution and usage details.
  */
 
+export '../l10n/lang.dart';
+
 export 'consts.dart';
 export 'a11how_cache.dart';
-
-export '../l10n/lang.dart';
