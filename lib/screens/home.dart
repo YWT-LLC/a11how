@@ -8,6 +8,7 @@ import '../utils/export.dart';
 import '../widgets/export.dart';
 
 import 'dart:io';
+import 'dart:math';
 import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
@@ -28,9 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String? workPath;
   List<ARBFile> arbFiles = <ARBFile>[];
 
-  late double colWidth = widthOf(context);
+  final ScrollController sharedVert = ScrollController();
 
-  // Set the page title //
+  // Init //
 
   @override
   void initState() {
@@ -43,21 +44,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) => Consumer<EzCP>(
         builder: (_, EzCP config, __) {
+          double colWidth = max(widthOf(context) / 4, ScreenSize.small.size);
+
           final BoxDecoration colDeco = BoxDecoration(
             border: Border.all(
               color: config.colors.onSurface,
               width: config.borderWidth,
             ),
-            borderRadius: config.textRadius,
+            borderRadius: BorderRadius.zero,
             color: config.colors.surface,
-          );
-          final BoxDecoration headerDeco = BoxDecoration(
-            border: Border.all(
-              color: config.colors.outline,
-              width: config.borderWidth,
-            ),
-            borderRadius: config.textRadius,
-            color: config.colors.secondary,
           );
 
           return A11howScaffold(
@@ -71,54 +66,53 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: workPath == null
                     ? Center(
                         child: EzTextIconButton(
-                          config,
-                          label: 'Open .arb directory',
-                          icon: EzIcon(config, Icons.folder_open),
-                          onPressed: () async {
-                            // Valid dir?
-                            final String? selectedDirectory = await FilePicker.getDirectoryPath();
-                            if (selectedDirectory == null) return;
+                        config,
+                        label: 'Open .arb directory',
+                        icon: EzIcon(config, Icons.folder_open),
+                        onPressed: () async => await ezNoTouch(() async {
+                          // Valid dir?
+                          final String? selectedDirectory = await FilePicker.getDirectoryPath();
+                          if (selectedDirectory == null) return;
 
-                            // Get files
-                            final Directory dir = Directory(selectedDirectory);
-                            final List<ARBFile> loadedFiles = <ARBFile>[];
+                          // Get files
+                          final Directory dir = Directory(selectedDirectory);
+                          final List<ARBFile> loadedFiles = <ARBFile>[];
 
-                            if (dir.existsSync()) {
-                              final List<FileSystemEntity> entities = dir.listSync();
-                              for (final FileSystemEntity entity in entities) {
-                                if (entity is File && entity.path.endsWith('.arb')) {
-                                  // Save valid .arb files
-                                  try {
-                                    final String content = await entity.readAsString();
-                                    final Map<String, dynamic> json = jsonDecode(content);
+                          if (dir.existsSync()) {
+                            final List<FileSystemEntity> entities = dir.listSync();
+                            for (final FileSystemEntity entity in entities) {
+                              if (entity is File && entity.path.endsWith('.arb')) {
+                                // Save valid .arb files
+                                try {
+                                  final String content = await entity.readAsString();
+                                  final Map<String, dynamic> json = jsonDecode(content);
 
-                                    final String fallbackName = entity.path
-                                        .split(Platform.pathSeparator)
-                                        .last
-                                        .replaceAll('.arb', '');
-                                    final String locale = json['@@locale'] ?? fallbackName;
+                                  final String fallbackName = entity.path
+                                      .split(Platform.pathSeparator)
+                                      .last
+                                      .replaceAll('.arb', '');
+                                  final String locale = json['@@locale'] ?? fallbackName;
 
-                                    loadedFiles.add(ARBFile(
-                                      filePath: entity.path,
-                                      localeCode: locale,
-                                      translations: json,
-                                    ));
-                                  } catch (e) {
-                                    ezLog('Skipped invalid ARB file: ${entity.path}');
-                                  }
+                                  loadedFiles.add(ARBFile(
+                                    path: entity.path,
+                                    localeCode: locale,
+                                    entries: json,
+                                  ));
+                                } catch (e) {
+                                  ezLog('Skipped invalid ARB file: ${entity.path}');
                                 }
                               }
                             }
+                          }
 
-                            arbFiles = loadedFiles;
-                            workPath = selectedDirectory.contains(homePath)
-                                ? '$homePath${selectedDirectory.split(homePath)[1]}'
-                                : selectedDirectory;
-                            setState(() {});
-                          },
-                        ),
-                      )
+                          arbFiles = loadedFiles;
+                          workPath = selectedDirectory.contains(homePath)
+                              ? '$homePath${selectedDirectory.split(homePath)[1]}'
+                              : selectedDirectory;
+                        }).whenComplete(() => setState(() {})),
+                      ))
                     : ReorderableListView(
+                        buildDefaultDragHandles: false,
                         scrollDirection: Axis.horizontal,
                         onReorderItem: (int oldIndex, int newIndex) {
                           if (oldIndex == newIndex) return;
@@ -129,20 +123,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           setState(() {});
                         },
+                        // header: TODO,
                         children: arbFiles.map((ARBFile arb) {
                           // Filter metadata keys (starts with '@')
-                          final List<String> keys = arb.translations.keys
-                              .where((String k) => !k.startsWith('@'))
-                              .toList();
+                          final List<String> keys =
+                              arb.entries.keys.where((String k) => !k.startsWith('@')).toList();
 
                           return Container(
-                            key: ValueKey<String>(arb.filePath),
+                            key: ValueKey<String>(arb.path),
                             width: colWidth,
                             decoration: colDeco,
                             child: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
                               // Header
                               Container(
-                                decoration: headerDeco,
+                                width: double.infinity,
+                                color: config.colors.secondary,
                                 child: Text(
                                   '${arb.localeCode} (HUMAN_VER)',
                                   style:
@@ -154,22 +149,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               // Entries
                               Expanded(
                                   child: ListView.builder(
+                                controller: sharedVert,
                                 itemCount: keys.length,
                                 itemBuilder: (_, int index) {
                                   final String key = keys[index];
-                                  final String value = arb.translations[key];
+                                  final String value = arb.entries[key];
 
-                                  return ListTile(
-                                    title: Text(
-                                      key,
-                                      style: config.labelStyle,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    subtitle: Text(
-                                      value.toString(),
-                                      style: config.bodyStyle,
-                                      textAlign: TextAlign.center,
-                                    ),
+                                  return EzTextField(
+                                    constraints: BoxConstraints(maxWidth: colWidth),
+                                    controller: TextEditingController(text: value.toString()),
+                                    hintText: key,
+                                    maxLines: null,
+                                    textAlign: TextAlign.start,
+                                    validator: (_) => null,
                                   );
                                 },
                               )),
