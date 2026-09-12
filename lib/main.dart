@@ -6,11 +6,11 @@
 import './screens/export.dart';
 import './utils/export.dart';
 
+import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:open_ui/open_ui.dart';
 
 void main() async {
   // Configure the app //
@@ -30,7 +30,13 @@ void main() async {
         allowList: allEZConfigKeys.keys.toSet(),
       ),
     ),
-    defaults: isMobile() ? ywtMobileConfig : ywtDesktopConfig,
+    defaults: isMobile()
+        ? ywtMobileConfig
+        : <String, dynamic>{
+            ...ywtDesktopConfig,
+            darkShowBackFABKey: true,
+            lightShowBackFABKey: true,
+          },
   );
 
   // Run the app //
