@@ -21,6 +21,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Define the build data //
 
+  String? workPath;
+  List<File> files = <File>[];
+
   // Set the page title //
 
   @override
@@ -38,18 +41,32 @@ class _HomeScreenState extends State<HomeScreen> {
         config,
         body: EzScreen(
           config,
-          child: Center(
-            child: EzTextIconButton(
-              config,
-              label: 'Open project',
-              icon: EzIcon(config, Icons.folder_open),
-              onPressed: () async {
-                final String? selectedDirectory = await FilePicker.getDirectoryPath();
-                if (selectedDirectory == null) return;
+          child: EzAnimSwitch(
+            config,
+            forceFade: true,
+            forceType: EzTransitionType.none,
+            child: workPath == null
+                ? Center(
+                    child: EzTextIconButton(
+                      config,
+                      label: 'Open .arb directory',
+                      icon: EzIcon(config, Icons.folder_open),
+                      onPressed: () async {
+                        final String? selectedDirectory = await FilePicker.getDirectoryPath();
+                        if (selectedDirectory == null) return;
 
-                // todo
-              },
-            ),
+                        setState(() {
+                          workPath = selectedDirectory.contains(homePath)
+                              ? '$homePath${selectedDirectory.split(homePath)[1]}'
+                              : selectedDirectory;
+                        });
+                      },
+                    ),
+                  )
+                : ReorderableListView(
+                    scrollDirection: Axis.horizontal,
+                    children: <Widget>[],
+                  ),
           ),
         ),
         isHome: true,
