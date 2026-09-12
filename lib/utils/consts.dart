@@ -10,13 +10,13 @@ const String appName = 'a11How';
 const String androidPackage = 'llc.ywt.a11how';
 
 class ARBFile {
-  final String filePath;
+  final String path;
   final String localeCode;
-  final Map<String, dynamic> translations;
+  final Map<String, dynamic> entries;
 
   ARBFile({
-    required this.filePath,
+    required this.path,
     required this.localeCode,
-    required this.translations,
+    required this.entries,
   });
 }
