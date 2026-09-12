@@ -29,8 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String? workPath;
   List<ARBFile> arbFiles = <ARBFile>[];
 
-  final ScrollController sharedVert = ScrollController();
-
   // Init //
 
   @override
@@ -149,7 +147,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               // Entries
                               Expanded(
                                   child: ListView.builder(
-                                controller: sharedVert,
                                 itemCount: keys.length,
                                 itemBuilder: (_, int index) {
                                   final String key = keys[index];
