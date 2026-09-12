@@ -3,25 +3,21 @@
  * See LICENSE for distribution and usage details.
  */
 
-import 'package:flutter/material.dart';
-import 'package:open_ui/open_ui.dart';
+import '../screens/export.dart';
 
-class CountFAB extends StatelessWidget {
-  /// EzConfig Provider
+import 'package:open_ui/open_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class SettingsFAB extends FloatingActionButton {
   final EzCP config;
 
-  /// [FloatingActionButton.onPressed] passthrough
-  final void Function() count;
-
-  /// Increases the count (for the home screen)
-  const CountFAB(this.config, this.count, {super.key});
-
-  @override
-  Widget build(BuildContext context) => FloatingActionButton(
-        heroTag: 'count_fab',
-        onPressed: count,
-        child: EzIcon(config, Icons.add),
-      );
+  SettingsFAB(this.config, {required BuildContext context, super.key})
+      : super(
+          child: EzIcon(config, Icons.settings),
+          onPressed: () => context.goNamed(settingsHubPath),
+          tooltip: config.ezL10n.ssNavHint,
+        );
 }
 
 // todo: Complete link placeholders and include in scripts
