@@ -30,13 +30,7 @@ void main() async {
         allowList: allEZConfigKeys.keys.toSet(),
       ),
     ),
-    defaults: isMobile()
-        ? ywtMobileConfig
-        : <String, dynamic>{
-            ...ywtDesktopConfig,
-            darkShowBackFABKey: true,
-            lightShowBackFABKey: true,
-          },
+    defaults: isMobile() ? a11HowMobile : a11HowDesktop,
   );
 
   // Run the app //
@@ -81,6 +75,14 @@ class A11how extends StatelessWidget {
               pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
                   ezPageBuilder(configWatcher(pbc), pbc, pbs, const HomeScreen()),
               routes: <RouteBase>[
+                // Settings
+                GoRoute(
+                  path: comparePath,
+                  name: comparePath,
+                  pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
+                      ezPageBuilder(configWatcher(pbc), pbc, pbs, const CompareScreen()),
+                ),
+
                 // Settings
                 GoRoute(
                   path: settingsHubPath,
