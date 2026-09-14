@@ -29,6 +29,70 @@ class _HomeScreenState extends State<HomeScreen> {
   String? workPath;
   List<ARBFile> arbFiles = <ARBFile>[];
 
+  // Define custom functions //
+
+  Future<void> processPath(EzCP config, String? preSelected) async {
+    await ezNoTouch(() async {
+      // Valid dir?
+      final String? selectedDirectory = preSelected ?? await FilePicker.getDirectoryPath();
+      if (selectedDirectory == null) return;
+
+      // Get files
+      final Directory dir = Directory(selectedDirectory);
+      final List<ARBFile> loadedFiles = <ARBFile>[];
+
+      if (dir.existsSync()) {
+        final List<FileSystemEntity> entities = dir.listSync();
+        for (final FileSystemEntity entity in entities) {
+          if (entity is File && entity.path.endsWith('.arb')) {
+            // Save valid .arb files
+            try {
+              final String content = await entity.readAsString();
+              final Map<String, dynamic> json = jsonDecode(content);
+
+              final String fallbackName =
+                  entity.path.split(Platform.pathSeparator).last.replaceAll('.arb', '');
+              final String locale = json['@@locale'] ?? fallbackName;
+
+              loadedFiles.add(ARBFile(
+                path: entity.path,
+                localeCode: locale,
+                entries: json,
+              ));
+            } catch (e) {
+              ezLog('Skipped invalid ARB file: ${entity.path}');
+            }
+          }
+        }
+      }
+
+      arbFiles = loadedFiles;
+      if (arbFiles.isNotEmpty) {
+        workPath = selectedDirectory.contains(homePath)
+            ? '$homePath${selectedDirectory.split(homePath)[1]}'
+            : selectedDirectory;
+
+        recentProjects.remove(workPath);
+        recentProjects.insert(0, workPath!);
+
+        await EzCM.setStringList(recentProjectsKey, recentProjects);
+      } else {
+        if (mounted) {
+          ezSnackBar(
+            config,
+            context: context,
+            message: 'Nothing found${preSelected == null ? '' : ' - removing from recent'}',
+          );
+        }
+        if (preSelected != null) {
+          recentProjects.remove(preSelected);
+          await EzCM.setStringList(recentProjectsKey, recentProjects);
+        }
+      }
+    });
+    setState(() {});
+  }
+
   // Init //
 
   Future<void> gatherRecent() async {
@@ -57,59 +121,51 @@ class _HomeScreenState extends State<HomeScreen> {
             forceType: EzTransitionType.none,
             child: Center(
               child: workPath == null
-                  ? EzTextIconButton(
-                      config,
-                      label: 'Open .arb directory',
-                      icon: EzIcon(config, Icons.folder_open),
-                      onPressed: () async => await ezNoTouch(() async {
-                        // Valid dir?
-                        final String? selectedDirectory = await FilePicker.getDirectoryPath();
-                        if (selectedDirectory == null) return;
+                  ? EzRow(config, children: <Widget>[
+                      // Open new
+                      EzTextIconButton(
+                        config,
+                        label: 'Open .arb directory',
+                        icon: EzIcon(config, Icons.folder_open),
+                        onPressed: () async => await processPath(config, null),
+                      ),
 
-                        // Get files
-                        final Directory dir = Directory(selectedDirectory);
-                        final List<ARBFile> loadedFiles = <ARBFile>[];
-
-                        if (dir.existsSync()) {
-                          final List<FileSystemEntity> entities = dir.listSync();
-                          for (final FileSystemEntity entity in entities) {
-                            if (entity is File && entity.path.endsWith('.arb')) {
-                              // Save valid .arb files
-                              try {
-                                final String content = await entity.readAsString();
-                                final Map<String, dynamic> json = jsonDecode(content);
-
-                                final String fallbackName = entity.path
-                                    .split(Platform.pathSeparator)
-                                    .last
-                                    .replaceAll('.arb', '');
-                                final String locale = json['@@locale'] ?? fallbackName;
-
-                                loadedFiles.add(ARBFile(
-                                  path: entity.path,
-                                  localeCode: locale,
-                                  entries: json,
-                                ));
-                              } catch (e) {
-                                ezLog('Skipped invalid ARB file: ${entity.path}');
-                              }
-                            }
-                          }
-                        }
-
-                        arbFiles = loadedFiles;
-                        if (arbFiles.isNotEmpty) {
-                          workPath = selectedDirectory.contains(homePath)
-                              ? '$homePath${selectedDirectory.split(homePath)[1]}'
-                              : selectedDirectory;
-
-                          recentProjects.remove(workPath);
-                          recentProjects.insert(0, workPath!);
-
-                          await EzCM.setStringList(recentProjectsKey, recentProjects);
-                        }
-                      }).whenComplete(() => setState(() {})),
-                    )
+                      // Recent(s)
+                      if (recentProjects.isNotEmpty) ...<Widget>[
+                        VerticalDivider(width: config.spacing, color: config.colors.secondary),
+                        EzCol(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            EzText(
+                              config,
+                              text: 'Recent projects',
+                              textAlign: TextAlign.start,
+                              style: config.titleStyle,
+                            ),
+                            config.spacer,
+                            ...recentProjects.map((String path) => EzRow(config, children: <Widget>[
+                                  EzTextButton(
+                                    config,
+                                    text: path,
+                                    textAlign: TextAlign.start,
+                                    onPressed: () async => await processPath(config, path),
+                                  ),
+                                  config.rowMargin,
+                                  EzIconButton(
+                                    config,
+                                    tooltip: config.ezL10n.gRemove,
+                                    icon: const Icon(Icons.remove),
+                                    onPressed: () async {
+                                      recentProjects.remove(path);
+                                      await EzCM.setStringList(recentProjectsKey, recentProjects);
+                                      setState(() {});
+                                    },
+                                  ),
+                                ])),
+                          ],
+                        ),
+                      ]
+                    ])
                   : const SizedBox.shrink(), // TODO: choose langs, then nav? three screen(file)s?
             ),
           ),
