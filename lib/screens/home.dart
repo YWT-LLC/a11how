@@ -3,6 +3,7 @@
  * See LICENSE for distribution and usage details.
  */
 
+import '../screens/export.dart';
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
@@ -11,7 +12,7 @@ import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,9 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // Define the build data //
 
   List<String> recentProjects = <String>[];
-
-  String? workPath;
-  List<ARBFile> arbFiles = <ARBFile>[];
 
   // Define custom functions //
 
@@ -66,16 +64,20 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
 
-      arbFiles = loadedFiles;
-      if (arbFiles.isNotEmpty) {
-        workPath = selectedDirectory.contains(homePath)
-            ? '$homePath${selectedDirectory.split(homePath)[1]}'
-            : selectedDirectory;
-
+      if (loadedFiles.isNotEmpty) {
         recentProjects.remove(selectedDirectory);
         recentProjects.insert(0, selectedDirectory);
 
         await EzCM.setStringList(recentProjectsKey, recentProjects);
+
+        if (mounted) {
+          context.goNamed(
+            selectPath,
+            extra: selectedDirectory.contains(homePath)
+                ? '$homePath${selectedDirectory.split(homePath)[1]}'
+                : selectedDirectory,
+          );
+        }
       } else {
         if (mounted) {
           ezSnackBar(
@@ -93,6 +95,44 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
+  Iterable<Widget> displayRecent(EzCP config) => recentProjects.map((String path) => Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: config.marginVal,
+          vertical: config.spacing / 2,
+        ),
+        child: EzScrollView(
+          config,
+          reverseHands: true,
+          thumbVisibility: false,
+          scrollDirection: Axis.horizontal,
+          children: <Widget>[
+            EzLink(
+              config,
+              text: path,
+              textAlign: TextAlign.start,
+              hint: config.ezL10n.gOpen,
+              onTap: () async => await processPath(config, path),
+            ),
+            config.rowMargin,
+            EzIconButton(
+              config,
+              tooltip: config.ezL10n.gRemove,
+              icon: const Icon(Icons.remove),
+              style: IconButton.styleFrom(
+                side: config.borderSide(color: config.colors.errorContainer),
+                foregroundColor: config.colors.error,
+                backgroundColor: config.colors.surface,
+              ),
+              onPressed: () async {
+                recentProjects.remove(path);
+                await EzCM.setStringList(recentProjectsKey, recentProjects);
+                setState(() {});
+              },
+            ),
+          ],
+        ),
+      ));
+
   // Init //
 
   Future<void> gatherRecent() async {
@@ -109,9 +149,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Return the build //
 
-  // TODO: (conditional) verticality
-  // ...swap widget layer, RowCol, something
-
   @override
   Widget build(BuildContext context) {
     return Consumer<EzCP>(
@@ -124,78 +161,76 @@ class _HomeScreenState extends State<HomeScreen> {
             forceFade: true,
             forceType: EzTransitionType.none,
             child: Center(
-                child: //workPath == null ? TODO: restore here
-                    EzScrollView(
-              config,
-              reverseHands: true,
-              scrollDirection: Axis.horizontal,
-              children: <Widget>[
-                // Open new
-                EzTextIconButton(
-                  config,
-                  label: 'Open .arb directory',
-                  icon: EzIcon(config, Icons.folder_open),
-                  onPressed: () async => await processPath(config, null),
-                ),
+              child: EzSwapWidget(
+                restricted: EzScrollView(config, children: <Widget>[
+                  // Open new
+                  EzTextIconButton(
+                    config,
+                    label: 'Open .arb directory',
+                    icon: EzIcon(config, Icons.folder_open),
+                    onPressed: () async => await processPath(config, null),
+                  ),
 
-                // Recent(s)
-                if (recentProjects.isNotEmpty) ...<Widget>[
-                  SizedBox(
-                    height: heightOf(context) * 0.667,
-                    child: VerticalDivider(
-                      width: config.spacing * 3,
-                      color: config.colors.secondaryContainer,
+                  // Div
+                  EzDivider(
+                    height: config.spacing * 3,
+                    width: widthOf(context) * 0.667,
+                    color: config.colors.secondaryContainer,
+                  ),
+
+                  // Recent(s)
+                  EzText(
+                    config,
+                    text: 'Recent projects',
+                    textAlign: TextAlign.start,
+                    style: config.titleStyle,
+                  ),
+                  EzSpacer(config.spacing / 2),
+                  ...displayRecent(config),
+                ]),
+                expanded: EzScrollView(
+                  config,
+                  reverseHands: true,
+                  scrollDirection: Axis.horizontal,
+                  children: <Widget>[
+                    // Open new
+                    EzTextIconButton(
+                      config,
+                      label: 'Open .arb directory',
+                      icon: EzIcon(config, Icons.folder_open),
+                      onPressed: () async => await processPath(config, null),
                     ),
-                  ),
-                  EzCol(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      EzText(
-                        config,
-                        text: 'Recent projects',
-                        textAlign: TextAlign.start,
-                        style: config.titleStyle,
+
+                    // Div
+                    SizedBox(
+                      height: heightOf(context) * 0.667,
+                      child: VerticalDivider(
+                        width: config.spacing * 3,
+                        color: config.colors.secondaryContainer,
                       ),
-                      EzSpacer(config.spacing / 2),
-                      ...recentProjects.map((String path) => Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: config.marginVal,
-                              vertical: config.spacing / 2,
-                            ),
-                            child: EzRow(config, children: <Widget>[
-                              EzLink(
-                                config,
-                                text: path,
-                                textAlign: TextAlign.start,
-                                hint: config.ezL10n.gOpen,
-                                onTap: () async => await processPath(config, path),
-                              ),
-                              config.rowMargin,
-                              EzIconButton(
-                                config,
-                                tooltip: config.ezL10n.gRemove,
-                                icon: const Icon(Icons.remove),
-                                style: IconButton.styleFrom(
-                                  side: BorderSide.none,
-                                  foregroundColor: config.colors.onError,
-                                  backgroundColor: config.colors.error,
-                                ),
-                                onPressed: () async {
-                                  recentProjects.remove(path);
-                                  await EzCM.setStringList(recentProjectsKey, recentProjects);
-                                  setState(() {});
-                                },
-                              ),
-                            ]),
-                          )),
+                    ),
+
+                    // Recent(s)
+                    if (recentProjects.isNotEmpty) ...<Widget>[
+                      EzCol(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          EzText(
+                            config,
+                            text: 'Recent projects',
+                            textAlign: TextAlign.start,
+                            style: config.titleStyle,
+                          ),
+                          EzSpacer(config.spacing / 2),
+                          ...displayRecent(config),
+                        ],
+                      ),
                     ],
-                  ),
-                ]
-              ],
-            )
-                // : const SizedBox.shrink(), // TODO: choose langs, then nav? three screen(file)s?
+                  ],
                 ),
+              ),
+            ),
           ),
         ),
         isHome: true,
