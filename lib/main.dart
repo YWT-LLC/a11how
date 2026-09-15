@@ -80,7 +80,7 @@ class A11how extends StatelessWidget {
                   path: comparePath,
                   name: comparePath,
                   pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
-                      ezPageBuilder(configWatcher(pbc), pbc, pbs, const CompareScreen()),
+                      ezPageBuilder(configWatcher(pbc), pbc, pbs, const WorkScreen()),
                 ),
 
                 // Settings

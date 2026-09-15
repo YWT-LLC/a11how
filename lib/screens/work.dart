@@ -11,14 +11,14 @@ import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CompareScreen extends StatefulWidget {
-  const CompareScreen({super.key});
+class WorkScreen extends StatefulWidget {
+  const WorkScreen({super.key});
 
   @override
-  State<CompareScreen> createState() => _CompareScreenState();
+  State<WorkScreen> createState() => _WorkScreenState();
 }
 
-class _CompareScreenState extends State<CompareScreen> {
+class _WorkScreenState extends State<WorkScreen> {
   // Define the build data //
 
   String? workPath;
