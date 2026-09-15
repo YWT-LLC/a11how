@@ -75,10 +75,18 @@ class A11how extends StatelessWidget {
               pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
                   ezPageBuilder(configWatcher(pbc), pbc, pbs, const HomeScreen()),
               routes: <RouteBase>[
-                // Settings
+                // Select
                 GoRoute(
-                  path: comparePath,
-                  name: comparePath,
+                  path: selectPath,
+                  name: selectPath,
+                  pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
+                      ezPageBuilder(configWatcher(pbc), pbc, pbs, const SelectScreen()),
+                ),
+
+                // Work
+                GoRoute(
+                  path: workPath,
+                  name: workPath,
                   pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
                       ezPageBuilder(configWatcher(pbc), pbc, pbs, const WorkScreen()),
                 ),

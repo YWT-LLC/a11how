@@ -5,15 +5,19 @@
 
 // Exports //
 
-export 'work.dart';
 export 'error.dart';
 export 'home.dart';
+export 'select.dart';
 export 'settings.dart';
+export 'work.dart';
 
 // Route names //
 
-/// compare
-const String comparePath = 'compare';
+/// select
+const String selectPath = 'select';
 
 /// settings-hub
 const String settingsHubPath = 'settings-hub';
+
+/// work
+const String workPath = 'work';
