@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SelectScreen extends StatefulWidget {
-  const SelectScreen({super.key});
+  final String workPath;
+
+  const SelectScreen(this.workPath, {super.key});
 
   @override
   State<SelectScreen> createState() => _SelectScreenState();
@@ -21,7 +23,6 @@ class SelectScreen extends StatefulWidget {
 class _SelectScreenState extends State<SelectScreen> {
   // Define the build data //
 
-  String? workPath;
   List<ARBFile> arbFiles = <ARBFile>[];
 
   // Return the build //
