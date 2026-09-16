@@ -5,5 +5,6 @@
 
 export '../l10n/lang.dart';
 
-export 'consts.dart';
 export 'a11how_cache.dart';
+export 'consts.dart';
+export 'models.dart';

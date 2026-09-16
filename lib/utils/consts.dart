@@ -25,27 +25,3 @@ final Map<String, Object> a11HowDesktop = <String, Object>{
   lightShowBackFABKey: true,
   recentProjectsKey: <String>[],
 };
-
-//* Models *//
-
-class ARBDir {
-  final String path;
-  final List<ARBFile> files;
-
-  ARBDir({
-    required this.path,
-    required this.files,
-  });
-}
-
-class ARBFile {
-  final String path;
-  final String localeCode;
-  final Map<String, dynamic> entries;
-
-  ARBFile({
-    required this.path,
-    required this.localeCode,
-    required this.entries,
-  });
-}
