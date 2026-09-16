@@ -83,7 +83,7 @@ class A11how extends StatelessWidget {
                     configWatcher(pbc),
                     pbc,
                     pbs,
-                    SelectScreen(pbs.extra as String),
+                    SelectScreen(pbs.extra as ARBDir),
                   ),
                 ),
 

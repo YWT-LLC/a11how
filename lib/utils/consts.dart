@@ -28,6 +28,16 @@ final Map<String, Object> a11HowDesktop = <String, Object>{
 
 //* Models *//
 
+class ARBDir {
+  final String path;
+  final List<ARBFile> files;
+
+  ARBDir({
+    required this.path,
+    required this.files,
+  });
+}
+
 class ARBFile {
   final String path;
   final String localeCode;
