@@ -3,12 +3,16 @@
  * See LICENSE for distribution and usage details.
  */
 
+import '../utils/export.dart';
+
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class WorkScreen extends StatefulWidget {
-  const WorkScreen({super.key});
+  final WorkPair workPair;
+
+  const WorkScreen(this.workPair, {super.key});
 
   @override
   State<WorkScreen> createState() => _WorkScreenState();
