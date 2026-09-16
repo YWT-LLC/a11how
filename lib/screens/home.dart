@@ -73,9 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
         if (mounted) {
           context.goNamed(
             selectPath,
-            extra: selectedDirectory.contains(homePath)
-                ? '$homePath${selectedDirectory.split(homePath)[1]}'
-                : selectedDirectory,
+            extra: ARBDir(
+              path: selectedDirectory.contains(homePath)
+                  ? '$homePath${selectedDirectory.split(homePath)[1]}'
+                  : selectedDirectory,
+              files: loadedFiles,
+            ),
           );
         }
       } else {
