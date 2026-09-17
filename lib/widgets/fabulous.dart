@@ -14,6 +14,7 @@ class SettingsFAB extends FloatingActionButton {
 
   SettingsFAB(this.config, {required BuildContext context, super.key})
       : super(
+          heroTag: 'settings_FAB',
           child: EzIcon(config, Icons.settings),
           onPressed: () => context.goNamed(settingsHubPath),
           tooltip: config.ezL10n.ssNavHint,

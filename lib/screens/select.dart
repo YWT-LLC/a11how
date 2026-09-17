@@ -202,7 +202,7 @@ class _SelectScreenState extends State<SelectScreen> {
 
                 // Choices/options
                 buildOptions(config),
-                EzFooter(config),
+                config.separator,
               ]),
             ),
             fabs: <Widget>[
@@ -213,6 +213,7 @@ class _SelectScreenState extends State<SelectScreen> {
                 kid: Padding(
                   padding: EdgeInsets.only(bottom: config.spacing),
                   child: FloatingActionButton(
+                    heroTag: 'undo_FAB',
                     onPressed: () => setState(() => truth = null),
                     tooltip: config.ezL10n.gUndo,
                     child: EzIcon(config, Icons.undo),
