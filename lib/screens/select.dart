@@ -3,12 +3,14 @@
  * See LICENSE for distribution and usage details.
  */
 
+import '../screens/export.dart';
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class SelectScreen extends StatefulWidget {
   final ARBDir workDir;
@@ -34,15 +36,11 @@ class _SelectScreenState extends State<SelectScreen> {
   // Define custom functions //
 
   void hoverOption(ARBFile arb) => setState(
-      () => truth == null ? truthPreview = arb.localeCode : comparePreview = arb.localeCode);
+      () => (truth == null) ? truthPreview = arb.localeCode : comparePreview = arb.localeCode);
 
-  void chooseOption(ARBFile arb) {
-    if (truth == null) {
-      truth = arb;
-    } else {
-      compare = arb;
-    }
-  }
+  void chooseOption(ARBFile arb) => (truth == null)
+      ? setState(() => truth = arb)
+      : context.goNamed(workPath, extra: WorkPair(truth: truth!, compare: arb));
 
   Widget buildOptions(EzCP config) => wrap
       ? EzScrollView(
