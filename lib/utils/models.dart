@@ -3,6 +3,12 @@
  * See LICENSE for distribution and usage details.
  */
 
+import '../screens/export.dart';
+
+import 'package:open_ui/open_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 class ARBDir {
   final String path;
   final List<ARBFile> files;
@@ -24,6 +30,24 @@ class ARBFile {
     required this.entries,
   });
 }
+
+class HybridAction {
+  final String label;
+  final IconData icon;
+  final void Function() onPressed;
+
+  HybridAction({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+  });
+}
+
+HybridAction settingsAction(EzCP config, BuildContext context) => HybridAction(
+      label: 'Settings',
+      icon: Icons.settings,
+      onPressed: () => context.goNamed(settingsHubPath),
+    );
 
 class WorkPair {
   final ARBFile truth;
