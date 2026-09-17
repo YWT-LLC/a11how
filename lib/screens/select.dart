@@ -45,21 +45,24 @@ class _SelectScreenState extends State<SelectScreen> {
   Widget buildOptions(EzCP config) => wrap
       ? EzScrollView(
           config,
-          child: EzWrap(
-            children: widget.workDir.files
-                .where((ARBFile arb) => search.isEmpty ? true : arb.localeCode.contains(search))
-                .map((ARBFile arb) => Padding(
-                      padding: EzInsets.wrap(config.spacing),
-                      child: MouseRegion(
-                        onHover: (_) => hoverOption(arb),
-                        child: EzElevatedButton(
-                          config,
-                          text: '${arb.localeCode}: ${arb.localeCode}',
-                          onPressed: () => chooseOption(arb),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+            child: EzWrap(
+              children: widget.workDir.files
+                  .where((ARBFile arb) => search.isEmpty ? true : arb.localeCode.contains(search))
+                  .map((ARBFile arb) => Padding(
+                        padding: EzInsets.wrap(config.spacing),
+                        child: MouseRegion(
+                          onHover: (_) => hoverOption(arb),
+                          child: EzElevatedButton(
+                            config,
+                            text: arb.localeCode,
+                            onPressed: () => chooseOption(arb),
+                          ),
                         ),
-                      ),
-                    ))
-                .toList(),
+                      ))
+                  .toList(),
+            ),
           ),
         )
       : Expanded(
@@ -73,7 +76,7 @@ class _SelectScreenState extends State<SelectScreen> {
                         onHover: (_) => hoverOption(arb),
                         child: EzTextButton(
                           config,
-                          text: '${arb.localeCode}: ${arb.localeCode}',
+                          text: arb.localeCode,
                           onPressed: () => chooseOption(arb),
                         ),
                       ),
@@ -181,7 +184,7 @@ class _SelectScreenState extends State<SelectScreen> {
                       // Search
                       EzTextField(
                         constraints: ezTextFieldConstraints(context),
-                        hintText: 'Search (code only)',
+                        hintText: 'Search',
                         validator: (String? check) {
                           if (check == null) return null;
 
