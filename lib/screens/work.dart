@@ -6,6 +6,8 @@
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
+import 'dart:io';
+import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +25,28 @@ class _WorkScreenState extends State<WorkScreen> {
   // Define the build data //
 
   bool keyChanges = false;
+  bool saving = false;
+
+  // Define custom functions //
+
+  Future<void> save(EzCP config) async {
+    if (saving) return;
+    setState(() => saving = true);
+
+    try {
+      final File file = File(widget.workPair.compare.path);
+
+      final String jsonString =
+          const JsonEncoder.withIndent('  ').convert(widget.workPair.compare.entries);
+      await file.writeAsString(jsonString);
+
+      if (mounted) ezSnackBar(config, context: context, message: 'Success!');
+    } catch (e) {
+      if (mounted) ezSnackBar(config, context: context, message: 'Failure: $e');
+    } finally {
+      if (mounted) setState(() => saving = false);
+    }
+  }
 
   // Return the build //
 
@@ -76,6 +100,8 @@ class _WorkScreenState extends State<WorkScreen> {
                                 hintText: entry.value as String,
                                 style: config.bodyStyle,
                                 textAlign: TextAlign.start,
+                                onChanged: (String newValue) =>
+                                    widget.workPair.compare.entries[entry.key] = newValue,
                                 validator: (_) => null,
                               ))
                           .toList(),
@@ -87,11 +113,10 @@ class _WorkScreenState extends State<WorkScreen> {
             fabs: <Widget>[
               FloatingActionButton(
                 heroTag: 'save_FAB',
-                onPressed: doNothing,
+                onPressed: saving ? null : () => save(config),
                 tooltip: config.ezL10n.gSave,
-                child: EzIcon(config, Icons.save),
+                child: saving ? const CircularProgressIndicator() : EzIcon(config, Icons.save),
               ),
-              config.spacer,
             ]);
       },
     );
