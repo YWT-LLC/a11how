@@ -205,7 +205,7 @@ class _WorkScreenState extends State<WorkScreen> {
                 : EzCol(children: <Widget>[
                     EzTextField(
                       constraints: const BoxConstraints(minWidth: double.infinity),
-                      hintText: 'Filter (key prefix)',
+                      hintText: 'Filter',
                       onChanged: (String entry) => setState(() => filter = entry),
                       validator: (_) => null,
                     ),
@@ -214,10 +214,11 @@ class _WorkScreenState extends State<WorkScreen> {
                         config,
                         mainAxisSize: MainAxisSize.max,
                         children: workData
-                            .where(
+                            .where(// TODO: options
                                 (WorkRow row) => filter.isEmpty ? true : row.key.startsWith(filter))
                             .map((WorkRow row) => EzRow(
                                   config,
+                                  key: ValueKey<String>(row.key),
                                   reverseHands: false,
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment: MainAxisAlignment.center,

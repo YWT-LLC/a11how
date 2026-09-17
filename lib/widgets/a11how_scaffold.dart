@@ -51,7 +51,6 @@ class A11howScaffold extends StatelessWidget {
               config,
               label: action.label,
               icon: EzIcon(config, action.icon),
-              style: TextButton.styleFrom(padding: EdgeInsets.zero),
               onPressed: action.onPressed,
             )))
         .toList();
