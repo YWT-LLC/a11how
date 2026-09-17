@@ -3,5 +3,4 @@
  * See LICENSE for distribution and usage details.
  */
 
-export 'fabulous.dart';
 export 'a11how_scaffold.dart';
