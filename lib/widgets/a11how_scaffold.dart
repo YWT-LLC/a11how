@@ -32,10 +32,17 @@ class A11howScaffold extends StatelessWidget {
             ezTextSize(
               config,
               text: 'Settings',
-              style: config.labelStyle,
+              style: config.bodyStyle,
               textScaler: MediaQuery.textScalerOf(context),
             ).height) +
         config.padding;
+
+    Iterable<Widget> fabActions() => actions.map((HybridAction action) => FloatingActionButton(
+          heroTag: '${action.label}_FAB',
+          onPressed: action.onPressed,
+          tooltip: action.label,
+          child: EzIcon(config, action.icon),
+        ));
 
     List<Widget> toolbarActions() => actions
         .map((HybridAction action) => Padding(
@@ -55,12 +62,7 @@ class A11howScaffold extends StatelessWidget {
         body: body,
         fabs: <Widget>[
           updater(config),
-          ...actions.map((HybridAction action) => FloatingActionButton(
-                heroTag: '${action.label}_FAB',
-                onPressed: action.onPressed,
-                tooltip: action.label,
-                child: EzIcon(config, action.icon),
-              )),
+          ...fabActions(),
           if (settingsFABs != null) ...settingsFABs!,
           ...config.backFABs(isHome),
         ],
