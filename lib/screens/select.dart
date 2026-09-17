@@ -42,48 +42,49 @@ class _SelectScreenState extends State<SelectScreen> {
       ? setState(() => truth = arb)
       : context.goNamed(workPath, extra: WorkPair(truth: truth!, compare: arb));
 
-  Widget buildOptions(EzCP config) => wrap
-      ? EzScrollView(
-          config,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
-            child: EzWrap(
-              children: widget.workDir.files
-                  .where((ARBFile arb) => search.isEmpty ? true : arb.localeCode.contains(search))
-                  .map((ARBFile arb) => Padding(
-                        padding: EzInsets.wrap(config.spacing),
-                        child: MouseRegion(
-                          onHover: (_) => hoverOption(arb),
-                          child: EzElevatedButton(
-                            config,
-                            text: arb.localeCode,
-                            onPressed: () => chooseOption(arb),
+  Widget buildOptions(EzCP config) => Expanded(
+        child: wrap
+            ? EzScrollView(
+                config,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                  child: EzWrap(
+                    children: widget.workDir.files
+                        .where((ARBFile arb) =>
+                            search.isEmpty ? true : arb.localeCode.contains(search))
+                        .map((ARBFile arb) => Padding(
+                              padding: EzInsets.wrap(config.spacing),
+                              child: MouseRegion(
+                                onHover: (_) => hoverOption(arb),
+                                child: EzElevatedButton(
+                                  config,
+                                  text: arb.localeCode,
+                                  onPressed: () => chooseOption(arb),
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              )
+            : EzScrollView(
+                config,
+                children: widget.workDir.files
+                    .where((ARBFile arb) => search.isEmpty ? true : arb.localeCode.contains(search))
+                    .map((ARBFile arb) => Padding(
+                          padding: EdgeInsets.symmetric(vertical: config.spacing / 2),
+                          child: MouseRegion(
+                            onHover: (_) => hoverOption(arb),
+                            child: EzTextButton(
+                              config,
+                              text: arb.localeCode,
+                              onPressed: () => chooseOption(arb),
+                            ),
                           ),
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        )
-      : Expanded(
-          child: EzScrollView(
-            config,
-            children: widget.workDir.files
-                .where((ARBFile arb) => search.isEmpty ? true : arb.localeCode.contains(search))
-                .map((ARBFile arb) => Padding(
-                      padding: EdgeInsets.symmetric(vertical: config.spacing / 2),
-                      child: MouseRegion(
-                        onHover: (_) => hoverOption(arb),
-                        child: EzTextButton(
-                          config,
-                          text: arb.localeCode,
-                          onPressed: () => chooseOption(arb),
-                        ),
-                      ),
-                    ))
-                .toList(),
-          ),
-        );
+                        ))
+                    .toList(),
+              ),
+      );
 
   // Return the build //
 
@@ -183,8 +184,8 @@ class _SelectScreenState extends State<SelectScreen> {
 
                       // Search
                       EzTextField(
-                        constraints: ezTextFieldConstraints(context),
-                        hintText: 'Search',
+                        constraints: ezTextFieldConstraints(context, prop: 0.5),
+                        hintText: 'Filter',
                         validator: (String? check) {
                           if (check == null) return null;
 
@@ -202,25 +203,17 @@ class _SelectScreenState extends State<SelectScreen> {
 
                 // Choices/options
                 buildOptions(config),
-                config.separator,
+                halfSpacer,
               ]),
             ),
-            fabs: <Widget>[
-              EzAnimVis(
-                config,
-                mod: 0.667,
-                visible: truth != null,
-                kid: Padding(
-                  padding: EdgeInsets.only(bottom: config.spacing),
-                  child: FloatingActionButton(
-                    heroTag: 'undo_FAB',
-                    onPressed: () => setState(() => truth = null),
-                    tooltip: config.ezL10n.gUndo,
-                    child: EzIcon(config, Icons.undo),
-                  ),
+            actions: <HybridAction>[
+              if (truth != null)
+                HybridAction(
+                  label: config.ezL10n.gUndo,
+                  icon: Icons.undo,
+                  onPressed: () => setState(() => truth = null),
                 ),
-              ),
-              SettingsFAB(config, context: context),
+              settingsAction(config, context),
             ],
           );
         },
