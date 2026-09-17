@@ -34,3 +34,15 @@ class WorkPair {
     required this.compare,
   });
 }
+
+class WorkRow {
+  String key;
+  String truth;
+  String compare;
+
+  WorkRow({
+    required this.key,
+    required this.truth,
+    required this.compare,
+  });
+}
