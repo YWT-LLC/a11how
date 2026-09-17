@@ -50,8 +50,9 @@ class _SelectScreenState extends State<SelectScreen> {
                   constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
                   child: EzWrap(
                     children: widget.workDir.files
-                        .where((ARBFile arb) =>
-                            search.isEmpty ? true : arb.localeCode.contains(search))
+                        .where((ARBFile arb) => search.isEmpty
+                            ? (arb.localeCode != truth?.localeCode)
+                            : arb.localeCode.contains(search))
                         .map((ARBFile arb) => Padding(
                               padding: EzInsets.wrap(config.spacing),
                               child: MouseRegion(
@@ -70,7 +71,9 @@ class _SelectScreenState extends State<SelectScreen> {
             : EzScrollView(
                 config,
                 children: widget.workDir.files
-                    .where((ARBFile arb) => search.isEmpty ? true : arb.localeCode.contains(search))
+                    .where((ARBFile arb) => search.isEmpty
+                        ? (arb.localeCode != truth?.localeCode)
+                        : arb.localeCode.contains(search))
                     .map((ARBFile arb) => Padding(
                           padding: EdgeInsets.symmetric(vertical: config.spacing / 2),
                           child: MouseRegion(
