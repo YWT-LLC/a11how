@@ -114,72 +114,78 @@ class _WorkScreenState extends State<WorkScreen> {
                 ? ReorderableListView(
                     buildDefaultDragHandles: false,
                     onReorderItem: (int oldIndex, int newIndex) {
-                      TODO
+                      if (oldIndex == newIndex) return;
+
+                      final WorkRow item = workData.removeAt(oldIndex);
+                      workData.insert(newIndex, item);
+                      keyChanges = true;
+
+                      setState(() {});
                     },
-                    children: workData
-                        .map((WorkRow row) => InkWell(
-                            key: ValueKey<String>(row.key),
-                            onLongPress: TODO,
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: EzRow(
+                    children: workData.asMap().entries.map((MapEntry<int, WorkRow> entry) {
+                      final int index = entry.key;
+                      final WorkRow row = entry.value;
+
+                      Widget dragHandle() => ReorderableDragStartListener(
+                            index: index,
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.grab,
+                              child: EzIcon(
                                 config,
-                                reverseHands: false,
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  // Drag handle
-                                  EzIcon(
-                                    config,
-                                    Icons.drag_handle,
-                                    color: config.colors.outline,
-                                  ),
-                                  config.rowMargin,
-
-                                  // Key
-                                  EzTextField(
-                                    constraints: miniThird,
-                                    hintText: row.key,
-                                    initialValue: row.key,
-                                    style: config.bodyStyle,
-                                    textAlign: TextAlign.start,
-                                    readOnly: true,
-                                    validator: (_) => null,
-                                  ),
-
-                                  // Truth
-                                  EzTextField(
-                                    constraints: miniThird,
-                                    hintText: row.truth,
-                                    initialValue: row.truth,
-                                    style: config.bodyStyle,
-                                    textAlign: TextAlign.start,
-                                    readOnly: true,
-                                    validator: (_) => null,
-                                  ),
-
-                                  // Work
-                                  EzTextField(
-                                    constraints: miniThird,
-                                    hintText: row.compare,
-                                    initialValue: row.compare,
-                                    style: config.bodyStyle,
-                                    textAlign: TextAlign.start,
-                                    readOnly: true,
-                                    validator: (_) => null,
-                                  ),
-
-                                  // Drag handle
-                                  config.rowMargin,
-                                  EzIcon(
-                                    config,
-                                    Icons.drag_handle,
-                                    color: config.colors.outline,
-                                  ),
-                                ],
+                                Icons.drag_handle,
+                                color: config.colors.outline,
                               ),
-                            )))
-                        .toList(),
+                            ),
+                          );
+
+                      return EzRow(
+                        config,
+                        key: ValueKey<String>(row.key),
+                        reverseHands: false,
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          dragHandle(),
+                          config.rowMargin,
+
+                          // Key
+                          EzTextField(
+                            constraints: miniThird,
+                            hintText: row.key,
+                            initialValue: row.key,
+                            style: config.bodyStyle,
+                            textAlign: TextAlign.start,
+                            readOnly: true,
+                            validator: (_) => null,
+                          ),
+
+                          // Truth
+                          EzTextField(
+                            constraints: miniThird,
+                            hintText: row.truth,
+                            initialValue: row.truth,
+                            style: config.bodyStyle,
+                            textAlign: TextAlign.start,
+                            readOnly: true,
+                            validator: (_) => null,
+                          ),
+
+                          // Work
+                          EzTextField(
+                            constraints: miniThird,
+                            hintText: row.compare,
+                            initialValue: row.compare,
+                            style: config.bodyStyle,
+                            textAlign: TextAlign.start,
+                            readOnly: true,
+                            validator: (_) => null,
+                          ),
+
+                          config.rowMargin,
+                          dragHandle(),
+                        ],
+                      );
+                    }).toList(),
                   )
                 : EzScrollView(
                     config,
