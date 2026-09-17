@@ -27,15 +27,31 @@ class _WorkScreenState extends State<WorkScreen> {
   bool keyChanges = false;
   bool saving = false;
 
+  final List<WorkRow> workData = <WorkRow>[];
+
   // Define custom functions //
 
   Future<void> save(EzCP config) async {
     if (saving) return;
     setState(() => saving = true);
 
-    // Truth
+    // Prep
+    final Map<String, dynamic> updatedTruth = <String, dynamic>{};
+    final Map<String, dynamic> updatedCompare = <String, dynamic>{};
+
+    for (final WorkRow row in workData) {
+      if (row.key.trim().isEmpty) continue;
+
+      updatedTruth[row.key] = row.truth;
+      updatedCompare[row.key] = row.compare;
+    }
+
+    // Save Truth
     try {
       final File file = File(widget.workPair.truth.path);
+      widget.workPair.truth.entries
+        ..clear()
+        ..addAll(updatedTruth);
 
       final String jsonString =
           const JsonEncoder.withIndent('  ').convert(widget.workPair.truth.entries);
@@ -44,9 +60,12 @@ class _WorkScreenState extends State<WorkScreen> {
       if (mounted) ezSnackBar(config, context: context, message: 'Failure saving truth: $e');
     }
 
-    // Compare
+    // Save Compare
     try {
       final File file = File(widget.workPair.compare.path);
+      widget.workPair.compare.entries
+        ..clear()
+        ..addAll(updatedCompare);
 
       final String jsonString =
           const JsonEncoder.withIndent('  ').convert(widget.workPair.compare.entries);
@@ -60,6 +79,21 @@ class _WorkScreenState extends State<WorkScreen> {
     if (mounted) setState(() => saving = false);
   }
 
+  // Init //
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (final String key in widget.workPair.truth.entries.keys) {
+      workData.add(WorkRow(
+        key: key,
+        truth: widget.workPair.truth.entries[key]?.toString() ?? '',
+        compare: widget.workPair.compare.entries[key]?.toString() ?? '',
+      ));
+    }
+  }
+
   // Return the build //
 
   @override
@@ -68,69 +102,71 @@ class _WorkScreenState extends State<WorkScreen> {
       builder: (_, EzCP config, __) {
         final BoxConstraints oneThird = BoxConstraints(maxWidth: widthOf(context) * 0.333);
 
-        return A11howScaffold(config,
-            body: EzScreen(
+        return A11howScaffold(
+          config,
+          body: EzScreen(
+            config,
+            margin: EdgeInsets.zero,
+            child: EzScrollView(
               config,
-              margin: EdgeInsets.zero,
-              child: EzScrollView(config, children: <Widget>[
-                EzRow(
-                  config,
-                  reverseHands: false,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    // Keys
-                    EzCol(
-                      children: widget.workPair.truth.entries.keys
-                          .map((String key) => EzTextField(
-                                constraints: oneThird,
-                                hintText: key,
-                                style: config.bodyStyle,
-                                textAlign: TextAlign.start,
-                                validator: (_) => null,
-                              ))
-                          .toList(),
-                    ),
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: workData
+                  .map((WorkRow row) => EzRow(
+                        config,
+                        reverseHands: false,
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          // Key
+                          EzTextField(
+                            constraints: oneThird,
+                            hintText: row.key,
+                            initialValue: row.key,
+                            style: config.bodyStyle,
+                            textAlign: TextAlign.start,
+                            onChanged: (String val) {
+                              row.key = val;
+                              keyChanges = true;
+                            },
+                            validator: (_) => null,
+                          ),
 
-                    // Truth
-                    EzCol(
-                      children: widget.workPair.truth.entries.entries
-                          .map((MapEntry<String, dynamic> entry) => EzTextField(
-                                constraints: oneThird,
-                                hintText: entry.value as String,
-                                style: config.bodyStyle,
-                                textAlign: TextAlign.start,
-                                validator: (_) => null,
-                              ))
-                          .toList(),
-                    ),
+                          // Truth
+                          EzTextField(
+                            constraints: oneThird,
+                            hintText: row.truth,
+                            initialValue: row.truth,
+                            style: config.bodyStyle,
+                            textAlign: TextAlign.start,
+                            onChanged: (String val) => row.truth = val,
+                            validator: (_) => null,
+                          ),
 
-                    // Work
-                    EzCol(
-                      children: widget.workPair.compare.entries.entries
-                          .map((MapEntry<String, dynamic> entry) => EzTextField(
-                                constraints: oneThird,
-                                hintText: entry.value as String,
-                                style: config.bodyStyle,
-                                textAlign: TextAlign.start,
-                                onChanged: (String newValue) =>
-                                    widget.workPair.compare.entries[entry.key] = newValue,
-                                validator: (_) => null,
-                              ))
-                          .toList(),
-                    ),
-                  ],
-                ),
-              ]),
+                          // Work
+                          EzTextField(
+                            constraints: oneThird,
+                            hintText: row.compare,
+                            initialValue: row.compare,
+                            style: config.bodyStyle,
+                            textAlign: TextAlign.start,
+                            onChanged: (String val) => row.compare = val,
+                            validator: (_) => null,
+                          ),
+                        ],
+                      ))
+                  .toList(),
             ),
-            fabs: <Widget>[
-              FloatingActionButton(
-                heroTag: 'save_FAB',
-                onPressed: saving ? null : () => save(config),
-                tooltip: config.ezL10n.gSave,
-                child: saving ? const CircularProgressIndicator() : EzIcon(config, Icons.save),
-              ),
-            ]);
+          ),
+          fabs: <Widget>[
+            FloatingActionButton(
+              heroTag: 'save_FAB',
+              onPressed: saving ? null : () => save(config),
+              tooltip: config.ezL10n.gSave,
+              child: saving ? const CircularProgressIndicator() : EzIcon(config, Icons.save),
+            ),
+          ],
+        );
       },
     );
   }
