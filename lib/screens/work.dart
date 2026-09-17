@@ -24,10 +24,12 @@ class WorkScreen extends StatefulWidget {
 class _WorkScreenState extends State<WorkScreen> {
   // Define the build data //
 
+  final List<WorkRow> workData = <WorkRow>[];
+
+  bool moving = false;
+
   bool keyChanges = false;
   bool saving = false;
-
-  final List<WorkRow> workData = <WorkRow>[];
 
   // Define custom functions //
 
@@ -158,12 +160,16 @@ class _WorkScreenState extends State<WorkScreen> {
                   .toList(),
             ),
           ),
-          fabs: <Widget>[
-            FloatingActionButton(
-              heroTag: 'save_FAB',
-              onPressed: saving ? null : () => save(config),
-              tooltip: config.ezL10n.gSave,
-              child: saving ? const CircularProgressIndicator() : EzIcon(config, Icons.save),
+          actions: <HybridAction>[
+            HybridAction(
+              icon: saving ? Icons.timer : Icons.save,
+              label: config.ezL10n.gSave,
+              onPressed: () => saving ? doNothing() : save(config),
+            ),
+            HybridAction(
+              icon: moving ? Icons.text_format : Icons.control_camera,
+              label: moving ? 'Edit entries' : 'Move rows',
+              onPressed: () => setState(() => moving = !moving),
             ),
           ],
         );
