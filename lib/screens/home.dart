@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         isHome: true,
-        fabs: <Widget>[SettingsFAB(config, context: context)],
+        actions: <HybridAction>[settingsAction(config, context)],
       ),
     );
   }

@@ -3,6 +3,7 @@
  * See LICENSE for distribution and usage details.
  */
 
+import '../utils/export.dart';
 import '../widgets/export.dart';
 
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class ErrorScreen extends StatelessWidget {
             ]),
           ),
         ),
+        actions: <HybridAction>[],
       ),
     );
   }

@@ -3,7 +3,8 @@
  * See LICENSE for distribution and usage details.
  */
 
-import '../../widgets/export.dart';
+import '../utils/export.dart';
+import '../widgets/export.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -121,7 +122,8 @@ class SettingsHubScreen extends StatelessWidget {
               ],
               target: targetPass,
             )),
-        fabs: <Widget>[
+        actions: <HybridAction>[],
+        settingsFABs: <Widget>[
           // Rebuild (conditional)
           if (config.needsRebuild) ...<Widget>[
             config.spacer,
