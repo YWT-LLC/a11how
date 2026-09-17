@@ -4,6 +4,7 @@
  */
 
 import '../utils/export.dart';
+import '../widgets/export.dart';
 
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +20,80 @@ class WorkScreen extends StatefulWidget {
 }
 
 class _WorkScreenState extends State<WorkScreen> {
+  // Define the build data //
+
+  bool keyChanges = false;
+
+  // Return the build //
+
   @override
   Widget build(BuildContext context) {
     return Consumer<EzCP>(
-      builder: (_, EzCP config, __) => const SizedBox.shrink(),
+      builder: (_, EzCP config, __) {
+        final BoxConstraints oneThird = BoxConstraints(maxWidth: widthOf(context) * 0.333);
+
+        return A11howScaffold(config,
+            body: EzScreen(
+              config,
+              margin: EdgeInsets.zero,
+              child: EzScrollView(config, children: <Widget>[
+                EzRow(
+                  config,
+                  reverseHands: false,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    // Keys
+                    EzCol(
+                      children: widget.workPair.truth.entries.keys
+                          .map((String key) => EzTextField(
+                                constraints: oneThird,
+                                hintText: key,
+                                style: config.bodyStyle,
+                                textAlign: TextAlign.start,
+                                validator: (_) => null,
+                              ))
+                          .toList(),
+                    ),
+
+                    // Truth
+                    EzCol(
+                      children: widget.workPair.truth.entries.entries
+                          .map((MapEntry<String, dynamic> entry) => EzTextField(
+                                constraints: oneThird,
+                                hintText: entry.value as String,
+                                style: config.bodyStyle,
+                                textAlign: TextAlign.start,
+                                validator: (_) => null,
+                              ))
+                          .toList(),
+                    ),
+
+                    // Work
+                    EzCol(
+                      children: widget.workPair.compare.entries.entries
+                          .map((MapEntry<String, dynamic> entry) => EzTextField(
+                                constraints: oneThird,
+                                hintText: entry.value as String,
+                                style: config.bodyStyle,
+                                textAlign: TextAlign.start,
+                                validator: (_) => null,
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                ),
+              ]),
+            ),
+            fabs: <Widget>[
+              FloatingActionButton(
+                heroTag: 'save_FAB',
+                onPressed: doNothing,
+                tooltip: config.ezL10n.gSave,
+                child: EzIcon(config, Icons.save),
+              ),
+              config.spacer,
+            ]);
+      },
     );
   }
 }
