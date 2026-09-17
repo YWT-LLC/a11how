@@ -33,6 +33,18 @@ class _WorkScreenState extends State<WorkScreen> {
     if (saving) return;
     setState(() => saving = true);
 
+    // Truth
+    try {
+      final File file = File(widget.workPair.truth.path);
+
+      final String jsonString =
+          const JsonEncoder.withIndent('  ').convert(widget.workPair.truth.entries);
+      await file.writeAsString(jsonString);
+    } catch (e) {
+      if (mounted) ezSnackBar(config, context: context, message: 'Failure saving truth: $e');
+    }
+
+    // Compare
     try {
       final File file = File(widget.workPair.compare.path);
 
@@ -42,10 +54,10 @@ class _WorkScreenState extends State<WorkScreen> {
 
       if (mounted) ezSnackBar(config, context: context, message: 'Success!');
     } catch (e) {
-      if (mounted) ezSnackBar(config, context: context, message: 'Failure: $e');
-    } finally {
-      if (mounted) setState(() => saving = false);
+      if (mounted) ezSnackBar(config, context: context, message: 'Failure saving compare: $e');
     }
+
+    if (mounted) setState(() => saving = false);
   }
 
   // Return the build //
@@ -65,6 +77,7 @@ class _WorkScreenState extends State<WorkScreen> {
                   config,
                   reverseHands: false,
                   mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     // Keys
                     EzCol(
