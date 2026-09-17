@@ -25,7 +25,7 @@ class _SelectScreenState extends State<SelectScreen> {
   // Define the build data //
 
   bool wrap = true;
-  String search = '';
+  String filter = '';
 
   ARBFile? truth;
   String truthPreview = '';
@@ -50,9 +50,9 @@ class _SelectScreenState extends State<SelectScreen> {
                   constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
                   child: EzWrap(
                     children: widget.workDir.files
-                        .where((ARBFile arb) => search.isEmpty
+                        .where((ARBFile arb) => filter.isEmpty
                             ? (arb.localeCode != truth?.localeCode)
-                            : arb.localeCode.contains(search))
+                            : arb.localeCode.contains(filter))
                         .map((ARBFile arb) => Padding(
                               padding: EzInsets.wrap(config.spacing),
                               child: MouseRegion(
@@ -71,9 +71,9 @@ class _SelectScreenState extends State<SelectScreen> {
             : EzScrollView(
                 config,
                 children: widget.workDir.files
-                    .where((ARBFile arb) => search.isEmpty
+                    .where((ARBFile arb) => filter.isEmpty
                         ? (arb.localeCode != truth?.localeCode)
-                        : arb.localeCode.contains(search))
+                        : arb.localeCode.contains(filter))
                     .map((ARBFile arb) => Padding(
                           padding: EdgeInsets.symmetric(vertical: config.spacing / 2),
                           child: MouseRegion(
@@ -185,7 +185,7 @@ class _SelectScreenState extends State<SelectScreen> {
                       ),
                       config.margin,
 
-                      // Search
+                      // Filter
                       EzTextField(
                         constraints: ezTextFieldConstraints(context, prop: 0.5),
                         hintText: 'Filter',
@@ -197,7 +197,7 @@ class _SelectScreenState extends State<SelectScreen> {
 
                           return null;
                         },
-                        onChanged: (String input) => setState(() => search = input),
+                        onChanged: (String input) => setState(() => filter = input),
                       )
                     ]),
                   ),
