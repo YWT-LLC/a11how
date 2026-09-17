@@ -128,8 +128,9 @@ class _WorkScreenState extends State<WorkScreen> {
   Widget build(BuildContext context) {
     return Consumer<EzCP>(
       builder: (_, EzCP config, __) {
-        final BoxConstraints miniThird = BoxConstraints(maxWidth: widthOf(context) * 0.3);
-        final BoxConstraints trueThird = BoxConstraints(maxWidth: widthOf(context) * 0.333);
+        final double maxWidth = widthOf(context) - config.marginVal;
+        final BoxConstraints lilThird = BoxConstraints(maxWidth: maxWidth * 0.3);
+        final BoxConstraints bigThird = BoxConstraints(maxWidth: maxWidth * 0.333);
 
         return A11howScaffold(
           config,
@@ -164,7 +165,7 @@ class _WorkScreenState extends State<WorkScreen> {
 
                           // Key
                           EzTextField(
-                            constraints: miniThird,
+                            constraints: lilThird,
                             hintText: row.key,
                             initialValue: row.key,
                             style: config.bodyStyle,
@@ -175,7 +176,7 @@ class _WorkScreenState extends State<WorkScreen> {
 
                           // Truth
                           EzTextField(
-                            constraints: miniThird,
+                            constraints: lilThird,
                             hintText: row.truth,
                             initialValue: row.truth,
                             style: config.bodyStyle,
@@ -186,7 +187,7 @@ class _WorkScreenState extends State<WorkScreen> {
 
                           // Work
                           EzTextField(
-                            constraints: miniThird,
+                            constraints: lilThird,
                             hintText: row.compare,
                             initialValue: row.compare,
                             style: config.bodyStyle,
@@ -201,10 +202,10 @@ class _WorkScreenState extends State<WorkScreen> {
                       );
                     }).toList(),
                   )
-                : EzCol(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+                : EzCol(children: <Widget>[
                     EzTextField(
                       constraints: const BoxConstraints(minWidth: double.infinity),
-                      hintText: 'Filter',
+                      hintText: 'Filter (key prefix)',
                       onChanged: (String entry) => setState(() => filter = entry),
                       validator: (_) => null,
                     ),
@@ -212,21 +213,20 @@ class _WorkScreenState extends State<WorkScreen> {
                       child: EzScrollView(
                         config,
                         mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: workData
                             .where(
-                                (WorkRow row) => filter.isEmpty ? true : row.key.contains(filter))
+                                (WorkRow row) => filter.isEmpty ? true : row.key.startsWith(filter))
                             .map((WorkRow row) => EzRow(
                                   config,
                                   reverseHands: false,
                                   mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     // Key
                                     fieldBorder(
                                       config,
                                       EzTextField(
-                                        constraints: trueThird,
+                                        constraints: bigThird,
                                         hintText: row.key,
                                         initialValue: row.key,
                                         style: config.bodyStyle,
@@ -243,7 +243,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                     fieldBorder(
                                       config,
                                       EzTextField(
-                                        constraints: trueThird,
+                                        constraints: bigThird,
                                         hintText: row.truth,
                                         initialValue: row.truth,
                                         style: config.bodyStyle,
@@ -257,7 +257,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                     fieldBorder(
                                       config,
                                       EzTextField(
-                                        constraints: trueThird,
+                                        constraints: bigThird,
                                         hintText: row.compare,
                                         initialValue: row.compare,
                                         style: config.bodyStyle,
