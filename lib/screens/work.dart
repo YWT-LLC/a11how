@@ -102,63 +102,135 @@ class _WorkScreenState extends State<WorkScreen> {
   Widget build(BuildContext context) {
     return Consumer<EzCP>(
       builder: (_, EzCP config, __) {
-        final BoxConstraints oneThird = BoxConstraints(maxWidth: widthOf(context) * 0.333);
+        final BoxConstraints miniThird = BoxConstraints(maxWidth: widthOf(context) * 0.3);
+        final BoxConstraints trueThird = BoxConstraints(maxWidth: widthOf(context) * 0.333);
 
         return A11howScaffold(
           config,
           body: EzScreen(
             config,
             margin: EdgeInsets.zero,
-            child: EzScrollView(
-              config,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: workData
-                  .map((WorkRow row) => EzRow(
-                        config,
-                        reverseHands: false,
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          // Key
-                          EzTextField(
-                            constraints: oneThird,
-                            hintText: row.key,
-                            initialValue: row.key,
-                            style: config.bodyStyle,
-                            textAlign: TextAlign.start,
-                            onChanged: (String val) {
-                              row.key = val;
-                              keyChanges = true;
-                            },
-                            validator: (_) => null,
-                          ),
+            child: moving
+                ? ReorderableListView(
+                    buildDefaultDragHandles: false,
+                    onReorderItem: (int oldIndex, int newIndex) {
+                      TODO
+                    },
+                    children: workData
+                        .map((WorkRow row) => InkWell(
+                            key: ValueKey<String>(row.key),
+                            onLongPress: TODO,
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: EzRow(
+                                config,
+                                reverseHands: false,
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  // Drag handle
+                                  EzIcon(
+                                    config,
+                                    Icons.drag_handle,
+                                    color: config.colors.outline,
+                                  ),
+                                  config.rowMargin,
 
-                          // Truth
-                          EzTextField(
-                            constraints: oneThird,
-                            hintText: row.truth,
-                            initialValue: row.truth,
-                            style: config.bodyStyle,
-                            textAlign: TextAlign.start,
-                            onChanged: (String val) => row.truth = val,
-                            validator: (_) => null,
-                          ),
+                                  // Key
+                                  EzTextField(
+                                    constraints: miniThird,
+                                    hintText: row.key,
+                                    initialValue: row.key,
+                                    style: config.bodyStyle,
+                                    textAlign: TextAlign.start,
+                                    readOnly: true,
+                                    validator: (_) => null,
+                                  ),
 
-                          // Work
-                          EzTextField(
-                            constraints: oneThird,
-                            hintText: row.compare,
-                            initialValue: row.compare,
-                            style: config.bodyStyle,
-                            textAlign: TextAlign.start,
-                            onChanged: (String val) => row.compare = val,
-                            validator: (_) => null,
-                          ),
-                        ],
-                      ))
-                  .toList(),
-            ),
+                                  // Truth
+                                  EzTextField(
+                                    constraints: miniThird,
+                                    hintText: row.truth,
+                                    initialValue: row.truth,
+                                    style: config.bodyStyle,
+                                    textAlign: TextAlign.start,
+                                    readOnly: true,
+                                    validator: (_) => null,
+                                  ),
+
+                                  // Work
+                                  EzTextField(
+                                    constraints: miniThird,
+                                    hintText: row.compare,
+                                    initialValue: row.compare,
+                                    style: config.bodyStyle,
+                                    textAlign: TextAlign.start,
+                                    readOnly: true,
+                                    validator: (_) => null,
+                                  ),
+
+                                  // Drag handle
+                                  config.rowMargin,
+                                  EzIcon(
+                                    config,
+                                    Icons.drag_handle,
+                                    color: config.colors.outline,
+                                  ),
+                                ],
+                              ),
+                            )))
+                        .toList(),
+                  )
+                : EzScrollView(
+                    config,
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: workData
+                        .map((WorkRow row) => EzRow(
+                              config,
+                              reverseHands: false,
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                // Key
+                                EzTextField(
+                                  constraints: trueThird,
+                                  hintText: row.key,
+                                  initialValue: row.key,
+                                  style: config.bodyStyle,
+                                  textAlign: TextAlign.start,
+                                  onChanged: (String val) {
+                                    row.key = val;
+                                    keyChanges = true;
+                                  },
+                                  validator: (_) => null,
+                                ),
+
+                                // Truth
+                                EzTextField(
+                                  constraints: trueThird,
+                                  hintText: row.truth,
+                                  initialValue: row.truth,
+                                  style: config.bodyStyle,
+                                  textAlign: TextAlign.start,
+                                  onChanged: (String val) => row.truth = val,
+                                  validator: (_) => null,
+                                ),
+
+                                // Work
+                                EzTextField(
+                                  constraints: trueThird,
+                                  hintText: row.compare,
+                                  initialValue: row.compare,
+                                  style: config.bodyStyle,
+                                  textAlign: TextAlign.start,
+                                  onChanged: (String val) => row.compare = val,
+                                  validator: (_) => null,
+                                ),
+                              ],
+                            ))
+                        .toList(),
+                  ),
           ),
           actions: <HybridAction>[
             HybridAction(
