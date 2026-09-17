@@ -33,6 +33,8 @@ void main() async {
     defaults: isMobile() ? a11HowMobile : a11HowDesktop,
   );
 
+  await setMindWindow();
+
   // Run the app //
 
   final (Locale storedLocale, OUILang storedOUILang) = await ezStoredL10n();
