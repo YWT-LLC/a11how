@@ -6,15 +6,14 @@
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
-import 'dart:math';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SelectScreen extends StatefulWidget {
-  final String workPath;
+  final ARBDir workDir;
 
-  const SelectScreen(this.workPath, {super.key});
+  const SelectScreen(this.workDir, {super.key});
 
   @override
   State<SelectScreen> createState() => _SelectScreenState();
@@ -23,86 +22,204 @@ class SelectScreen extends StatefulWidget {
 class _SelectScreenState extends State<SelectScreen> {
   // Define the build data //
 
-  List<ARBFile> arbFiles = <ARBFile>[];
+  bool wrap = true;
+  String search = '';
+
+  ARBFile? truth;
+  String truthPreview = '';
+
+  ARBFile? compare;
+  String comparePreview = '';
+
+  // Define custom functions //
+
+  void hoverOption(ARBFile arb) => setState(
+      () => truth == null ? truthPreview = arb.localeCode : comparePreview = arb.localeCode);
+
+  void chooseOption(ARBFile arb) {
+    if (truth == null) {
+      truth = arb;
+    } else {
+      compare = arb;
+    }
+  }
+
+  Widget buildOptions(EzCP config) => wrap
+      ? EzScrollView(
+          config,
+          child: EzWrap(
+            children: widget.workDir.files
+                .where((ARBFile arb) => search.isEmpty ? true : arb.localeCode.contains(search))
+                .map((ARBFile arb) => Padding(
+                      padding: EzInsets.wrap(config.spacing),
+                      child: MouseRegion(
+                        onHover: (_) => hoverOption(arb),
+                        child: EzElevatedButton(
+                          config,
+                          text: '${arb.localeCode}: ${arb.localeCode}',
+                          onPressed: () => chooseOption(arb),
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+        )
+      : Expanded(
+          child: EzScrollView(
+            config,
+            children: widget.workDir.files
+                .where((ARBFile arb) => search.isEmpty ? true : arb.localeCode.contains(search))
+                .map((ARBFile arb) => Padding(
+                      padding: EdgeInsets.symmetric(vertical: config.spacing / 2),
+                      child: MouseRegion(
+                        onHover: (_) => hoverOption(arb),
+                        child: EzTextButton(
+                          config,
+                          text: '${arb.localeCode}: ${arb.localeCode}',
+                          onPressed: () => chooseOption(arb),
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+        );
 
   // Return the build //
 
   @override
   Widget build(BuildContext context) => Consumer<EzCP>(
         builder: (_, EzCP config, __) {
-          double colWidth = max(widthOf(context) / 4, ScreenSize.small.size);
-
-          final BoxDecoration colDeco = BoxDecoration(
-            border: Border.all(
-              color: config.colors.onSurface,
-              width: config.borderWidth,
-            ),
-            borderRadius: BorderRadius.zero,
-            color: config.colors.surface,
-          );
+          final Widget halfSpacer = EzSpacer(config.spacing / 2);
 
           return A11howScaffold(
             config,
             body: EzScreen(
               config,
-              child: ReorderableListView(
-                buildDefaultDragHandles: false,
-                scrollDirection: Axis.horizontal,
-                onReorderItem: (int oldIndex, int newIndex) {
-                  if (oldIndex == newIndex) return;
-                  if (oldIndex < newIndex) newIndex -= 1;
+              child: EzCol(children: <Widget>[
+                // Header
+                EzText(
+                  config,
+                  text: widget.workDir.path,
+                  style: config.labelStyle?.copyWith(color: config.colors.outline),
+                  textAlign: TextAlign.center,
+                ),
+                config.spacer,
 
-                  final ARBFile item = arbFiles.removeAt(oldIndex);
-                  arbFiles.insert(newIndex, item);
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: config.marginVal),
+                  child: EzCol(children: <Widget>[
+                    // Curr truth
+                    EzAnimSwitch(
+                      config,
+                      mod: 0.5,
+                      forceFade: true,
+                      forceType: EzTransitionType.none,
+                      child: truth == null
+                          ? EzRichText(config, children: <InlineSpan>[
+                              EzPlainText(
+                                text: 'Source locale:',
+                                style: config.titleStyle?.copyWith(
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: config.colors.primary,
+                                ),
+                              ),
+                              EzPlainText(
+                                text: ' $truthPreview',
+                                style: config.bodyStyle?.copyWith(color: config.colors.outline),
+                              ),
+                            ])
+                          : EzRichText(config, children: <InlineSpan>[
+                              EzPlainText(text: 'Source locale:', style: config.bodyStyle),
+                              EzPlainText(text: ' ${truth!.localeCode}', style: config.bodyStyle),
+                            ]),
+                    ),
+                    config.spacer,
 
-                  setState(() {});
-                },
-                // header: TODO,
-                children: arbFiles.map((ARBFile arb) {
-                  // Filter metadata keys (starts with '@')
-                  final List<String> keys =
-                      arb.entries.keys.where((String k) => !k.startsWith('@')).toList();
+                    // Curr compare
+                    EzAnimSwitch(
+                      config,
+                      mod: 0.5,
+                      forceFade: true,
+                      forceType: EzTransitionType.none,
+                      child: truth == null
+                          ? EzRichText(config, children: <InlineSpan>[
+                              EzPlainText(text: 'Compare locale:', style: config.labelStyle),
+                              EzPlainText(text: comparePreview, style: config.labelStyle),
+                            ])
+                          : EzRichText(config, children: <InlineSpan>[
+                              EzPlainText(
+                                text: 'Compare locale:',
+                                style: config.titleStyle?.copyWith(
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: config.colors.primary,
+                                ),
+                              ),
+                              EzPlainText(
+                                text: ' $comparePreview',
+                                style: config.bodyStyle?.copyWith(color: config.colors.outline),
+                              ),
+                            ]),
+                    ),
+                  ]),
+                ),
+                halfSpacer,
 
-                  return Container(
-                    key: ValueKey<String>(arb.path),
-                    width: colWidth,
-                    decoration: colDeco,
-                    child: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
-                      // Header
-                      Container(
-                        width: double.infinity,
-                        color: config.colors.secondary,
-                        child: Text(
-                          '${arb.localeCode} (HUMAN_VER)',
-                          style: config.titleStyle?.copyWith(color: config.colors.onSecondary),
-                          textAlign: TextAlign.center,
-                        ),
+                // Div
+                Center(
+                  child: EzTitledDivider(
+                    config,
+                    height: config.spacing * 2,
+                    title: EzCol(children: <Widget>[
+                      // Toggle
+                      EzFlipFlop(
+                        config,
+                        init: wrap,
+                        onLabel: 'Wrap',
+                        offLabel: 'List',
+                        onChanged: (bool choice) => setState(() => wrap = choice),
                       ),
+                      config.margin,
 
-                      // Entries
-                      Expanded(
-                          child: ListView.builder(
-                        itemCount: keys.length,
-                        itemBuilder: (_, int index) {
-                          final String key = keys[index];
-                          final String value = arb.entries[key];
+                      // Search
+                      EzTextField(
+                        constraints: ezTextFieldConstraints(context),
+                        hintText: 'Search (code only)',
+                        validator: (String? check) {
+                          if (check == null) return null;
 
-                          return EzTextField(
-                            constraints: BoxConstraints(maxWidth: colWidth),
-                            controller: TextEditingController(text: value.toString()),
-                            hintText: key,
-                            maxLines: null,
-                            textAlign: TextAlign.start,
-                            validator: (_) => null,
-                          );
+                          final RegExp regex = RegExp(r'[\w_]*');
+                          if (!regex.hasMatch(check)) return r'[\w_]*';
+
+                          return null;
                         },
-                      )),
+                        onChanged: (String input) => setState(() => search = input),
+                      )
                     ]),
-                  );
-                }).toList(),
-              ),
+                  ),
+                ),
+                halfSpacer,
+
+                // Choices/options
+                buildOptions(config),
+                EzFooter(config),
+              ]),
             ),
-            fabs: <Widget>[SettingsFAB(config, context: context)],
+            fabs: <Widget>[
+              EzAnimVis(
+                config,
+                mod: 0.667,
+                visible: truth != null,
+                kid: Padding(
+                  padding: EdgeInsets.only(bottom: config.spacing),
+                  child: FloatingActionButton(
+                    onPressed: () => setState(() => truth = null),
+                    tooltip: config.ezL10n.gUndo,
+                    child: EzIcon(config, Icons.undo),
+                  ),
+                ),
+              ),
+              SettingsFAB(config, context: context),
+            ],
           );
         },
       );
