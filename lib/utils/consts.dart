@@ -17,11 +17,15 @@ const String recentProjectsKey = 'recentProjects';
 
 final Map<String, Object> a11HowMobile = <String, Object>{
   ...ywtMobileConfig,
+  darkShowScrollKey: false,
+  lightShowScrollKey: false,
   recentProjectsKey: <String>[],
 };
 final Map<String, Object> a11HowDesktop = <String, Object>{
   ...ywtDesktopConfig,
   darkShowBackFABKey: true,
   lightShowBackFABKey: true,
+  darkShowScrollKey: false,
+  lightShowScrollKey: false,
   recentProjectsKey: <String>[],
 };
