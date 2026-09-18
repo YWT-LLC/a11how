@@ -20,18 +20,12 @@ const String filterTypeKey = 'filterType';
 
 final Map<String, Object> a11HowMobile = <String, Object>{
   ...ywtMobileConfig,
-  darkShowScrollKey: false,
-  lightShowScrollKey: false,
   recentProjectsKey: <String>[],
   filterTypeKey: FilterType.startsWith.value
 };
 
 final Map<String, Object> a11HowDesktop = <String, Object>{
   ...ywtDesktopConfig,
-  darkShowBackFABKey: true,
-  lightShowBackFABKey: true,
-  darkShowScrollKey: false,
-  lightShowScrollKey: false,
   recentProjectsKey: <String>[],
   filterTypeKey: FilterType.startsWith.value
 };
