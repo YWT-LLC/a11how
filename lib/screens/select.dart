@@ -238,7 +238,7 @@ class _SelectScreenState extends State<SelectScreen> {
                 halfSpacer,
               ]),
             ),
-            // TODO: add and delete langs
+            // TODO: add langs
             // ...definitely easy copy prompt, maybe integrated browser?
             // TODO: group add and delete (entries)
             // ...ditto (but smaller)
@@ -246,19 +246,29 @@ class _SelectScreenState extends State<SelectScreen> {
                 ? <HybridAction>[
                     HybridAction(
                       label: 'Removing',
-                      icon: Icons.keyboard_arrow_down,
+                      icon: Icons.remove_done,
                       onPressed: () => setState(() => removing = !removing),
                     ),
                   ]
                 : <HybridAction>[
                     HybridAction(
-                      label: 'Add locale',
-                      icon: Icons.add,
+                      label: 'Add entry',
+                      icon: Icons.playlist_add_outlined,
                       onPressed: doNothing,
                     ),
                     HybridAction(
-                      label: 'Remove locale',
-                      icon: Icons.remove,
+                      label: 'Remove entries',
+                      icon: Icons.playlist_remove_outlined,
+                      onPressed: doNothing,
+                    ),
+                    HybridAction(
+                      label: 'Add locale',
+                      icon: Icons.group_add_outlined,
+                      onPressed: doNothing,
+                    ),
+                    HybridAction(
+                      label: 'Remove locales',
+                      icon: Icons.group_remove_outlined,
                       onPressed: () => setState(() => removing = !removing),
                     ),
                     if (truth != null)
