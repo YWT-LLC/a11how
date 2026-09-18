@@ -7,6 +7,7 @@ import '../screens/export.dart';
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
+import 'dart:io';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,8 @@ class SelectScreen extends StatefulWidget {
 class _SelectScreenState extends State<SelectScreen> {
   // Define the build data //
 
+  late final List<ARBFile> files = widget.workDir.files;
+
   bool wrap = true;
   String filter = '';
 
@@ -33,14 +36,28 @@ class _SelectScreenState extends State<SelectScreen> {
   ARBFile? compare;
   String comparePreview = '';
 
+  bool removing = false;
+
   // Define custom functions //
 
   void hoverOption(ARBFile arb) => setState(
       () => (truth == null) ? truthPreview = arb.localeCode : comparePreview = arb.localeCode);
 
-  void chooseOption(ARBFile arb) => (truth == null)
-      ? setState(() => truth = arb)
-      : context.goNamed(workPath, extra: WorkPair(truth: truth!, compare: arb));
+  Future<void> chooseOption(EzCP config, ARBFile arb) async {
+    if (removing) {
+      try {
+        final File file = File(arb.path);
+        await file.delete();
+        setState(() {});
+      } catch (e) {
+        if (mounted) ezSnackBar(config, context: context, message: 'Failure to delete file: $e');
+      }
+    } else {
+      (truth == null)
+          ? setState(() => truth = arb)
+          : context.goNamed(workPath, extra: WorkPair(truth: truth!, compare: arb));
+    }
+  }
 
   Widget buildOptions(EzCP config) => Expanded(
         child: wrap
@@ -49,7 +66,7 @@ class _SelectScreenState extends State<SelectScreen> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
                   child: EzWrap(
-                    children: widget.workDir.files
+                    children: files
                         .where((ARBFile arb) => filter.isEmpty
                             ? (arb.localeCode != truth?.localeCode)
                             : arb.localeCode.contains(filter))
@@ -60,7 +77,7 @@ class _SelectScreenState extends State<SelectScreen> {
                                 child: EzElevatedButton(
                                   config,
                                   text: arb.localeCode,
-                                  onPressed: () => chooseOption(arb),
+                                  onPressed: () async => await chooseOption(config, arb),
                                 ),
                               ),
                             ))
@@ -70,7 +87,7 @@ class _SelectScreenState extends State<SelectScreen> {
               )
             : EzScrollView(
                 config,
-                children: widget.workDir.files
+                children: files
                     .where((ARBFile arb) => filter.isEmpty
                         ? (arb.localeCode != truth?.localeCode)
                         : arb.localeCode.contains(filter))
@@ -81,7 +98,7 @@ class _SelectScreenState extends State<SelectScreen> {
                             child: EzTextButton(
                               config,
                               text: arb.localeCode,
-                              onPressed: () => chooseOption(arb),
+                              onPressed: () async => await chooseOption(config, arb),
                             ),
                           ),
                         ))
@@ -108,66 +125,77 @@ class _SelectScreenState extends State<SelectScreen> {
                   style: config.labelStyle?.copyWith(color: config.colors.outline),
                   textAlign: TextAlign.center,
                 ),
-                config.spacer,
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: config.marginVal),
-                  child: EzCol(children: <Widget>[
-                    // Curr truth
-                    EzAnimSwitch(
-                      config,
-                      mod: 0.5,
-                      forceFade: true,
-                      forceType: EzTransitionType.none,
-                      child: truth == null
-                          ? EzRichText(config, children: <InlineSpan>[
-                              EzPlainText(
-                                text: 'Source locale:',
-                                style: config.titleStyle?.copyWith(
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: config.colors.primary,
-                                ),
-                              ),
-                              EzPlainText(
-                                text: ' $truthPreview',
-                                style: config.bodyStyle?.copyWith(color: config.colors.outline),
-                              ),
-                            ])
-                          : EzRichText(config, children: <InlineSpan>[
-                              EzPlainText(text: 'Source locale:', style: config.bodyStyle),
-                              EzPlainText(text: ' ${truth!.localeCode}', style: config.bodyStyle),
-                            ]),
-                    ),
+                EzAnimVis(
+                  config,
+                  mod: 0.667,
+                  reverse: true,
+                  forceFade: true,
+                  forceType: EzTransitionType.slideY,
+                  visible: !removing,
+                  kid: EzCol(children: <Widget>[
                     config.spacer,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: config.marginVal),
+                      child: EzCol(children: <Widget>[
+                        // Curr truth
+                        EzAnimSwitch(
+                          config,
+                          mod: 0.5,
+                          forceFade: true,
+                          forceType: EzTransitionType.none,
+                          child: truth == null
+                              ? EzRichText(config, children: <InlineSpan>[
+                                  EzPlainText(
+                                    text: 'Source locale:',
+                                    style: config.titleStyle?.copyWith(
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: config.colors.primary,
+                                    ),
+                                  ),
+                                  EzPlainText(
+                                    text: ' $truthPreview',
+                                    style: config.bodyStyle?.copyWith(color: config.colors.outline),
+                                  ),
+                                ])
+                              : EzRichText(config, children: <InlineSpan>[
+                                  EzPlainText(text: 'Source locale:', style: config.bodyStyle),
+                                  EzPlainText(
+                                      text: ' ${truth!.localeCode}', style: config.bodyStyle),
+                                ]),
+                        ),
+                        config.spacer,
 
-                    // Curr compare
-                    EzAnimSwitch(
-                      config,
-                      mod: 0.5,
-                      forceFade: true,
-                      forceType: EzTransitionType.none,
-                      child: truth == null
-                          ? EzRichText(config, children: <InlineSpan>[
-                              EzPlainText(text: 'Compare locale:', style: config.labelStyle),
-                              EzPlainText(text: comparePreview, style: config.labelStyle),
-                            ])
-                          : EzRichText(config, children: <InlineSpan>[
-                              EzPlainText(
-                                text: 'Compare locale:',
-                                style: config.titleStyle?.copyWith(
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: config.colors.primary,
-                                ),
-                              ),
-                              EzPlainText(
-                                text: ' $comparePreview',
-                                style: config.bodyStyle?.copyWith(color: config.colors.outline),
-                              ),
-                            ]),
+                        // Curr compare
+                        EzAnimSwitch(
+                          config,
+                          mod: 0.5,
+                          forceFade: true,
+                          forceType: EzTransitionType.none,
+                          child: truth == null
+                              ? EzRichText(config, children: <InlineSpan>[
+                                  EzPlainText(text: 'Compare locale:', style: config.labelStyle),
+                                  EzPlainText(text: comparePreview, style: config.labelStyle),
+                                ])
+                              : EzRichText(config, children: <InlineSpan>[
+                                  EzPlainText(
+                                    text: 'Compare locale:',
+                                    style: config.titleStyle?.copyWith(
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: config.colors.primary,
+                                    ),
+                                  ),
+                                  EzPlainText(
+                                    text: ' $comparePreview',
+                                    style: config.bodyStyle?.copyWith(color: config.colors.outline),
+                                  ),
+                                ]),
+                        ),
+                      ]),
                     ),
+                    halfSpacer,
                   ]),
                 ),
-                halfSpacer,
 
                 // Div
                 Center(
@@ -213,25 +241,33 @@ class _SelectScreenState extends State<SelectScreen> {
             // ...definitely easy copy prompt, maybe integrated browser?
             // TODO: group add and delete (entries)
             // ...ditto (but smaller)
-            actions: <HybridAction>[
-              HybridAction(
-                label: 'Add locale',
-                icon: Icons.add,
-                onPressed: doNothing,
-              ),
-              HybridAction(
-                label: 'Remove locale',
-                icon: Icons.remove,
-                onPressed: doNothing,
-              ),
-              if (truth != null)
-                HybridAction(
-                  label: 'Undo select',
-                  icon: Icons.undo,
-                  onPressed: () => setState(() => truth = null),
-                ),
-              settingsAction(config, context),
-            ],
+            actions: removing
+                ? <HybridAction>[
+                    HybridAction(
+                      label: 'Removing',
+                      icon: Icons.keyboard_arrow_down,
+                      onPressed: () => setState(() => removing = !removing),
+                    ),
+                  ]
+                : <HybridAction>[
+                    HybridAction(
+                      label: 'Add locale',
+                      icon: Icons.add,
+                      onPressed: doNothing,
+                    ),
+                    HybridAction(
+                      label: 'Remove locale',
+                      icon: Icons.remove,
+                      onPressed: () => setState(() => removing = !removing),
+                    ),
+                    if (truth != null)
+                      HybridAction(
+                        label: 'Undo select',
+                        icon: Icons.undo,
+                        onPressed: () => setState(() => truth = null),
+                      ),
+                    settingsAction(config, context),
+                  ],
           );
         },
       );
