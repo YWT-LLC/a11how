@@ -125,6 +125,8 @@ $json
 
   Widget twoCents(EzCP config) => switch (this) {
         TranslationService.proZ ||
+        TranslationService.cafe ||
+        TranslationService.gengo ||
         TranslationService.fiverr ||
         TranslationService.upwork =>
           const SizedBox.shrink(),
