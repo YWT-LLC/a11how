@@ -35,12 +35,19 @@ class HybridAction {
   final String label;
   final IconData icon;
   final void Function() onPressed;
+  final MenuController? menuController;
+  final List<Widget>? menuChildren;
 
   HybridAction({
     required this.label,
     required this.icon,
     required this.onPressed,
-  });
+    this.menuController,
+    this.menuChildren,
+  }) : assert(
+          (menuController == null) == (menuChildren == null),
+          'If MenuController is provided, MenuChildren must be. Y vice versa.',
+        );
 }
 
 HybridAction settingsAction(EzCP config, BuildContext context) => HybridAction(

@@ -37,23 +37,41 @@ class A11howScaffold extends StatelessWidget {
             ).height) +
         config.padding;
 
-    Iterable<Widget> fabActions() => actions.map((HybridAction action) => FloatingActionButton(
-          heroTag: '${action.label}_FAB',
-          onPressed: action.onPressed,
-          tooltip: action.label,
-          child: EzIcon(config, action.icon),
-        ));
+    Iterable<Widget> fabActions() => actions.map((HybridAction action) {
+          final Widget core = FloatingActionButton(
+            heroTag: '${action.label}_FAB',
+            onPressed: action.onPressed,
+            tooltip: action.label,
+            child: EzIcon(config, action.icon),
+          );
 
-    List<Widget> toolbarActions() => actions
-        .map((HybridAction action) => Padding(
-            padding: EdgeInsets.symmetric(horizontal: config.spacing / 2),
-            child: EzTextIconButton(
-              config,
-              label: action.label,
-              icon: EzIcon(config, action.icon),
-              onPressed: action.onPressed,
-            )))
-        .toList();
+          return action.menuController == null
+              ? core
+              : MenuAnchor(
+                  controller: action.menuController!,
+                  menuChildren: action.menuChildren!,
+                  child: core,
+                );
+        });
+
+    List<Widget> toolbarActions() => actions.map((HybridAction action) {
+          final Widget core = Padding(
+              padding: EdgeInsets.symmetric(horizontal: config.spacing / 2),
+              child: EzTextIconButton(
+                config,
+                label: action.label,
+                icon: EzIcon(config, action.icon),
+                onPressed: action.onPressed,
+              ));
+
+          return action.menuController == null
+              ? core
+              : MenuAnchor(
+                  controller: action.menuController!,
+                  menuChildren: action.menuChildren!,
+                  child: core,
+                );
+        }).toList();
 
     return EzAdaptiveParent(
       small: EzScaffold(
