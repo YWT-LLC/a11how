@@ -48,6 +48,7 @@ class _SelectScreenState extends State<SelectScreen> {
       try {
         final File file = File(arb.path);
         await file.delete();
+        files.remove(arb);
         setState(() {});
       } catch (e) {
         if (mounted) ezSnackBar(config, context: context, message: 'Failure to delete file: $e');
