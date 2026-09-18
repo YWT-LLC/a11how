@@ -90,10 +90,6 @@ class _SelectScreenState extends State<SelectScreen> {
       );
 
   // Return the build //
-  // TODO: add and delete langs
-  // ...definitely easy copy prompt, maybe integrated browser?
-  // TODO: group add and delete (entries)
-  // ...ditto (but smaller)
 
   @override
   Widget build(BuildContext context) => Consumer<EzCP>(
@@ -213,10 +209,24 @@ class _SelectScreenState extends State<SelectScreen> {
                 halfSpacer,
               ]),
             ),
+            // TODO: add and delete langs
+            // ...definitely easy copy prompt, maybe integrated browser?
+            // TODO: group add and delete (entries)
+            // ...ditto (but smaller)
             actions: <HybridAction>[
+              HybridAction(
+                label: 'Add locale',
+                icon: Icons.add,
+                onPressed: doNothing,
+              ),
+              HybridAction(
+                label: 'Remove locale',
+                icon: Icons.remove,
+                onPressed: doNothing,
+              ),
               if (truth != null)
                 HybridAction(
-                  label: config.ezL10n.gUndo,
+                  label: 'Undo select',
                   icon: Icons.undo,
                   onPressed: () => setState(() => truth = null),
                 ),
