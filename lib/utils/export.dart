@@ -7,4 +7,5 @@ export '../l10n/lang.dart';
 
 export 'a11how_cache.dart';
 export 'consts.dart';
+export 'enums.dart';
 export 'models.dart';
