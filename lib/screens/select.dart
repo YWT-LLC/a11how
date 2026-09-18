@@ -8,8 +8,10 @@ import '../utils/export.dart';
 import '../widgets/export.dart';
 
 import 'dart:io';
+import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -264,7 +266,180 @@ class _SelectScreenState extends State<SelectScreen> {
                     HybridAction(
                       label: 'Add locale',
                       icon: Icons.group_add_outlined,
-                      onPressed: doNothing,
+                      onPressed: () async => await ezModal(
+                        config,
+                        context: context,
+                        enableDrag: false,
+                        isDismissible: false,
+                        showDragHandle: false,
+                        constraints: const BoxConstraints.expand(),
+                        builder: (_) {
+                          String? sourceCode;
+                          try {
+                            sourceCode = widget.workDir.files
+                                .firstWhere((ARBFile arb) => arb.localeCode == 'en_US')
+                                .localeCode;
+                          } catch (_) {
+                            // Contains with extra steps, if above fails sourceCode remains null (and that's okay)
+                          }
+
+                          final TextEditingController destController = TextEditingController();
+                          String? validateDest(String? check) {
+                            if (check == null || check.trim().isEmpty) {
+                              return 'Cannot be empty';
+                            }
+
+                            const String pattern = r'^[a-z]+_?[A-Z]*$';
+                            final RegExp regex = RegExp(pattern);
+                            if (!regex.hasMatch(check)) {
+                              return 'Invalid; $pattern';
+                            }
+
+                            return null;
+                          }
+
+                          final TextEditingController arbController = TextEditingController();
+                          String? validateARB(String? check) {
+                            if (check == null || check.trim().isEmpty) {
+                              return 'Cannot be empty';
+                            }
+
+                            return null;
+                          }
+
+                          return StatefulBuilder(
+                            builder: (BuildContext mCon, StateSetter setModal) => Container(
+                              margin: EdgeInsets.all(config.marginVal),
+                              constraints: const BoxConstraints.expand(),
+                              child: EzCol(
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  // Source
+                                  EzDropdownMenu<String>(
+                                    config,
+                                    label: 'Source locale',
+                                    initialSelection: sourceCode,
+                                    dropdownMenuEntries: widget.workDir.files
+                                        .map((ARBFile arb) => DropdownMenuEntry<String>(
+                                              label: arb.localeCode,
+                                              value: arb.localeCode,
+                                            ))
+                                        .toList(),
+                                    widthEntry: 'en_US_BB',
+                                    onSelected: (String? choice) {
+                                      if (choice == null) return;
+                                      setState(() => sourceCode = choice);
+                                    },
+                                  ),
+                                  config.spacer,
+
+                                  // Destination
+                                  EzRow(config, children: <Widget>[
+                                    Text('New locale:', style: config.bodyStyle),
+                                    config.rowMargin,
+                                    EzTextField(
+                                      constraints: BoxConstraints(
+                                        maxWidth: ezTextSize(
+                                          config,
+                                          text: '\txx(_YY?)\t',
+                                          style: config.bodyStyle,
+                                          textScaler: MediaQuery.of(context).textScaler,
+                                        ).width,
+                                      ),
+                                      hintText: 'xx(_YY?)',
+                                      controller: destController,
+                                      validator: validateDest,
+                                    ),
+                                  ]),
+
+                                  // Value/Field
+                                  EzTitledDivider(
+                                    config,
+                                    height: config.spacing * 3,
+                                    title: EzTextIconButton(
+                                      config,
+                                      label: 'Copy prompt',
+                                      icon: EzIcon(config, Icons.copy),
+                                      onPressed: sourceCode == null
+                                          ? null
+                                          : () {
+                                              final String jsonString =
+                                                  const JsonEncoder.withIndent('  ').convert(widget
+                                                      .workDir.files
+                                                      .firstWhere((ARBFile arb) =>
+                                                          arb.localeCode == sourceCode)
+                                                      .entries);
+
+                                              Clipboard.setData(ClipboardData(
+                                                text:
+                                                    'Please translate this .arb file from $sourceCode to ${destController.text}. Please maintain the format so I can copy/paste the results.\n\n$jsonString',
+                                              ));
+                                            },
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: EzTextField(
+                                      constraints: const BoxConstraints.expand(),
+                                      hintText: 'New entries',
+                                      controller: arbController,
+                                      validator: validateARB,
+                                    ),
+                                  ),
+                                  config.spacer,
+
+                                  // Submit/cancel
+                                  EzRow(config, children: <Widget>[
+                                    EzTextIconButton(
+                                      config,
+                                      label: config.ezL10n.gCancel,
+                                      icon: EzIcon(config, Icons.cancel),
+                                      onPressed: () => Navigator.of(mCon).pop(),
+                                    ),
+                                    config.rowSpacer,
+                                    EzTextIconButton(
+                                      config,
+                                      label: 'Add',
+                                      icon: EzIcon(config, Icons.add),
+                                      onPressed: () async {
+                                        if (validateDest(destController.text) != null ||
+                                            validateDest(arbController.text) != null) {
+                                          ezSnackBar(
+                                            config,
+                                            context: context,
+                                            message: 'Resolve issues please',
+                                          );
+                                          return;
+                                        }
+
+                                        final String newPath = widget.workDir.files.first.path;
+                                        newPath.replaceFirst(
+                                          RegExp(r'/[a-zA-Z_]+\.arb'),
+                                          '${destController.text}.arb',
+                                        );
+
+                                        // Save
+                                        try {
+                                          final File file = File(newPath);
+                                          await file.writeAsString(destController.text);
+                                        } catch (e) {
+                                          if (context.mounted) {
+                                            ezSnackBar(
+                                              config,
+                                              context: context,
+                                              message: 'Failure saving: $e',
+                                            );
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  ]),
+                                  config.spacer,
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     HybridAction(
                       label: 'Remove locales',
