@@ -90,6 +90,10 @@ class _SelectScreenState extends State<SelectScreen> {
       );
 
   // Return the build //
+  // TODO: add and delete langs
+  // ...definitely easy copy prompt, maybe integrated browser?
+  // TODO: group add and delete (entries)
+  // ...ditto (but smaller)
 
   @override
   Widget build(BuildContext context) => Consumer<EzCP>(
