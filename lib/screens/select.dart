@@ -250,9 +250,7 @@ class _SelectScreenState extends State<SelectScreen> {
               ]),
             ),
             // TODO: add langs
-            // ...definitely easy copy prompt, maybe integrated browser?
-            // TODO: group add and delete (entries)
-            // ...ditto (but smaller)
+            // TODO: group add && delete (entries)
             actions: removing
                 ? <HybridAction>[
                     HybridAction(
@@ -403,7 +401,7 @@ class _SelectScreenState extends State<SelectScreen> {
                                           // TODO: create zip and/or open site
                                           Clipboard.setData(ClipboardData(
                                             text: service.prompt(
-                                              source: sourceCode!, // TODO: validate  firsts
+                                              source: sourceCode!, // TODO: validate first
                                               dest: destController.text,
                                               json: jsonString,
                                             ),
