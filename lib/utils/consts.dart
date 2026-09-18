@@ -3,6 +3,8 @@
  * See LICENSE for distribution and usage details.
  */
 
+import '../utils/export.dart';
+
 import 'package:open_ui/open_ui.dart';
 
 //* App config *//
@@ -14,13 +16,16 @@ const String appName = 'a11How';
 const String androidPackage = 'llc.ywt.a11how';
 
 const String recentProjectsKey = 'recentProjects';
+const String filterTypeKey = 'filterType';
 
 final Map<String, Object> a11HowMobile = <String, Object>{
   ...ywtMobileConfig,
   darkShowScrollKey: false,
   lightShowScrollKey: false,
   recentProjectsKey: <String>[],
+  filterTypeKey: FilterType.startsWith.value
 };
+
 final Map<String, Object> a11HowDesktop = <String, Object>{
   ...ywtDesktopConfig,
   darkShowBackFABKey: true,
@@ -28,4 +33,5 @@ final Map<String, Object> a11HowDesktop = <String, Object>{
   darkShowScrollKey: false,
   lightShowScrollKey: false,
   recentProjectsKey: <String>[],
+  filterTypeKey: FilterType.startsWith.value
 };
