@@ -104,28 +104,35 @@ class _HomeScreenState extends State<HomeScreen> {
           thumbVisibility: false,
           scrollDirection: Axis.horizontal,
           children: <Widget>[
-            EzLink(
+            EzIconLink(
               config,
-              text: path,
+              icon: EzIcon(config, Icons.launch),
+              label: path,
               textAlign: TextAlign.start,
+              textColor: config.colors.onSurface,
               hint: config.ezL10n.gOpen,
               onTap: () async => await processPath(config, path),
             ),
-            config.rowMargin,
-            EzIconButton(
-              config,
-              tooltip: config.ezL10n.gRemove,
-              icon: const Icon(Icons.remove),
-              style: IconButton.styleFrom(
-                side: config.borderSide(color: config.colors.errorContainer),
-                foregroundColor: config.colors.error,
-                backgroundColor: config.colors.surface,
+            Tooltip(
+              message: config.ezL10n.gRemove,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () async {
+                    recentProjects.remove(path);
+                    await EzCM.setStringList(recentProjectsKey, recentProjects);
+                    setState(() {});
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(config.marginVal),
+                    child: EzIcon(
+                      config,
+                      Icons.remove_circle_outline,
+                      color: config.colors.error,
+                    ),
+                  ),
+                ),
               ),
-              onPressed: () async {
-                recentProjects.remove(path);
-                await EzCM.setStringList(recentProjectsKey, recentProjects);
-                setState(() {});
-              },
             ),
           ],
         ),
