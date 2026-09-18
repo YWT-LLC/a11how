@@ -155,7 +155,7 @@ class _WorkScreenState extends State<WorkScreen> {
             errorMaxLines: 1,
             border: OutlineInputBorder(
               borderSide: BorderSide(
-                color: config.colors.outline,
+                color: config.colors.onSurface.withValues(alpha: focusOpacity),
                 width: config.borderWidth / 2,
               ),
               borderRadius: BorderRadius.zero,
@@ -163,7 +163,7 @@ class _WorkScreenState extends State<WorkScreen> {
             ),
             disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: config.colors.outlineVariant,
+                color: Colors.transparent,
                 width: config.borderWidth / 2,
               ),
               borderRadius: BorderRadius.zero,
@@ -171,7 +171,7 @@ class _WorkScreenState extends State<WorkScreen> {
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: config.colors.outline,
+                color: config.colors.onSurface.withValues(alpha: focusOpacity),
                 width: config.borderWidth / 2,
               ),
               borderRadius: BorderRadius.zero,
@@ -179,7 +179,7 @@ class _WorkScreenState extends State<WorkScreen> {
             ),
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: config.colors.errorContainer,
+                color: config.colors.error.withValues(alpha: focusOpacity),
                 width: config.borderWidth / 2,
               ),
               borderRadius: BorderRadius.zero,
@@ -187,7 +187,7 @@ class _WorkScreenState extends State<WorkScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: config.colors.primaryContainer,
+                color: config.colors.primary.withValues(alpha: focusOpacity * 2),
                 width: config.borderWidth / 2,
               ),
               borderRadius: BorderRadius.zero,
@@ -195,7 +195,7 @@ class _WorkScreenState extends State<WorkScreen> {
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: config.colors.error,
+                color: config.colors.error.withValues(alpha: focusOpacity * 3),
                 width: config.borderWidth / 2,
               ),
               borderRadius: BorderRadius.zero,
@@ -295,7 +295,7 @@ class _WorkScreenState extends State<WorkScreen> {
                             config,
                             label: filterType.name(config),
                             textAlign: TextAlign.start,
-                            icon: EzIcon(config, Icons.sort),
+                            icon: EzIcon(config, Icons.filter_list),
                             onPressed: () => toggleMenu(filterMC),
                           ),
                         ),
@@ -314,9 +314,8 @@ class _WorkScreenState extends State<WorkScreen> {
                           config,
                           mainAxisSize: MainAxisSize.max,
                           children: workData
-                              .where(// TODO: options
-                                  (WorkRow row) =>
-                                      filterString.isEmpty ? true : checkFilter(row.key))
+                              .where((WorkRow row) =>
+                                  filterString.isEmpty ? true : checkFilter(row.key))
                               .map((WorkRow row) => EzRow(
                                     config,
                                     key: ValueKey<String>(row.key),
