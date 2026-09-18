@@ -116,6 +116,15 @@ class _SelectScreenState extends State<SelectScreen> {
         builder: (_, EzCP config, __) {
           final Widget halfSpacer = EzSpacer(config.spacing / 2);
 
+          final BoxConstraints filterConstraints = BoxConstraints.tightFor(
+            width: ezTextSize(
+              config,
+              text: '\txx(_YY?)\t',
+              style: config.bodyStyle,
+              textScaler: MediaQuery.of(context).textScaler,
+            ).width,
+          );
+
           return A11howScaffold(
             config,
             body: EzScreen(
@@ -218,7 +227,7 @@ class _SelectScreenState extends State<SelectScreen> {
 
                       // Filter
                       EzTextField(
-                        constraints: ezTextFieldConstraints(context, prop: 0.5),
+                        constraints: filterConstraints,
                         hintText: 'Filter',
                         validator: (String? check) {
                           if (check == null) return null;
@@ -266,180 +275,206 @@ class _SelectScreenState extends State<SelectScreen> {
                     HybridAction(
                       label: 'Add locale',
                       icon: Icons.group_add_outlined,
-                      onPressed: () async => await ezModal(
-                        config,
-                        context: context,
-                        enableDrag: false,
-                        isDismissible: false,
-                        showDragHandle: false,
-                        constraints: const BoxConstraints.expand(),
-                        builder: (_) {
-                          String? sourceCode;
-                          try {
-                            sourceCode = widget.workDir.files
-                                .firstWhere((ARBFile arb) => arb.localeCode == 'en_US')
-                                .localeCode;
-                          } catch (_) {
-                            // Contains with extra steps, if above fails sourceCode remains null (and that's okay)
+                      onPressed: () async {
+                        // Define (modal) build data //
+
+                        String? sourceCode;
+                        TranslationService service = TranslationService.proZ;
+
+                        final TextEditingController destController = TextEditingController();
+                        final TextEditingController arbController = TextEditingController();
+
+                        // Define custom (modal) functions //
+
+                        String? validateDest(String? check) {
+                          if (check == null || check.trim().isEmpty) {
+                            return 'Cannot be empty';
                           }
 
-                          final TextEditingController destController = TextEditingController();
-                          String? validateDest(String? check) {
-                            if (check == null || check.trim().isEmpty) {
-                              return 'Cannot be empty';
-                            }
-
-                            const String pattern = r'^[a-z]+_?[A-Z]*$';
-                            final RegExp regex = RegExp(pattern);
-                            if (!regex.hasMatch(check)) {
-                              return 'Invalid; $pattern';
-                            }
-
-                            return null;
+                          const String pattern = r'^[a-z]+_?[A-Z]*$';
+                          final RegExp regex = RegExp(pattern);
+                          if (!regex.hasMatch(check)) {
+                            return 'Invalid; $pattern';
                           }
 
-                          final TextEditingController arbController = TextEditingController();
-                          String? validateARB(String? check) {
-                            if (check == null || check.trim().isEmpty) {
-                              return 'Cannot be empty';
-                            }
+                          return null;
+                        }
 
-                            return null;
+                        String? validateARB(String? check) {
+                          if (check == null || check.trim().isEmpty) {
+                            return 'Cannot be empty';
                           }
 
-                          return StatefulBuilder(
+                          return null;
+                        }
+
+                        // Init (modal) //
+
+                        try {
+                          sourceCode = widget.workDir.files
+                              .firstWhere((ARBFile arb) => arb.localeCode == 'en_US')
+                              .localeCode;
+                        } catch (_) {
+                          // Contains with extra steps, if above fails sourceCode remains null (and that's okay)
+                        }
+
+                        // Return (modal) build //
+
+                        await ezModal(
+                          config,
+                          context: context,
+                          enableDrag: false,
+                          isDismissible: false,
+                          showDragHandle: false,
+                          constraints: const BoxConstraints.expand(),
+                          builder: (_) => StatefulBuilder(
                             builder: (BuildContext mCon, StateSetter setModal) => Container(
                               margin: EdgeInsets.all(config.marginVal),
                               constraints: const BoxConstraints.expand(),
-                              child: EzCol(
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  // Source
-                                  EzDropdownMenu<String>(
+                              child: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                                // Source
+                                EzDropdownMenu<String>(
+                                  config,
+                                  label: 'Source locale',
+                                  initialSelection: sourceCode,
+                                  dropdownMenuEntries: widget.workDir.files
+                                      .map((ARBFile arb) => DropdownMenuEntry<String>(
+                                            label: arb.localeCode,
+                                            value: arb.localeCode,
+                                          ))
+                                      .toList(),
+                                  widthEntry: 'en_US_BB',
+                                  onSelected: (String? choice) {
+                                    if (choice == null) return;
+                                    setModal(() => sourceCode = choice);
+                                  },
+                                ),
+                                config.margin,
+
+                                // Destination
+                                EzRow(config, children: <Widget>[
+                                  Text('New locale:', style: config.bodyStyle),
+                                  config.rowMargin,
+                                  EzTextField(
+                                    constraints: filterConstraints,
+                                    hintText: 'xx_YY',
+                                    controller: destController,
+                                    validator: validateDest,
+                                  ),
+                                ]),
+                                config.separator,
+
+                                // Service
+                                EzRow(config, children: <Widget>[
+                                  EzDropdownMenu<TranslationService>(
                                     config,
-                                    label: 'Source locale',
-                                    initialSelection: sourceCode,
-                                    dropdownMenuEntries: widget.workDir.files
-                                        .map((ARBFile arb) => DropdownMenuEntry<String>(
-                                              label: arb.localeCode,
-                                              value: arb.localeCode,
+                                    label: 'Choose service',
+                                    initialSelection: service,
+                                    dropdownMenuEntries: TranslationService.values
+                                        .map((TranslationService ts) =>
+                                            DropdownMenuEntry<TranslationService>(
+                                              label: ts.name(config),
+                                              value: ts,
                                             ))
                                         .toList(),
                                     widthEntry: 'en_US_BB',
-                                    onSelected: (String? choice) {
+                                    onSelected: (TranslationService? choice) {
                                       if (choice == null) return;
-                                      setState(() => sourceCode = choice);
+                                      setModal(() => service = choice);
                                     },
                                   ),
-                                  config.spacer,
+                                  service.twoCents(config),
+                                ]),
+                                config.margin,
+                                EzTextIconButton(
+                                  config,
+                                  label: 'Copy prompt',
+                                  icon: EzIcon(config, Icons.copy),
+                                  onPressed: sourceCode == null
+                                      ? null
+                                      : () {
+                                          final String jsonString =
+                                              const JsonEncoder.withIndent('  ').convert(widget
+                                                  .workDir.files
+                                                  .firstWhere(
+                                                      (ARBFile arb) => arb.localeCode == sourceCode)
+                                                  .entries);
 
-                                  // Destination
-                                  EzRow(config, children: <Widget>[
-                                    Text('New locale:', style: config.bodyStyle),
-                                    config.rowMargin,
-                                    EzTextField(
-                                      constraints: BoxConstraints(
-                                        maxWidth: ezTextSize(
-                                          config,
-                                          text: '\txx(_YY?)\t',
-                                          style: config.bodyStyle,
-                                          textScaler: MediaQuery.of(context).textScaler,
-                                        ).width,
-                                      ),
-                                      hintText: 'xx(_YY?)',
-                                      controller: destController,
-                                      validator: validateDest,
-                                    ),
-                                  ]),
+                                          // TODO: create zip and/or open site
+                                          Clipboard.setData(ClipboardData(
+                                            text: service.prompt(
+                                              source: sourceCode!, // TODO: validate  firsts
+                                              dest: destController.text,
+                                              json: jsonString,
+                                            ),
+                                          ));
+                                        },
+                                ),
+                                config.divider,
 
-                                  // Value/Field
-                                  EzTitledDivider(
+                                // Value/Field
+                                Expanded(
+                                  child: EzTextField(
+                                    constraints: const BoxConstraints.expand(),
+                                    hintText: 'New entries',
+                                    controller: arbController,
+                                    validator: validateARB,
+                                  ),
+                                ),
+                                config.spacer,
+
+                                // Submit/cancel
+                                EzRow(config, children: <Widget>[
+                                  EzTextIconButton(
                                     config,
-                                    height: config.spacing * 3,
-                                    title: EzTextIconButton(
-                                      config,
-                                      label: 'Copy prompt',
-                                      icon: EzIcon(config, Icons.copy),
-                                      onPressed: sourceCode == null
-                                          ? null
-                                          : () {
-                                              final String jsonString =
-                                                  const JsonEncoder.withIndent('  ').convert(widget
-                                                      .workDir.files
-                                                      .firstWhere((ARBFile arb) =>
-                                                          arb.localeCode == sourceCode)
-                                                      .entries);
-
-                                              Clipboard.setData(ClipboardData(
-                                                text:
-                                                    'Please translate this .arb file from $sourceCode to ${destController.text}. Please maintain the format so I can copy/paste the results.\n\n$jsonString',
-                                              ));
-                                            },
-                                    ),
+                                    label: config.ezL10n.gCancel,
+                                    icon: EzIcon(config, Icons.cancel),
+                                    onPressed: () => Navigator.of(mCon).pop(),
                                   ),
-                                  Expanded(
-                                    child: EzTextField(
-                                      constraints: const BoxConstraints.expand(),
-                                      hintText: 'New entries',
-                                      controller: arbController,
-                                      validator: validateARB,
-                                    ),
-                                  ),
-                                  config.spacer,
+                                  config.rowSpacer,
+                                  EzTextIconButton(
+                                    config,
+                                    label: 'Add',
+                                    icon: EzIcon(config, Icons.add),
+                                    onPressed: () async {
+                                      if (validateDest(destController.text) != null ||
+                                          validateDest(arbController.text) != null) {
+                                        ezSnackBar(
+                                          config,
+                                          context: context,
+                                          message: 'Resolve issues please',
+                                        );
+                                        return;
+                                      }
 
-                                  // Submit/cancel
-                                  EzRow(config, children: <Widget>[
-                                    EzTextIconButton(
-                                      config,
-                                      label: config.ezL10n.gCancel,
-                                      icon: EzIcon(config, Icons.cancel),
-                                      onPressed: () => Navigator.of(mCon).pop(),
-                                    ),
-                                    config.rowSpacer,
-                                    EzTextIconButton(
-                                      config,
-                                      label: 'Add',
-                                      icon: EzIcon(config, Icons.add),
-                                      onPressed: () async {
-                                        if (validateDest(destController.text) != null ||
-                                            validateDest(arbController.text) != null) {
+                                      final String newPath = widget.workDir.files.first.path;
+                                      newPath.replaceFirst(
+                                        RegExp(r'/[a-zA-Z_]+\.arb'),
+                                        '${destController.text}.arb',
+                                      );
+
+                                      // Save
+                                      try {
+                                        final File file = File(newPath);
+                                        await file.writeAsString(destController.text);
+                                      } catch (e) {
+                                        if (context.mounted) {
                                           ezSnackBar(
                                             config,
                                             context: context,
-                                            message: 'Resolve issues please',
+                                            message: 'Failure saving: $e',
                                           );
-                                          return;
                                         }
-
-                                        final String newPath = widget.workDir.files.first.path;
-                                        newPath.replaceFirst(
-                                          RegExp(r'/[a-zA-Z_]+\.arb'),
-                                          '${destController.text}.arb',
-                                        );
-
-                                        // Save
-                                        try {
-                                          final File file = File(newPath);
-                                          await file.writeAsString(destController.text);
-                                        } catch (e) {
-                                          if (context.mounted) {
-                                            ezSnackBar(
-                                              config,
-                                              context: context,
-                                              message: 'Failure saving: $e',
-                                            );
-                                          }
-                                        }
-                                      },
-                                    ),
-                                  ]),
-                                  config.spacer,
-                                ],
-                              ),
+                                      }
+                                    },
+                                  ),
+                                ]),
+                                config.spacer,
+                              ]),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                     HybridAction(
                       label: 'Remove locales',
