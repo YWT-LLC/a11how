@@ -38,11 +38,14 @@ class A11howScaffold extends StatelessWidget {
         config.padding;
 
     Iterable<Widget> fabActions() => actions.map((HybridAction action) {
-          final Widget core = FloatingActionButton(
-            heroTag: '${action.label}_FAB',
-            onPressed: action.onPressed,
-            tooltip: action.label,
-            child: EzIcon(config, action.icon),
+          final Widget core = Padding(
+            padding: EdgeInsets.only(top: config.spacing),
+            child: FloatingActionButton(
+              heroTag: '${action.label}_FAB',
+              onPressed: action.onPressed,
+              tooltip: action.label,
+              child: EzIcon(config, action.icon),
+            ),
           );
 
           return action.menuController == null
@@ -94,14 +97,14 @@ class A11howScaffold extends StatelessWidget {
                   config,
                   height: toolbarHeight,
                   leading: config.isLefty
-                      ? null
+                      ? const SizedBox.shrink()
                       : EzScrollView(
                           config,
                           thumbVisibility: false,
                           scrollDirection: Axis.horizontal,
                           children: toolbarActions(),
                         ),
-                  leadingWidth: config.isLefty ? null : double.infinity,
+                  leadingWidth: config.isLefty ? 0 : double.infinity,
                   actions: config.isLefty ? toolbarActions() : null,
                 ),
               ),
