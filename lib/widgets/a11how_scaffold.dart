@@ -89,23 +89,21 @@ class A11howScaffold extends StatelessWidget {
       ),
       medium: EzScaffold(
         config,
-        appBar: actions.isEmpty
-            ? null
-            : PreferredSize(
-                preferredSize: Size(double.infinity, toolbarHeight),
-                child: EzAppBar(
-                  config,
-                  height: toolbarHeight,
-                  title: EzScrollView(
-                    config,
-                    reverseHands: true,
-                    thumbVisibility: false,
-                    scrollDirection: Axis.horizontal,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: toolbarActions(),
-                  ),
-                ),
-              ),
+        appBar: PreferredSize(
+          preferredSize: Size(double.infinity, toolbarHeight),
+          child: EzAppBar(
+            config,
+            height: toolbarHeight,
+            title: EzScrollView(
+              config,
+              reverseHands: true,
+              thumbVisibility: false,
+              scrollDirection: Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: toolbarActions(),
+            ),
+          ),
+        ),
         body: body,
         fabs: <Widget>[
           updater(config),
