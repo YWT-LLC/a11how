@@ -271,7 +271,24 @@ class _SelectScreenState extends State<SelectScreen> {
                     HybridAction(
                       label: 'Remove entries',
                       icon: Icons.playlist_remove_outlined,
-                      onPressed: doNothing,
+                      onPressed: () async {
+                        // Define (modal) build data //
+
+                        // Return (modal) build //
+
+                        await ezModal(
+                          config,
+                          context: context,
+                          enableDrag: false,
+                          isDismissible: false,
+                          showDragHandle: false,
+                          constraints: const BoxConstraints.expand(),
+                          builder: (_) => StatefulBuilder(
+                            builder: (BuildContext mCon, StateSetter setModal) =>
+                                const SizedBox.shrink(),
+                          ),
+                        );
+                      },
                     ),
                     HybridAction(
                       label: 'Add locale',
