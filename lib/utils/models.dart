@@ -34,7 +34,7 @@ class ARBFile {
 class HybridAction {
   final String label;
   final IconData icon;
-  final void Function() onPressed;
+  final void Function()? onPressed;
   final MenuController? menuController;
   final List<Widget>? menuChildren;
 
