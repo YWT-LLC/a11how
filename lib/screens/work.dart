@@ -8,7 +8,6 @@ import '../widgets/export.dart';
 
 import 'dart:io';
 import 'dart:math';
-import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +50,22 @@ class _WorkScreenState extends State<WorkScreen> {
             : check.toLowerCase().endsWith(filterString.toLowerCase()),
       };
 
+  Future<void> _writeSortedJson(File file, {required bool truth}) async {
+    final Map<String, dynamic> entries =
+        truth ? widget.workPair.truth.entries : widget.workPair.compare.entries;
+
+    final List<String> keys = entries.keys.toList();
+    keys.removeWhere((String key) => key.contains('@@locale'));
+    keys.sort();
+
+    await file.writeAsString(
+        '{\n\t"@@locale": "${truth ? widget.workPair.truth.localeCode : widget.workPair.compare.localeCode}"');
+    for (final String key in keys) {
+      await file.writeAsString(',\n\t"$key": "${entries[key]}"', mode: FileMode.append);
+    }
+    await file.writeAsString('\n}', mode: FileMode.append);
+  }
+
   Future<void> save(EzCP config) async {
     if (saving) return;
     setState(() => saving = true);
@@ -73,9 +88,7 @@ class _WorkScreenState extends State<WorkScreen> {
         ..clear()
         ..addAll(updatedTruth);
 
-      final String jsonString =
-          const JsonEncoder.withIndent('  ').convert(widget.workPair.truth.entries);
-      await file.writeAsString(jsonString);
+      await _writeSortedJson(file, truth: true);
     } catch (e) {
       if (mounted) ezSnackBar(config, context: context, message: 'Failure saving truth: $e');
     }
@@ -87,10 +100,7 @@ class _WorkScreenState extends State<WorkScreen> {
         ..clear()
         ..addAll(updatedCompare);
 
-      final String jsonString =
-          const JsonEncoder.withIndent('  ').convert(widget.workPair.compare.entries);
-      await file.writeAsString(jsonString);
-
+      await _writeSortedJson(file, truth: false);
       if (mounted) ezSnackBar(config, context: context, message: 'Success!');
     } catch (e) {
       if (mounted) ezSnackBar(config, context: context, message: 'Failure saving compare: $e');
