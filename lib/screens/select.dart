@@ -9,6 +9,7 @@ import '../widgets/export.dart';
 
 import 'dart:io';
 import 'dart:convert';
+import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SelectScreen extends StatefulWidget {
   final ARBDir workDir;
@@ -251,7 +253,6 @@ class _SelectScreenState extends State<SelectScreen> {
                 halfSpacer,
               ]),
             ),
-            // TODO: add langs
             // TODO: group add && delete (entries)
             actions: removing
                 ? <HybridAction>[
@@ -424,8 +425,9 @@ class _SelectScreenState extends State<SelectScreen> {
 
                                             for (final MapEntry<String, dynamic> entry
                                                 in sourceFile.entries.entries) {
-                                              blankEntries[entry.key] =
-                                                  entry.key.startsWith('@') ? entry.value : '';
+                                              blankEntries[entry.key] = entry.key.startsWith('@')
+                                                  ? destController.text
+                                                  : '';
                                             }
 
                                             final String blankJson =
@@ -445,8 +447,11 @@ class _SelectScreenState extends State<SelectScreen> {
                                               ));
 
                                             final List<int> zipData = ZipEncoder().encode(archive);
-                                            final String zipPath =
-                                                '~/Downloads/${service.name(config)}_gig.zip';
+
+                                            Directory? outDir = await getDownloadsDirectory();
+                                            outDir ??= await getApplicationDocumentsDirectory();
+                                            final String zipPath = p.join(
+                                                outDir.path, '${service.name(config)}_gig.zip');
 
                                             try {
                                               final File zipFile = File(zipPath);
@@ -504,8 +509,8 @@ class _SelectScreenState extends State<SelectScreen> {
                                         return;
                                       }
 
-                                      final String newPath = widget.workDir.files.first.path;
-                                      newPath.replaceFirst(
+                                      String newPath = widget.workDir.files.first.path;
+                                      newPath = newPath.replaceFirst(
                                         RegExp(r'_[a-zA-Z_]+\.arb'),
                                         '_${destController.text}.arb',
                                       );
