@@ -123,16 +123,21 @@ $json
 ''',
       };
 
-  Widget twoCents(EzCP config) => switch (this) {
+  bool get human => switch (this) {
         TranslationService.proZ ||
         TranslationService.cafe ||
         TranslationService.gengo ||
         TranslationService.fiverr ||
         TranslationService.upwork =>
-          const SizedBox.shrink(),
-        _ => EzToolTipper(
-            config,
-            message: """Reminder: LLMs are a shortcut.
+          true,
+        _ => false,
+      };
+
+  Widget twoCents(EzCP config) => human
+      ? const SizedBox.shrink()
+      : EzToolTipper(
+          config,
+          message: """Reminder: LLMs are a shortcut.
 And inherently, mathematically, unreliable.
 
 Disclose you're using machine translation until you can afford proper translations <3
@@ -146,8 +151,7 @@ LARPing has a time and place: the forest, and the bedroom.
 Let's keep it out of our resumes though, shall we?
 
 ...unless you have a ren-fair resume, then pop-off my liege.""",
-          ),
-      };
+        );
 
   static TranslationService? lookup(String? value) => switch (value) {
         esProZ => TranslationService.proZ,
