@@ -268,7 +268,12 @@ class _SelectScreenState extends State<SelectScreen> {
                     _AddEntryAction(config),
 
                     // Remove entries
-                    _RemoveEntryAction(config, context),
+                    _RemoveEntryAction(
+                      config,
+                      context: context,
+                      workDir: widget.workDir,
+                      truth: truth,
+                    ),
 
                     // Add locale
                     _AddLocaleAction(
@@ -276,6 +281,7 @@ class _SelectScreenState extends State<SelectScreen> {
                       context: context,
                       workDir: widget.workDir,
                       filterConstraints: filterConstraints,
+                      truth: truth,
                     ),
 
                     // Start removing locales
@@ -315,13 +321,34 @@ class _AddEntryAction extends HybridAction {
 class _RemoveEntryAction extends HybridAction {
   final EzCP config;
   final BuildContext context;
+  final ARBDir workDir;
+  final ARBFile? truth;
 
-  _RemoveEntryAction(this.config, this.context)
-      : super(
+  _RemoveEntryAction(
+    this.config, {
+    required this.context,
+    required this.workDir,
+    this.truth,
+  }) : super(
           label: 'Remove entries',
           icon: Icons.playlist_remove_outlined,
           onPressed: () async {
             // Define (modal) build data //
+
+            String? sourceCode;
+
+            // Init (modal) //
+
+            if (truth == null) {
+              try {
+                sourceCode =
+                    workDir.files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US').localeCode;
+              } catch (_) {
+                // Contains with extra steps, if above fails sourceCode remains null (and that's okay)
+              }
+            } else {
+              sourceCode = truth.localeCode;
+            }
 
             // Return (modal) build //
 
@@ -333,7 +360,30 @@ class _RemoveEntryAction extends HybridAction {
               showDragHandle: false,
               constraints: const BoxConstraints.expand(),
               builder: (_) => StatefulBuilder(
-                builder: (BuildContext mCon, StateSetter setModal) => const SizedBox.shrink(),
+                builder: (BuildContext mCon, StateSetter setModal) => Container(
+                  margin: EdgeInsets.all(config.marginVal),
+                  constraints: const BoxConstraints.expand(),
+                  child: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                    // Source
+                    EzDropdownMenu<String>(
+                      config,
+                      label: 'Source locale',
+                      initialSelection: sourceCode,
+                      dropdownMenuEntries: workDir.files
+                          .map((ARBFile arb) => DropdownMenuEntry<String>(
+                                label: arb.localeCode,
+                                value: arb.localeCode,
+                              ))
+                          .toList(),
+                      widthEntry: 'en_US_BB',
+                      onSelected: (String? choice) {
+                        if (choice == null) return;
+                        setModal(() => sourceCode = choice);
+                      },
+                    ),
+                    config.margin,
+                  ]),
+                ),
               ),
             );
           },
@@ -345,12 +395,14 @@ class _AddLocaleAction extends HybridAction {
   final BuildContext context;
   final ARBDir workDir;
   final BoxConstraints filterConstraints;
+  final ARBFile? truth;
 
   _AddLocaleAction(
     this.config, {
     required this.context,
     required this.workDir,
     required this.filterConstraints,
+    this.truth,
   }) : super(
           label: 'Add locale',
           icon: Icons.group_add_outlined,
@@ -389,11 +441,15 @@ class _AddLocaleAction extends HybridAction {
 
             // Init (modal) //
 
-            try {
-              sourceCode =
-                  workDir.files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US').localeCode;
-            } catch (_) {
-              // Contains with extra steps, if above fails sourceCode remains null (and that's okay)
+            if (truth == null) {
+              try {
+                sourceCode =
+                    workDir.files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US').localeCode;
+              } catch (_) {
+                // Contains with extra steps, if above fails sourceCode remains null (and that's okay)
+              }
+            } else {
+              sourceCode = truth.localeCode;
             }
 
             // Return (modal) build //
