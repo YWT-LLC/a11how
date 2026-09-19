@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SelectScreen extends StatefulWidget {
   final ARBDir workDir;
@@ -390,7 +391,17 @@ class _SelectScreenState extends State<SelectScreen> {
                                   icon: EzIcon(config, Icons.copy),
                                   onPressed: sourceCode == null
                                       ? null
-                                      : () {
+                                      : () async {
+                                          if (sourceCode == null ||
+                                              validateDest(destController.text) == null) {
+                                            ezSnackBar(
+                                              config,
+                                              context: context,
+                                              message: 'Please complete the form',
+                                            );
+                                            return;
+                                          }
+
                                           final String jsonString =
                                               const JsonEncoder.withIndent('  ').convert(widget
                                                   .workDir.files
@@ -398,14 +409,19 @@ class _SelectScreenState extends State<SelectScreen> {
                                                       (ARBFile arb) => arb.localeCode == sourceCode)
                                                   .entries);
 
-                                          // TODO: create zip and/or open site
-                                          Clipboard.setData(ClipboardData(
+                                          await Clipboard.setData(ClipboardData(
                                             text: service.prompt(
-                                              source: sourceCode!, // TODO: validate first
+                                              source: sourceCode!,
                                               dest: destController.text,
                                               json: jsonString,
                                             ),
                                           ));
+
+                                          if (service.human) {
+                                            TODO;
+                                          }
+
+                                          await launchUrl(service.url);
                                         },
                                 ),
                                 config.divider,
