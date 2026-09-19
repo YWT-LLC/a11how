@@ -265,15 +265,15 @@ class _SelectScreenState extends State<SelectScreen> {
                   ]
                 : <HybridAction>[
                     // Add entries
-                    _AddEntryAction(config),
-
-                    // Remove entries
-                    _RemoveEntryAction(
+                    _AddEntryAction(
                       config,
                       context: context,
                       workDir: widget.workDir,
                       truth: truth,
                     ),
+
+                    // Remove entries
+                    _RemoveEntryAction(config),
 
                     // Add locale
                     _AddLocaleAction(
@@ -309,45 +309,34 @@ class _SelectScreenState extends State<SelectScreen> {
 
 class _AddEntryAction extends HybridAction {
   final EzCP config;
-
-  _AddEntryAction(this.config)
-      : super(
-          label: 'Add entry',
-          icon: Icons.playlist_add_outlined,
-          onPressed: doNothing,
-        );
-}
-
-class _RemoveEntryAction extends HybridAction {
-  final EzCP config;
   final BuildContext context;
   final ARBDir workDir;
   final ARBFile? truth;
 
-  _RemoveEntryAction(
+  _AddEntryAction(
     this.config, {
     required this.context,
     required this.workDir,
     this.truth,
   }) : super(
-          label: 'Remove entries',
-          icon: Icons.playlist_remove_outlined,
+          label: 'Add entry',
+          icon: Icons.playlist_add_outlined,
           onPressed: () async {
             // Define (modal) build data //
 
-            String? sourceCode;
+            ARBFile? adding = truth;
+            final Set<ARBFile> completed = <ARBFile>{};
 
-            // Init (modal) //
+            final TextEditingController arbController = TextEditingController();
 
-            if (truth == null) {
-              try {
-                sourceCode =
-                    workDir.files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US').localeCode;
-              } catch (_) {
-                // Contains with extra steps, if above fails sourceCode remains null (and that's okay)
+            // Define custom (modal) functions //
+
+            String? validateARB(String? check) {
+              if (check == null || check.trim().isEmpty) {
+                return 'Cannot be empty';
               }
-            } else {
-              sourceCode = truth.localeCode;
+
+              return null;
             }
 
             // Return (modal) build //
@@ -361,32 +350,149 @@ class _RemoveEntryAction extends HybridAction {
               constraints: const BoxConstraints.expand(),
               builder: (_) => StatefulBuilder(
                 builder: (BuildContext mCon, StateSetter setModal) => Container(
+                  alignment: Alignment.center,
                   margin: EdgeInsets.all(config.marginVal),
                   constraints: const BoxConstraints.expand(),
-                  child: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
-                    // Source
-                    EzDropdownMenu<String>(
-                      config,
-                      label: 'Source locale',
-                      initialSelection: sourceCode,
-                      dropdownMenuEntries: workDir.files
-                          .map((ARBFile arb) => DropdownMenuEntry<String>(
-                                label: arb.localeCode,
-                                value: arb.localeCode,
-                              ))
-                          .toList(),
-                      widthEntry: 'en_US_BB',
-                      onSelected: (String? choice) {
-                        if (choice == null) return;
-                        setModal(() => sourceCode = choice);
-                      },
-                    ),
-                    config.margin,
-                  ]),
+                  child: EzScrollView(
+                    config,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      EzHeader(config),
+                      EzAnimSwitch(
+                        config,
+                        mod: 0.667,
+                        child: (adding == null)
+                            ? EzCol(children: <Widget>[
+                                Text(
+                                  'TODO:',
+                                  textAlign: TextAlign.center,
+                                  style: config.titleStyle,
+                                ),
+                                config.margin,
+                                EzWrap(
+                                  children: workDir.files
+                                      .where((ARBFile arb) =>
+                                          completed.isEmpty ? true : !completed.contains(arb))
+                                      .map((ARBFile arb) => Padding(
+                                            padding: EzInsets.wrap(config.spacing),
+                                            child: EzElevatedButton(
+                                              config,
+                                              text: arb.localeCode,
+                                              onPressed: () => setModal(() => adding = arb),
+                                            ),
+                                          ))
+                                      .toList(),
+                                ),
+                                if (completed.isNotEmpty) ...<Widget>[
+                                  config.divider,
+                                  Text(
+                                    'toDONE:',
+                                    textAlign: TextAlign.center,
+                                    style: config.titleStyle,
+                                  ),
+                                  config.margin,
+                                  EzWrap(
+                                    children: completed
+                                        .map((ARBFile arb) => Padding(
+                                              padding: EzInsets.wrap(config.spacing),
+                                              child: EzElevatedButton(
+                                                config,
+                                                fauxDisabled: true,
+                                                text: arb.localeCode,
+                                                onPressed: doNothing,
+                                                onLongPress: () {
+                                                  completed.remove(arb);
+                                                  setModal(() {});
+                                                },
+                                              ),
+                                            ))
+                                        .toList(),
+                                  ),
+                                ],
+                              ])
+                            : EzCol(children: <Widget>[
+                                // Field
+                                EzTextField(
+                                  maxLines: null,
+                                  validator: validateARB,
+                                  hintText:
+                                      '{\n\t"@@locale": "${adding!.localeCode}",\n\t"newKey": "New value(s)"\n}',
+                                  controller: arbController,
+                                  textAlign: TextAlign.start,
+                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                ),
+                                config.spacer,
+                              ]),
+                      ),
+                      config.spacer,
+
+                      // Add/submit && /cancel
+                      EzRow(
+                        config,
+                        children: (adding == null)
+                            ? <Widget>[
+                                EzTextIconButton(
+                                  config,
+                                  label: config.ezL10n.gCancel,
+                                  icon: EzIcon(config, Icons.cancel),
+                                  onPressed: (completed.length == workDir.files.length)
+                                      ? null
+                                      : () => Navigator.of(context).pop(),
+                                ),
+                                config.rowSpacer,
+                                EzTextIconButton(
+                                  config,
+                                  label: 'Save',
+                                  icon: EzIcon(config, Icons.save),
+                                  // TODO: write all caches
+                                  onPressed:
+                                      completed.isEmpty ? null : () => Navigator.of(context).pop(),
+                                ),
+                              ]
+                            : <Widget>[
+                                EzTextIconButton(
+                                  config,
+                                  label: config.ezL10n.gCancel,
+                                  icon: EzIcon(config, Icons.cancel),
+                                  onPressed: () {
+                                    arbController.clear();
+                                    setModal(() => adding = null);
+                                  },
+                                ),
+                                config.rowSpacer,
+                                EzTextIconButton(
+                                  config,
+                                  label: 'Add',
+                                  icon: EzIcon(config, Icons.add),
+                                  onPressed: () {
+                                    // TODO: create a local class/model for "cache"
+                                    // When big save is pressed, all the caches get append written (and sorted)
+                                    // ...prolly have some more stuff to classify/send to utils
+                                    completed.add(adding!);
+                                    arbController.clear();
+                                    setModal(() => adding = null);
+                                  },
+                                ),
+                              ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
           },
+        );
+}
+
+class _RemoveEntryAction extends HybridAction {
+  final EzCP config;
+
+  _RemoveEntryAction(this.config)
+      : super(
+          label: 'Remove entries',
+          icon: Icons.playlist_remove_outlined,
+          onPressed: doNothing,
         );
 }
 
