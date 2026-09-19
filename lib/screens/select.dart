@@ -9,6 +9,7 @@ import '../widgets/export.dart';
 
 import 'dart:io';
 import 'dart:convert';
+import 'package:archive/archive.dart';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -393,21 +394,21 @@ class _SelectScreenState extends State<SelectScreen> {
                                       ? null
                                       : () async {
                                           if (sourceCode == null ||
-                                              validateDest(destController.text) == null) {
+                                              validateDest(destController.text) != null) {
                                             ezSnackBar(
                                               config,
-                                              context: context,
+                                              context: mCon,
                                               message: 'Please complete the form',
                                             );
                                             return;
                                           }
+                                          final ARBFile sourceFile = widget.workDir.files
+                                              .firstWhere(
+                                                  (ARBFile arb) => arb.localeCode == sourceCode);
 
                                           final String jsonString =
-                                              const JsonEncoder.withIndent('  ').convert(widget
-                                                  .workDir.files
-                                                  .firstWhere(
-                                                      (ARBFile arb) => arb.localeCode == sourceCode)
-                                                  .entries);
+                                              const JsonEncoder.withIndent('  ')
+                                                  .convert(sourceFile.entries);
 
                                           await Clipboard.setData(ClipboardData(
                                             text: service.prompt(
@@ -418,7 +419,47 @@ class _SelectScreenState extends State<SelectScreen> {
                                           ));
 
                                           if (service.human) {
-                                            TODO;
+                                            final Map<String, dynamic> blankEntries =
+                                                <String, dynamic>{};
+
+                                            for (final MapEntry<String, dynamic> entry
+                                                in sourceFile.entries.entries) {
+                                              blankEntries[entry.key] =
+                                                  entry.key.startsWith('@') ? entry.value : '';
+                                            }
+
+                                            final String blankJson =
+                                                const JsonEncoder.withIndent('  ')
+                                                    .convert(blankEntries);
+
+                                            final Archive archive = Archive()
+                                              ..addFile(ArchiveFile(
+                                                '$sourceCode.arb',
+                                                jsonString.length,
+                                                utf8.encode(jsonString),
+                                              ))
+                                              ..addFile(ArchiveFile(
+                                                '${destController.text}.arb',
+                                                blankJson.length,
+                                                utf8.encode(blankJson),
+                                              ));
+
+                                            final List<int> zipData = ZipEncoder().encode(archive);
+                                            final String zipPath =
+                                                '~/Downloads/${service.name(config)}_gig.zip';
+
+                                            try {
+                                              final File zipFile = File(zipPath);
+                                              await zipFile.writeAsBytes(zipData);
+                                            } catch (e) {
+                                              if (context.mounted) {
+                                                ezSnackBar(
+                                                  config,
+                                                  context: mCon,
+                                                  message: 'Failed to create zip: $e',
+                                                );
+                                              }
+                                            }
                                           }
 
                                           await launchUrl(service.url);
@@ -429,10 +470,12 @@ class _SelectScreenState extends State<SelectScreen> {
                                 // Value/Field
                                 Expanded(
                                   child: EzTextField(
-                                    constraints: const BoxConstraints.expand(),
+                                    maxLines: null,
+                                    validator: validateARB,
                                     hintText: 'New entries',
                                     controller: arbController,
-                                    validator: validateARB,
+                                    textAlign: TextAlign.start,
+                                    constraints: const BoxConstraints.expand(),
                                   ),
                                 ),
                                 config.spacer,
@@ -452,10 +495,10 @@ class _SelectScreenState extends State<SelectScreen> {
                                     icon: EzIcon(config, Icons.add),
                                     onPressed: () async {
                                       if (validateDest(destController.text) != null ||
-                                          validateDest(arbController.text) != null) {
+                                          validateARB(arbController.text) != null) {
                                         ezSnackBar(
                                           config,
-                                          context: context,
+                                          context: mCon,
                                           message: 'Resolve issues please',
                                         );
                                         return;
@@ -463,23 +506,25 @@ class _SelectScreenState extends State<SelectScreen> {
 
                                       final String newPath = widget.workDir.files.first.path;
                                       newPath.replaceFirst(
-                                        RegExp(r'/[a-zA-Z_]+\.arb'),
-                                        '${destController.text}.arb',
+                                        RegExp(r'_[a-zA-Z_]+\.arb'),
+                                        '_${destController.text}.arb',
                                       );
 
                                       // Save
                                       try {
                                         final File file = File(newPath);
-                                        await file.writeAsString(destController.text);
+                                        await file.writeAsString(arbController.text);
                                       } catch (e) {
-                                        if (context.mounted) {
+                                        if (mCon.mounted) {
                                           ezSnackBar(
                                             config,
-                                            context: context,
+                                            context: mCon,
                                             message: 'Failure saving: $e',
                                           );
                                         }
                                       }
+
+                                      if (mCon.mounted) Navigator.of(mCon).pop();
                                     },
                                   ),
                                 ]),
