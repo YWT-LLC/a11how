@@ -6,17 +6,19 @@
 import './export.dart';
 
 import 'dart:io';
+import 'dart:convert';
+
+const JsonEncoder _encoder = JsonEncoder.withIndent('\t');
 
 Future<void> writeSortedJson({required File file, required ARBFile arb}) async {
-  final Map<String, dynamic> entries = arb.entries;
+  final List<String> keys = arb.entries.keys.toList()
+    ..remove('@@locale')
+    ..sort();
 
-  final List<String> keys = entries.keys.toList();
-  keys.removeWhere((String key) => key.contains('@@locale'));
-  keys.sort();
-
-  await file.writeAsString('{\n\t"@@locale": "${arb.localeCode}"');
+  final Map<String, dynamic> sortedMap = <String, dynamic>{'@@locale': arb.localeCode};
   for (final String key in keys) {
-    await file.writeAsString(',\n\t"$key": "${entries[key]}"', mode: FileMode.append);
+    sortedMap[key] = arb.entries[key];
   }
-  await file.writeAsString('\n}', mode: FileMode.append);
+
+  await file.writeAsString(_encoder.convert(sortedMap));
 }
