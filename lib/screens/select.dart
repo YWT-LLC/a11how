@@ -253,7 +253,6 @@ class _SelectScreenState extends State<SelectScreen> {
                 halfSpacer,
               ]),
             ),
-            // TODO: group add && delete (entries)
             actions: removing
                 ? <HybridAction>[
                     // End removing locales
@@ -711,20 +710,19 @@ class _RemoveEntryAction extends HybridAction {
                           config,
                           label: 'Save',
                           icon: EzIcon(config, Icons.save),
-                          // TODO: make it so
                           onPressed: choppingBlock.isEmpty
                               ? null
-                              : () async {
-                                  for (final ARBFile arb in workDir.files) {
-                                    arb.entries.removeWhere(
-                                        (String key, _) => choppingBlock.contains(key));
-                                  }
+                              : () => ezNoTouch(() async {
+                                    for (final ARBFile arb in workDir.files) {
+                                      arb.entries.removeWhere(
+                                          (String key, _) => choppingBlock.contains(key));
+                                    }
 
-                                  // TODO: make sorted save shared (after fixing it)
-                                  await save;
+                                    // TODO: make sorted save shared (after fixing it)
+                                    await save;
 
-                                  if (context.mounted) Navigator.of(context).pop();
-                                },
+                                    if (context.mounted) Navigator.of(context).pop();
+                                  }),
                         ),
                       ]),
                       config.spacer,
