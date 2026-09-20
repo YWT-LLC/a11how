@@ -48,23 +48,6 @@ class _WorkScreenState extends State<WorkScreen> {
             : check.toLowerCase().endsWith(filterString.toLowerCase()),
       };
 
-  // TODO: redo... just switch data types then use a print for that. don't re-invent
-  Future<void> _writeSortedJson(File file, {required bool truth}) async {
-    final Map<String, dynamic> entries =
-        truth ? widget.workPair.truth.entries : widget.workPair.compare.entries;
-
-    final List<String> keys = entries.keys.toList();
-    keys.removeWhere((String key) => key.contains('@@locale'));
-    keys.sort();
-
-    await file.writeAsString(
-        '{\n\t"@@locale": "${truth ? widget.workPair.truth.localeCode : widget.workPair.compare.localeCode}"');
-    for (final String key in keys) {
-      await file.writeAsString(',\n\t"$key": "${entries[key]}"', mode: FileMode.append);
-    }
-    await file.writeAsString('\n}', mode: FileMode.append);
-  }
-
   Future<void> save(EzCP config) async {
     if (saving) return;
     setState(() => saving = true);
@@ -87,7 +70,7 @@ class _WorkScreenState extends State<WorkScreen> {
         ..clear()
         ..addAll(updatedTruth);
 
-      await _writeSortedJson(file, truth: true);
+      await writeSortedJson(file: file, workPair: widget.workPair, truth: true);
     } catch (e) {
       if (mounted) ezSnackBar(config, context: context, message: 'Failure saving truth: $e');
     }
@@ -99,7 +82,7 @@ class _WorkScreenState extends State<WorkScreen> {
         ..clear()
         ..addAll(updatedCompare);
 
-      await _writeSortedJson(file, truth: false);
+      await writeSortedJson(file: file, workPair: widget.workPair, truth: false);
       if (mounted) ezSnackBar(config, context: context, message: 'Success!');
     } catch (e) {
       if (mounted) ezSnackBar(config, context: context, message: 'Failure saving compare: $e');
