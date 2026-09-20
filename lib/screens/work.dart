@@ -27,11 +27,9 @@ class _WorkScreenState extends State<WorkScreen> {
   final List<WorkRow> workData = <WorkRow>[];
 
   String filterString = '';
-  FilterType filterType = FTConfig.safeLookup(EzCM.get(filterTypeKey));
+  FilterType filterType = FTConfig.safeLookup(EzCM.get(workFilterTypeKey));
   final MenuController filterMC = MenuController();
   bool caseSensitive = false;
-
-  bool moving = false;
 
   bool keyChanges = false;
   bool saving = false;
@@ -146,7 +144,6 @@ class _WorkScreenState extends State<WorkScreen> {
     return Consumer<EzCP>(
       builder: (_, EzCP config, __) {
         final double editMax = widthOf(context) - (config.marginVal * 2);
-        final double moveMax = widthOf(context) - ((config.marginVal + config.iconSize) * 2);
 
         return A11howScaffold(
           config,
@@ -215,166 +212,100 @@ class _WorkScreenState extends State<WorkScreen> {
             child: EzScreen(
               config,
               margin: EdgeInsets.zero,
-              child: moving
-                  ? ReorderableListView(
-                      buildDefaultDragHandles: false,
-                      onReorderItem: (int oldIndex, int newIndex) {
-                        if (oldIndex == newIndex) return;
-
-                        final WorkRow item = workData.removeAt(oldIndex);
-                        workData.insert(newIndex, item);
-                        keyChanges = true;
-
-                        setState(() {});
-                      },
-                      children: workData.asMap().entries.map((MapEntry<int, WorkRow> entry) {
-                        final int index = entry.key;
-                        final WorkRow row = entry.value;
-
-                        return EzRow(
-                          config,
-                          key: ValueKey<String>(row.key),
-                          reverseHands: false,
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            dragHandle(config, index),
-                            config.rowMargin,
-
-                            // Key
-                            EzTextField(
-                              constraints: BoxConstraints.tightFor(width: moveMax * 0.2),
-                              hintText: row.key,
-                              initialValue: row.key,
-                              style: config.bodyStyle,
+              child: EzCol(children: <Widget>[
+                EzRow(config, children: <Widget>[
+                  config.rowMargin,
+                  Expanded(
+                    child: EzTextField(
+                      constraints: const BoxConstraints(),
+                      hintText: 'Filter (key)',
+                      onChanged: (String entry) => setState(() => filterString = entry),
+                      validator: (_) => null,
+                    ),
+                  ),
+                  config.rowMargin,
+                  MenuAnchor(
+                    controller: filterMC,
+                    menuChildren: FilterType.values
+                        .map((FilterType ft) => EzMenuButton(
+                              config,
+                              label: ft.name(config),
                               textAlign: TextAlign.start,
-                              readOnly: true,
-                              validator: (_) => null,
-                            ),
+                              onPressed: () => setState(() => filterType = ft),
+                            ))
+                        .toList(),
+                    child: EzTextIconButton(
+                      config,
+                      label: filterType.name(config),
+                      textAlign: TextAlign.start,
+                      icon: EzIcon(config, Icons.filter_list),
+                      onPressed: () => toggleMenu(filterMC),
+                    ),
+                  ),
+                  config.rowSpacer,
+                  EzIconButton(
+                    config,
+                    fauxDisabled: !caseSensitive,
+                    tooltip: 'Toggle case sensitivity',
+                    icon: EzIcon(config, Icons.abc),
+                    onPressed: () => setState(() => caseSensitive = !caseSensitive),
+                  ),
+                  config.rowMargin,
+                ]),
+                Expanded(
+                  child: EzScrollView(
+                    config,
+                    mainAxisSize: MainAxisSize.max,
+                    children: workData
+                        .where((WorkRow row) => filterString.isEmpty ? true : checkFilter(row.key))
+                        .map((WorkRow row) => EzRow(
+                              config,
+                              key: ValueKey<String>(row.key),
+                              reverseHands: false,
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                // Key
+                                EzTextField(
+                                  constraints: BoxConstraints.tightFor(width: editMax * 0.2),
+                                  hintText: row.key,
+                                  initialValue: row.key,
+                                  style: config.bodyStyle,
+                                  textAlign: TextAlign.start,
+                                  onChanged: (String val) {
+                                    row.key = val;
+                                    keyChanges = true;
+                                  },
+                                  validator: (_) => null,
+                                ),
 
-                            // Truth
-                            EzTextField(
-                              constraints: BoxConstraints.tightFor(width: moveMax * 0.4),
-                              hintText: row.truth,
-                              initialValue: row.truth,
-                              style: config.bodyStyle,
-                              textAlign: TextAlign.start,
-                              readOnly: true,
-                              validator: (_) => null,
-                            ),
+                                // Truth
+                                EzTextField(
+                                  constraints: BoxConstraints.tightFor(width: editMax * 0.4),
+                                  hintText: row.truth,
+                                  initialValue: row.truth,
+                                  style: config.bodyStyle,
+                                  textAlign: TextAlign.start,
+                                  onChanged: (String val) => row.truth = val,
+                                  validator: (_) => null,
+                                ),
 
-                            // Work
-                            EzTextField(
-                              constraints: BoxConstraints.tightFor(width: moveMax * 0.4),
-                              hintText: row.compare,
-                              initialValue: row.compare,
-                              style: config.bodyStyle,
-                              textAlign: TextAlign.start,
-                              readOnly: true,
-                              validator: (_) => null,
-                            ),
-
-                            config.rowMargin,
-                            dragHandle(config, index),
-                          ],
-                        );
-                      }).toList(),
-                    )
-                  : EzCol(children: <Widget>[
-                      EzRow(config, children: <Widget>[
-                        config.rowMargin,
-                        Expanded(
-                          child: EzTextField(
-                            constraints: const BoxConstraints(),
-                            hintText: 'Filter (key)',
-                            onChanged: (String entry) => setState(() => filterString = entry),
-                            validator: (_) => null,
-                          ),
-                        ),
-                        config.rowMargin,
-                        MenuAnchor(
-                          controller: filterMC,
-                          menuChildren: FilterType.values
-                              .map((FilterType ft) => EzMenuButton(
-                                    config,
-                                    label: ft.name(config),
-                                    textAlign: TextAlign.start,
-                                    onPressed: () => setState(() => filterType = ft),
-                                  ))
-                              .toList(),
-                          child: EzTextIconButton(
-                            config,
-                            label: filterType.name(config),
-                            textAlign: TextAlign.start,
-                            icon: EzIcon(config, Icons.filter_list),
-                            onPressed: () => toggleMenu(filterMC),
-                          ),
-                        ),
-                        config.rowSpacer,
-                        EzIconButton(
-                          config,
-                          fauxDisabled: !caseSensitive,
-                          tooltip: 'Toggle case sensitivity',
-                          icon: EzIcon(config, Icons.abc),
-                          onPressed: () => setState(() => caseSensitive = !caseSensitive),
-                        ),
-                        config.rowMargin,
-                      ]),
-                      Expanded(
-                        child: EzScrollView(
-                          config,
-                          mainAxisSize: MainAxisSize.max,
-                          children: workData
-                              .where((WorkRow row) =>
-                                  filterString.isEmpty ? true : checkFilter(row.key))
-                              .map((WorkRow row) => EzRow(
-                                    config,
-                                    key: ValueKey<String>(row.key),
-                                    reverseHands: false,
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      // Key
-                                      EzTextField(
-                                        constraints: BoxConstraints.tightFor(width: editMax * 0.2),
-                                        hintText: row.key,
-                                        initialValue: row.key,
-                                        style: config.bodyStyle,
-                                        textAlign: TextAlign.start,
-                                        onChanged: (String val) {
-                                          row.key = val;
-                                          keyChanges = true;
-                                        },
-                                        validator: (_) => null,
-                                      ),
-
-                                      // Truth
-                                      EzTextField(
-                                        constraints: BoxConstraints.tightFor(width: editMax * 0.4),
-                                        hintText: row.truth,
-                                        initialValue: row.truth,
-                                        style: config.bodyStyle,
-                                        textAlign: TextAlign.start,
-                                        onChanged: (String val) => row.truth = val,
-                                        validator: (_) => null,
-                                      ),
-
-                                      // Work
-                                      EzTextField(
-                                        constraints: BoxConstraints.tightFor(width: editMax * 0.4),
-                                        hintText: row.compare,
-                                        initialValue: row.compare,
-                                        style: config.bodyStyle,
-                                        textAlign: TextAlign.start,
-                                        onChanged: (String val) => row.compare = val,
-                                        validator: (_) => null,
-                                      ),
-                                    ],
-                                  ))
-                              .toList(),
-                        ),
-                      ),
-                    ]),
+                                // Work
+                                EzTextField(
+                                  constraints: BoxConstraints.tightFor(width: editMax * 0.4),
+                                  hintText: row.compare,
+                                  initialValue: row.compare,
+                                  style: config.bodyStyle,
+                                  textAlign: TextAlign.start,
+                                  onChanged: (String val) => row.compare = val,
+                                  validator: (_) => null,
+                                ),
+                              ],
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ]),
             ),
           ),
           actions: <HybridAction>[
@@ -382,11 +313,6 @@ class _WorkScreenState extends State<WorkScreen> {
               icon: saving ? Icons.timer : Icons.save,
               label: config.ezL10n.gSave,
               onPressed: () => saving ? doNothing() : save(config),
-            ),
-            HybridAction(
-              icon: moving ? Icons.text_format : Icons.control_camera,
-              label: moving ? 'Edit entries' : 'Move rows',
-              onPressed: () => setState(() => moving = !moving),
             ),
           ],
         );
