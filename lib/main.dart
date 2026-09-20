@@ -87,18 +87,19 @@ class A11how extends StatelessWidget {
                     pbs,
                     SelectScreen(pbs.extra as ARBDir),
                   ),
-                ),
-
-                // Work
-                GoRoute(
-                  path: workPath,
-                  name: workPath,
-                  pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
-                    configWatcher(pbc),
-                    pbc,
-                    pbs,
-                    WorkScreen(pbs.extra as WorkPair),
-                  ),
+                  routes: <RouteBase>[
+                    // Work
+                    GoRoute(
+                      path: workPath,
+                      name: workPath,
+                      pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
+                        configWatcher(pbc),
+                        pbc,
+                        pbs,
+                        WorkScreen(pbs.extra as WorkPair),
+                      ),
+                    ),
+                  ],
                 ),
 
                 // Settings
