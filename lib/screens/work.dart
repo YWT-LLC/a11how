@@ -70,7 +70,7 @@ class _WorkScreenState extends State<WorkScreen> {
         ..clear()
         ..addAll(updatedTruth);
 
-      await writeSortedJson(file: file, workPair: widget.workPair, truth: true);
+      await writeSortedJson(file: file, arb: widget.workPair.truth);
     } catch (e) {
       if (mounted) ezSnackBar(config, context: context, message: 'Failure saving truth: $e');
     }
@@ -82,7 +82,7 @@ class _WorkScreenState extends State<WorkScreen> {
         ..clear()
         ..addAll(updatedCompare);
 
-      await writeSortedJson(file: file, workPair: widget.workPair, truth: false);
+      await writeSortedJson(file: file, arb: widget.workPair.compare);
       if (mounted) ezSnackBar(config, context: context, message: 'Success!');
     } catch (e) {
       if (mounted) ezSnackBar(config, context: context, message: 'Failure saving compare: $e');
