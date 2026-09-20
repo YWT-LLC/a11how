@@ -123,7 +123,7 @@ class SettingsHubScreen extends StatelessWidget {
               target: targetPass,
             )),
         actions: <HybridAction>[
-          HybridAction(label: 'a11How', icon: Icons.settings, onPressed: null),
+          HybridAction(label: 'a11how', icon: Icons.settings, onPressed: null),
         ],
         settingsFABs: <Widget>[
           // Rebuild (conditional)
