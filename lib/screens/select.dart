@@ -62,7 +62,7 @@ class _SelectScreenState extends State<SelectScreen> {
     } else {
       (truth == null)
           ? setState(() => truth = arb)
-          : context.goNamed(workPath, extra: WorkPair(truth: truth!, compare: arb));
+          : context.pushNamed(workPath, extra: WorkPair(truth: truth!, compare: arb));
     }
   }
 
