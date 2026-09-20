@@ -7,7 +7,6 @@ import './export.dart';
 
 import 'dart:io';
 
-// TODO: redo... just switch data types then use a print for that. don't re-invent
 Future<void> writeSortedJson({required File file, required ARBFile arb}) async {
   final Map<String, dynamic> entries = arb.entries;
 
