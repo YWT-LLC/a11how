@@ -338,7 +338,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                   ),
                                   child: EzTextField(
                                     constraints: BoxConstraints.tightFor(width: editMax * 0.4),
-                                    hintText: row.truth.isEmpty ? 'EMPTY!' : row.truth,
+                                    hintText: row.truth,
                                     initialValue: row.truth,
                                     style: config.bodyStyle,
                                     textAlign: TextAlign.start,
@@ -359,7 +359,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                   ),
                                   child: EzTextField(
                                     constraints: BoxConstraints.tightFor(width: editMax * 0.4),
-                                    hintText: row.compare.isEmpty ? 'EMPTY!' : row.compare,
+                                    hintText: row.compare,
                                     initialValue: row.compare,
                                     style: config.bodyStyle,
                                     textAlign: TextAlign.start,
