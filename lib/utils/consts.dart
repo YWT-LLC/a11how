@@ -9,23 +9,26 @@ import 'package:open_ui/open_ui.dart';
 
 //* App config *//
 
-/// a11How
-const String appName = 'a11How';
+/// a11how
+const String appName = 'a11how';
 
 /// llc.ywt.a11how
 const String androidPackage = 'llc.ywt.a11how';
 
 const String recentProjectsKey = 'recentProjects';
-const String filterTypeKey = 'filterType';
+const String removeKeyFilterTypeKey = 'removeKeyFilterType';
+const String workFilterTypeKey = 'workFilterType';
 
 final Map<String, Object> a11HowMobile = <String, Object>{
   ...ywtMobileConfig,
   recentProjectsKey: <String>[],
-  filterTypeKey: FilterType.startsWith.value
+  removeKeyFilterTypeKey: FilterType.contains.value,
+  workFilterTypeKey: FilterType.startsWith.value,
 };
 
 final Map<String, Object> a11HowDesktop = <String, Object>{
   ...ywtDesktopConfig,
   recentProjectsKey: <String>[],
-  filterTypeKey: FilterType.startsWith.value
+  removeKeyFilterTypeKey: FilterType.contains.value,
+  workFilterTypeKey: FilterType.startsWith.value,
 };
