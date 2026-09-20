@@ -349,104 +349,9 @@ class _AddEntryAction extends HybridAction {
               config,
               context: context,
               child: StatefulBuilder(
-                builder: (BuildContext mCon, StateSetter setModal) => EzScrollView(
-                  config,
+                builder: (BuildContext mCon, StateSetter setModal) => EzCol(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    EzHeader(config),
-                    EzAnimSwitch(
-                      config,
-                      mod: 0.667,
-                      child: (adding == null)
-                          ? EzCol(children: <Widget>[
-                              Text(
-                                'TODO:',
-                                textAlign: TextAlign.center,
-                                style: config.titleStyle,
-                              ),
-                              config.margin,
-                              EzWrap(
-                                children: workDir.files
-                                    .where((ARBFile arb) =>
-                                        completed.isEmpty ? true : !completed.contains(arb))
-                                    .map((ARBFile arb) => Padding(
-                                          padding: EzInsets.wrap(config.spacing),
-                                          child: EzElevatedButton(
-                                            config,
-                                            text: arb.localeCode,
-                                            onPressed: () => setModal(() => adding = arb),
-                                          ),
-                                        ))
-                                    .toList(),
-                              ),
-                              if (completed.isNotEmpty) ...<Widget>[
-                                config.divider,
-                                Text(
-                                  'toDONE:',
-                                  textAlign: TextAlign.center,
-                                  style: config.titleStyle,
-                                ),
-                                config.margin,
-                                EzWrap(
-                                  children: completed
-                                      .map((_AddCache cache) => Padding(
-                                            padding: EzInsets.wrap(config.spacing),
-                                            child: EzElevatedButton(
-                                              config,
-                                              fauxDisabled: true,
-                                              text: cache.file.localeCode,
-                                              onPressed: doNothing,
-                                              onLongPress: () {
-                                                completed.remove(cache);
-                                                setModal(() {});
-                                              },
-                                            ),
-                                          ))
-                                      .toList(),
-                                ),
-                              ],
-                            ])
-                          : EzCol(children: <Widget>[
-                              // Flare
-                              Container(
-                                margin: EdgeInsets.all(config.marginVal),
-                                alignment:
-                                    config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
-                                constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
-                                child: Text(
-                                  '{\n\t"@@locale": "${adding!.localeCode}",\n\t...',
-                                  textAlign: TextAlign.start,
-                                  style: config.bodyStyle,
-                                ),
-                              ),
-
-                              // Field
-                              EzTextField(
-                                maxLines: null,
-                                validator: validateARB,
-                                hintText: '\t"newKey(s)": "New value(s)",',
-                                controller: arbController,
-                                textAlign: TextAlign.start,
-                                constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
-                              ),
-
-                              // Flare
-                              Container(
-                                margin: EdgeInsets.all(config.marginVal),
-                                alignment:
-                                    config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
-                                constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
-                                child: Text(
-                                  '\t...\n}',
-                                  textAlign: TextAlign.start,
-                                  style: config.bodyStyle,
-                                ),
-                              ),
-                            ]),
-                    ),
-                    config.spacer,
-
                     // Add/submit && /cancel
                     EzRow(
                       config,
@@ -506,6 +411,100 @@ class _AddEntryAction extends HybridAction {
                               ),
                             ],
                     ),
+                    config.spacer,
+                    Expanded(
+                      child: EzAnimSwitch(
+                        config,
+                        mod: 0.667,
+                        child: (adding == null)
+                            ? EzScrollView(config, children: <Widget>[
+                                Text(
+                                  'TODO:',
+                                  textAlign: TextAlign.center,
+                                  style: config.titleStyle,
+                                ),
+                                config.margin,
+                                EzWrap(
+                                  children: workDir.files
+                                      .where((ARBFile arb) =>
+                                          completed.isEmpty ? true : !completed.contains(arb))
+                                      .map((ARBFile arb) => Padding(
+                                            padding: EzInsets.wrap(config.spacing),
+                                            child: EzElevatedButton(
+                                              config,
+                                              text: arb.localeCode,
+                                              onPressed: () => setModal(() => adding = arb),
+                                            ),
+                                          ))
+                                      .toList(),
+                                ),
+                                if (completed.isNotEmpty) ...<Widget>[
+                                  config.divider,
+                                  Text(
+                                    'toDONE:',
+                                    textAlign: TextAlign.center,
+                                    style: config.titleStyle,
+                                  ),
+                                  config.margin,
+                                  EzWrap(
+                                    children: completed
+                                        .map((_AddCache cache) => Padding(
+                                              padding: EzInsets.wrap(config.spacing),
+                                              child: EzElevatedButton(
+                                                config,
+                                                fauxDisabled: true,
+                                                text: cache.file.localeCode,
+                                                onPressed: doNothing,
+                                                onLongPress: () {
+                                                  completed.remove(cache);
+                                                  setModal(() {});
+                                                },
+                                              ),
+                                            ))
+                                        .toList(),
+                                  ),
+                                ],
+                              ])
+                            : EzScrollView(config, children: <Widget>[
+                                // Flare
+                                Container(
+                                  margin: EdgeInsets.all(config.marginVal),
+                                  alignment:
+                                      config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
+                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                  child: Text(
+                                    '{\n\t"@@locale": "${adding!.localeCode}",\n\t...',
+                                    textAlign: TextAlign.start,
+                                    style: config.bodyStyle,
+                                  ),
+                                ),
+
+                                // Field
+                                EzTextField(
+                                  maxLines: null,
+                                  validator: validateARB,
+                                  hintText: '\t"newKey(s)": "New value(s)",',
+                                  controller: arbController,
+                                  textAlign: TextAlign.start,
+                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                ),
+
+                                // Flare
+                                Container(
+                                  margin: EdgeInsets.all(config.marginVal),
+                                  alignment:
+                                      config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
+                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                  child: Text(
+                                    '\t...\n}',
+                                    textAlign: TextAlign.start,
+                                    style: config.bodyStyle,
+                                  ),
+                                ),
+                              ]),
+                      ),
+                    ),
+                    config.spacer,
                   ],
                 ),
               ),
