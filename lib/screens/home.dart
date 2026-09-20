@@ -8,6 +8,7 @@ import '../utils/export.dart';
 import '../widgets/export.dart';
 
 import 'dart:io';
+import 'dart:async';
 import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +27,19 @@ class _HomeScreenState extends State<HomeScreen> {
   // Define the build data //
 
   bool developing = EzCM.get(developingKey) ?? false;
+  late String recentProjectsKey = developing ? recentProjectDirKey : recentProjectUrlKey;
   List<String> recentProjects = <String>[];
 
+  TextEditingController urlController = TextEditingController();
+
   // Define custom functions //
+
+  Future<void> flippityFloppity(bool choice) async {
+    developing = choice;
+    recentProjectsKey = choice ? recentProjectDirKey : recentProjectUrlKey;
+    recentProjects = await EzCM.getStringList(recentProjectsKey) ?? <String>[];
+    setState(() {});
+  }
 
   Future<void> processPath(EzCP config, String? preSelected) async {
     await ezNoTouch(() async {
@@ -75,6 +86,84 @@ class _HomeScreenState extends State<HomeScreen> {
           context.goNamed(
             selectPath,
             extra: ARBDir(path: selectedDirectory, files: loadedFiles),
+          );
+        }
+      } else {
+        if (mounted) {
+          ezSnackBar(
+            config,
+            context: context,
+            message: 'Nothing found${preSelected == null ? '' : ' - removing from recent'}',
+          );
+        }
+        if (preSelected != null) {
+          recentProjects.remove(preSelected);
+          await EzCM.setStringList(recentProjectsKey, recentProjects);
+        }
+      }
+    });
+    setState(() {});
+  }
+
+  String? validateUrl(String? check) {
+    if (check == null || check.isEmpty) {
+      return 'Cannot be empty';
+    }
+    return Uri.parse(check).isAbsolute ? null : 'Invalid URL';
+  }
+
+  Future<void> processURL(EzCP config, String? preSelected) async {
+    await ezNoTouch(() async {
+      // Valid url?
+      final String url = preSelected ?? urlController.text;
+      if (validateUrl(url) != null) {
+        ezSnackBar(
+          config,
+          context: context,
+          message: 'Invalid URL',
+        );
+        return;
+      }
+
+      // Get files
+      final Directory dir = Directory(url);
+      final List<ARBFile> loadedFiles = <ARBFile>[];
+
+      if (dir.existsSync()) {
+        final List<FileSystemEntity> entities = dir.listSync();
+        for (final FileSystemEntity entity in entities) {
+          if (entity is File && entity.path.endsWith('.arb')) {
+            // Save valid .arb files
+            try {
+              final String content = await entity.readAsString();
+              final Map<String, dynamic> json = jsonDecode(content);
+
+              final String fallbackName =
+                  entity.path.split(Platform.pathSeparator).last.replaceAll('.arb', '');
+              final String locale = json['@@locale'] ?? fallbackName;
+
+              loadedFiles.add(ARBFile(
+                path: entity.path,
+                localeCode: locale,
+                entries: json,
+              ));
+            } catch (e) {
+              ezLog('Skipped invalid ARB file: ${entity.path}');
+            }
+          }
+        }
+      }
+
+      if (loadedFiles.isNotEmpty) {
+        recentProjects.remove(url);
+        recentProjects.insert(0, url);
+
+        await EzCM.setStringList(recentProjectsKey, recentProjects);
+
+        if (mounted) {
+          context.goNamed(
+            selectPath,
+            extra: ARBDir(path: url, files: loadedFiles),
           );
         }
       } else {
@@ -141,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Init //
 
   Future<void> gatherRecent() async {
-    recentProjects = await EzCM.getStringList(recentProjectsKey) ?? recentProjects;
+    recentProjects = await EzCM.getStringList(recentProjectsKey) ?? <String>[];
     if (recentProjects.isNotEmpty) setState(() {});
   }
 
@@ -154,6 +243,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Return the build //
 
+  Widget openButton(EzCP config) => developing
+      ? EzTextIconButton(
+          config,
+          label: 'Open .arb directory',
+          icon: EzIcon(config, Icons.folder_open),
+          onPressed: () async => await processPath(config, null),
+        )
+      : EzCol(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
+          EzTextIconButton(
+            config,
+            label: 'Open GitHub repo',
+            icon: EzIcon(config, Icons.search),
+            onPressed: () async => await processURL(config, null),
+          ),
+          config.margin,
+          EzTextField(
+            controller: urlController,
+            hintText: 'https://github.com/YWT-LLC/a11how/tree/main/lib/l10n',
+            constraints: ezTextFieldConstraints(context, prop: 0.667),
+            validator: validateUrl,
+          ),
+        ]);
+
   @override
   Widget build(BuildContext context) {
     return Consumer<EzCP>(
@@ -162,26 +274,25 @@ class _HomeScreenState extends State<HomeScreen> {
         body: EzScreen(
           config,
           child: EzSwapWidget(
+            config,
+            animate: true, // TODO: fix
+            mod: 0.667,
             restricted: EzScrollView(
               config,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
+                // Toggle
                 EzFlipFlop(
                   config,
                   init: developing,
                   onLabel: 'Developing',
                   offLabel: 'Contributing',
-                  onChanged: (bool choice) => setState(() => developing = choice),
+                  onChanged: flippityFloppity,
                 ),
                 config.spacer,
 
                 // Open new
-                EzTextIconButton(
-                  config,
-                  label: 'Open .arb directory',
-                  icon: EzIcon(config, Icons.folder_open),
-                  onPressed: () async => await processPath(config, null),
-                ),
+                openButton(config),
 
                 // Div
                 EzDivider(
@@ -202,26 +313,23 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             expanded: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
+              // Toggle
               EzFlipFlop(
                 config,
                 init: developing,
                 onLabel: 'Developing',
                 offLabel: 'Contributing',
-                onChanged: (bool choice) => setState(() => developing = choice),
+                onChanged: flippityFloppity,
               ),
               config.separator,
+
               EzScrollView(
                 config,
                 reverseHands: true,
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
                   // Open new
-                  EzTextIconButton(
-                    config,
-                    label: 'Open .arb directory',
-                    icon: EzIcon(config, Icons.folder_open),
-                    onPressed: () async => await processPath(config, null),
-                  ),
+                  openButton(config),
 
                   // Div
                   SizedBox(
