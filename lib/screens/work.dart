@@ -28,8 +28,8 @@ class _WorkScreenState extends State<WorkScreen> {
 
   String filterString = '';
   FilterType filterType = FTConfig.safeLookup(EzCM.get(filterTypeKey));
-  MenuController filterMC = MenuController();
-  bool caseSensitive = true;
+  final MenuController filterMC = MenuController();
+  bool caseSensitive = false;
 
   bool moving = false;
 
