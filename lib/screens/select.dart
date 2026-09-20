@@ -412,15 +412,40 @@ class _AddEntryAction extends HybridAction {
                                 ],
                               ])
                             : EzCol(children: <Widget>[
+                                // Flare
+                                Container(
+                                  margin: EdgeInsets.all(config.marginVal),
+                                  alignment:
+                                      config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
+                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                  child: Text(
+                                    '{\n\t"@@locale": "${adding!.localeCode}",\n\t...',
+                                    textAlign: TextAlign.start,
+                                    style: config.bodyStyle,
+                                  ),
+                                ),
+
                                 // Field
                                 EzTextField(
                                   maxLines: null,
                                   validator: validateARB,
-                                  hintText:
-                                      '{\n\t"@@locale": "${adding!.localeCode}",\n\t"newKey": "New value(s)"\n}',
+                                  hintText: '\t"newKey(s)": "New value(s)",',
                                   controller: arbController,
                                   textAlign: TextAlign.start,
                                   constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                ),
+
+                                // Flare
+                                Container(
+                                  margin: EdgeInsets.all(config.marginVal),
+                                  alignment:
+                                      config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
+                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                  child: Text(
+                                    '\t...\n}',
+                                    textAlign: TextAlign.start,
+                                    style: config.bodyStyle,
+                                  ),
                                 ),
                                 config.spacer,
                               ]),
@@ -599,6 +624,9 @@ class _AddLocaleAction extends HybridAction {
                         constraints: filterConstraints,
                         hintText: 'xx_YY',
                         controller: destController,
+                        onTapOutside: (_) => setModal(() {}),
+                        onEditingComplete: () => setModal(() {}),
+                        onFieldSubmitted: (_) => setModal(() {}),
                         validator: validateDest,
                       ),
                     ]),
@@ -709,7 +737,8 @@ class _AddLocaleAction extends HybridAction {
                       child: EzTextField(
                         maxLines: null,
                         validator: validateARB,
-                        hintText: 'New entries',
+                        hintText:
+                            '{\n\t"@@locale": "${destController.text.isEmpty ? 'xx_YY' : destController.text}",\n\t"newKey(s)": "New value(s)"\n}',
                         controller: arbController,
                         textAlign: TextAlign.start,
                         constraints: const BoxConstraints.expand(),
