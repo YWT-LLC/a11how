@@ -31,6 +31,10 @@ class _WorkScreenState extends State<WorkScreen> {
   final MenuController filterMC = MenuController();
   bool caseSensitive = false;
 
+  final MenuController highlightMC = MenuController();
+  bool showEmpty = false;
+  bool showIdentical = false;
+
   bool keyChanges = false;
   bool saving = false;
 
@@ -134,7 +138,7 @@ class _WorkScreenState extends State<WorkScreen> {
         return A11howScaffold(
           config,
           body: InputDecorationTheme(
-            filled: true,
+            filled: false,
             contentPadding: EdgeInsets.all(config.marginVal),
             fillColor: config.colors.surface.withValues(
               alpha: max(config.colors.surface.a, focusOpacity),
@@ -201,6 +205,59 @@ class _WorkScreenState extends State<WorkScreen> {
               child: EzCol(children: <Widget>[
                 EzRow(config, children: <Widget>[
                   config.rowMargin,
+                  MenuAnchor(
+                    controller: highlightMC,
+                    menuChildren: <Widget>[
+                      EzMenuButton(
+                        config,
+                        label: 'Show empty',
+                        textAlign: TextAlign.start,
+                        icon: Icon(
+                          Icons.circle,
+                          size: config.iconSize / 2,
+                          color: config.colors.secondary,
+                        ),
+                        onPressed: () => setState(() => showEmpty = !showEmpty),
+                      ),
+                      EzMenuButton(
+                        config,
+                        label: 'Show identical',
+                        textAlign: TextAlign.start,
+                        icon: Icon(
+                          Icons.circle,
+                          size: config.iconSize / 2,
+                          color: config.colors.tertiary,
+                        ),
+                        onPressed: () => setState(() => showIdentical = !showIdentical),
+                      ),
+                    ],
+                    child: EzTextIconButton(
+                      config,
+                      label: 'Highlight',
+                      icon: EzRow(config, children: <Widget>[
+                        if (!showEmpty && !showIdentical)
+                          Icon(
+                            Icons.circle_outlined,
+                            size: config.iconSize / 2,
+                            color: config.colors.outline,
+                          ),
+                        if (showEmpty)
+                          Icon(
+                            Icons.circle,
+                            size: config.iconSize / 2,
+                            color: config.colors.secondary,
+                          ),
+                        if (showIdentical)
+                          Icon(
+                            Icons.circle,
+                            size: config.iconSize / 2,
+                            color: config.colors.tertiary,
+                          ),
+                      ]),
+                      onPressed: () => toggleMenu(highlightMC),
+                    ),
+                  ),
+                  config.rowMargin,
                   Expanded(
                     child: EzTextField(
                       constraints: const BoxConstraints(),
@@ -228,7 +285,7 @@ class _WorkScreenState extends State<WorkScreen> {
                       onPressed: () => toggleMenu(filterMC),
                     ),
                   ),
-                  config.rowSpacer,
+                  config.rowMargin,
                   EzIconButton(
                     config,
                     fauxDisabled: !caseSensitive,
@@ -252,39 +309,63 @@ class _WorkScreenState extends State<WorkScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 // Key
-                                EzTextField(
-                                  constraints: BoxConstraints.tightFor(width: editMax * 0.2),
-                                  hintText: row.key,
-                                  initialValue: row.key,
-                                  style: config.bodyStyle,
-                                  textAlign: TextAlign.start,
-                                  onChanged: (String val) {
-                                    row.key = val;
-                                    keyChanges = true;
-                                  },
-                                  validator: validateField,
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: (showEmpty && row.key.isEmpty)
+                                        ? config.colors.secondary.withValues(alpha: focusOpacity)
+                                        : config.colors.surface,
+                                  ),
+                                  child: EzTextField(
+                                    constraints: BoxConstraints.tightFor(width: editMax * 0.2),
+                                    hintText: row.key,
+                                    initialValue: row.key,
+                                    style: config.bodyStyle,
+                                    textAlign: TextAlign.start,
+                                    onChanged: (String val) {
+                                      row.key = val;
+                                      keyChanges = true;
+                                    },
+                                    validator: validateField,
+                                  ),
                                 ),
 
                                 // Truth
-                                EzTextField(
-                                  constraints: BoxConstraints.tightFor(width: editMax * 0.4),
-                                  hintText: row.truth.isEmpty ? 'EMPTY!' : row.truth,
-                                  initialValue: row.truth,
-                                  style: config.bodyStyle,
-                                  textAlign: TextAlign.start,
-                                  onChanged: (String val) => row.truth = val,
-                                  validator: validateField,
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: (showEmpty && row.key.isEmpty)
+                                        ? config.colors.secondary.withValues(alpha: focusOpacity)
+                                        : config.colors.surface,
+                                  ),
+                                  child: EzTextField(
+                                    constraints: BoxConstraints.tightFor(width: editMax * 0.4),
+                                    hintText: row.truth.isEmpty ? 'EMPTY!' : row.truth,
+                                    initialValue: row.truth,
+                                    style: config.bodyStyle,
+                                    textAlign: TextAlign.start,
+                                    onChanged: (String val) => row.truth = val,
+                                    validator: validateField,
+                                  ),
                                 ),
 
                                 // Work
-                                EzTextField(
-                                  constraints: BoxConstraints.tightFor(width: editMax * 0.4),
-                                  hintText: row.compare.isEmpty ? 'EMPTY!' : row.compare,
-                                  initialValue: row.compare,
-                                  style: config.bodyStyle,
-                                  textAlign: TextAlign.start,
-                                  onChanged: (String val) => row.compare = val,
-                                  validator: validateField,
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: (showIdentical && row.compare == row.truth)
+                                        ? config.colors.tertiary.withValues(alpha: focusOpacity)
+                                        : ((showEmpty && row.key.isEmpty)
+                                            ? config.colors.secondary
+                                                .withValues(alpha: focusOpacity)
+                                            : config.colors.surface),
+                                  ),
+                                  child: EzTextField(
+                                    constraints: BoxConstraints.tightFor(width: editMax * 0.4),
+                                    hintText: row.compare.isEmpty ? 'EMPTY!' : row.compare,
+                                    initialValue: row.compare,
+                                    style: config.bodyStyle,
+                                    textAlign: TextAlign.start,
+                                    onChanged: (String val) => row.compare = val,
+                                    validator: validateField,
+                                  ),
                                 ),
                               ],
                             ))
