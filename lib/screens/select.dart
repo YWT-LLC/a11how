@@ -712,8 +712,19 @@ class _RemoveEntryAction extends HybridAction {
                           label: 'Save',
                           icon: EzIcon(config, Icons.save),
                           // TODO: make it so
-                          onPressed:
-                              choppingBlock.isEmpty ? null : () => Navigator.of(context).pop(),
+                          onPressed: choppingBlock.isEmpty
+                              ? null
+                              : () async {
+                                  for (final ARBFile arb in workDir.files) {
+                                    arb.entries.removeWhere(
+                                        (String key, _) => choppingBlock.contains(key));
+                                  }
+
+                                  // TODO: make sorted save shared (after fixing it)
+                                  await save;
+
+                                  if (context.mounted) Navigator.of(context).pop();
+                                },
                         ),
                       ]),
                       config.spacer,
