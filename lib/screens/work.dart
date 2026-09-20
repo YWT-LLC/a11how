@@ -32,7 +32,7 @@ class _WorkScreenState extends State<WorkScreen> {
   bool caseSensitive = false;
 
   final MenuController highlightMC = MenuController();
-  bool showEmpty = false;
+  bool showEmpty = true;
   bool showIdentical = false;
 
   bool keyChanges = false;
