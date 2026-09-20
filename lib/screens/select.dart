@@ -541,7 +541,9 @@ class _RemoveEntryAction extends HybridAction {
 
             // Define custom functions //
 
-            bool checkFilter(String check) => switch (filterType) {
+            bool checkFilter(String check) =>
+                !choppingBlock.contains(check) &&
+                switch (filterType) {
                   FilterType.startsWith => caseSensitive
                       ? check.startsWith(filterString)
                       : check.toLowerCase().startsWith(filterString.toLowerCase()),
@@ -600,7 +602,7 @@ class _RemoveEntryAction extends HybridAction {
                               EzCol(children: <Widget>[
                                   // Title
                                   Text(
-                                    'Remove keys...',
+                                    choppingBlock.isEmpty ? 'Select keys to remove' : 'Removing...',
                                     style: config.bodyStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -614,6 +616,7 @@ class _RemoveEntryAction extends HybridAction {
                                                     padding: EzInsets.wrap(config.spacing),
                                                     child: EzTextButton(
                                                       config,
+                                                      key: ValueKey<String>(key),
                                                       text: key,
                                                       onPressed: doNothing,
                                                       onLongPress: () {
@@ -624,6 +627,10 @@ class _RemoveEntryAction extends HybridAction {
                                                   ))
                                               .toList(),
                                         ),
+                                  if (choppingBlock.isNotEmpty) ...<Widget>[
+                                    EzDivider(height: config.marginVal),
+                                    EzSpacer(config.spacing / 2),
+                                  ],
 
                                   // Filter
                                   EzRow(config, children: <Widget>[
@@ -631,7 +638,7 @@ class _RemoveEntryAction extends HybridAction {
                                     Expanded(
                                       child: EzTextField(
                                         constraints: const BoxConstraints(),
-                                        hintText: 'Filter (key)',
+                                        hintText: 'Filter',
                                         onChanged: (String entry) =>
                                             setModal(() => filterString = entry),
                                         validator: (_) => null,
@@ -681,6 +688,7 @@ class _RemoveEntryAction extends HybridAction {
                                                   padding: EzInsets.wrap(config.spacing),
                                                   child: EzTextIconButton(
                                                     config,
+                                                    key: ValueKey<String>(key),
                                                     label: key,
                                                     icon: EzIcon(config, Icons.remove),
                                                     onPressed: () {
@@ -718,8 +726,9 @@ class _RemoveEntryAction extends HybridAction {
                                           (String key, _) => choppingBlock.contains(key));
                                     }
 
-                                    // TODO: make sorted save shared (after fixing it)
-                                    await save;
+                                    for (final ARBFile arb in workDir.files) {
+                                      await writeSortedJson(file: File(arb.path), arb: arb);
+                                    }
 
                                     if (context.mounted) Navigator.of(context).pop();
                                   }),
