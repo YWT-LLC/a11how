@@ -345,167 +345,158 @@ class _AddEntryAction extends HybridAction {
 
             // Return (modal) build //
 
-            await ezModal(
+            await ezFullScreenModal(
               config,
               context: context,
-              enableDrag: false,
-              isDismissible: false,
-              showDragHandle: false,
-              constraints: const BoxConstraints.expand(),
-              builder: (_) => StatefulBuilder(
-                builder: (BuildContext mCon, StateSetter setModal) => Container(
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.all(config.marginVal),
-                  constraints: const BoxConstraints.expand(),
-                  child: EzScrollView(
-                    config,
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      EzHeader(config),
-                      EzAnimSwitch(
-                        config,
-                        mod: 0.667,
-                        child: (adding == null)
-                            ? EzCol(children: <Widget>[
+              child: StatefulBuilder(
+                builder: (BuildContext mCon, StateSetter setModal) => EzScrollView(
+                  config,
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    EzHeader(config),
+                    EzAnimSwitch(
+                      config,
+                      mod: 0.667,
+                      child: (adding == null)
+                          ? EzCol(children: <Widget>[
+                              Text(
+                                'TODO:',
+                                textAlign: TextAlign.center,
+                                style: config.titleStyle,
+                              ),
+                              config.margin,
+                              EzWrap(
+                                children: workDir.files
+                                    .where((ARBFile arb) =>
+                                        completed.isEmpty ? true : !completed.contains(arb))
+                                    .map((ARBFile arb) => Padding(
+                                          padding: EzInsets.wrap(config.spacing),
+                                          child: EzElevatedButton(
+                                            config,
+                                            text: arb.localeCode,
+                                            onPressed: () => setModal(() => adding = arb),
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                              if (completed.isNotEmpty) ...<Widget>[
+                                config.divider,
                                 Text(
-                                  'TODO:',
+                                  'toDONE:',
                                   textAlign: TextAlign.center,
                                   style: config.titleStyle,
                                 ),
                                 config.margin,
                                 EzWrap(
-                                  children: workDir.files
-                                      .where((ARBFile arb) =>
-                                          completed.isEmpty ? true : !completed.contains(arb))
+                                  children: completed
                                       .map((ARBFile arb) => Padding(
                                             padding: EzInsets.wrap(config.spacing),
                                             child: EzElevatedButton(
                                               config,
+                                              fauxDisabled: true,
                                               text: arb.localeCode,
-                                              onPressed: () => setModal(() => adding = arb),
+                                              onPressed: doNothing,
+                                              onLongPress: () {
+                                                completed.remove(arb);
+                                                setModal(() {});
+                                              },
                                             ),
                                           ))
                                       .toList(),
                                 ),
-                                if (completed.isNotEmpty) ...<Widget>[
-                                  config.divider,
-                                  Text(
-                                    'toDONE:',
-                                    textAlign: TextAlign.center,
-                                    style: config.titleStyle,
-                                  ),
-                                  config.margin,
-                                  EzWrap(
-                                    children: completed
-                                        .map((ARBFile arb) => Padding(
-                                              padding: EzInsets.wrap(config.spacing),
-                                              child: EzElevatedButton(
-                                                config,
-                                                fauxDisabled: true,
-                                                text: arb.localeCode,
-                                                onPressed: doNothing,
-                                                onLongPress: () {
-                                                  completed.remove(arb);
-                                                  setModal(() {});
-                                                },
-                                              ),
-                                            ))
-                                        .toList(),
-                                  ),
-                                ],
-                              ])
-                            : EzCol(children: <Widget>[
-                                // Flare
-                                Container(
-                                  margin: EdgeInsets.all(config.marginVal),
-                                  alignment:
-                                      config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
-                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
-                                  child: Text(
-                                    '{\n\t"@@locale": "${adding!.localeCode}",\n\t...',
-                                    textAlign: TextAlign.start,
-                                    style: config.bodyStyle,
-                                  ),
-                                ),
-
-                                // Field
-                                EzTextField(
-                                  maxLines: null,
-                                  validator: validateARB,
-                                  hintText: '\t"newKey(s)": "New value(s)",',
-                                  controller: arbController,
-                                  textAlign: TextAlign.start,
-                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
-                                ),
-
-                                // Flare
-                                Container(
-                                  margin: EdgeInsets.all(config.marginVal),
-                                  alignment:
-                                      config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
-                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
-                                  child: Text(
-                                    '\t...\n}',
-                                    textAlign: TextAlign.start,
-                                    style: config.bodyStyle,
-                                  ),
-                                ),
-                              ]),
-                      ),
-                      config.spacer,
-
-                      // Add/submit && /cancel
-                      EzRow(
-                        config,
-                        children: (adding == null)
-                            ? <Widget>[
-                                EzTextIconButton(
-                                  config,
-                                  label: config.ezL10n.gCancel,
-                                  icon: EzIcon(config, Icons.cancel),
-                                  onPressed: (completed.length == workDir.files.length)
-                                      ? null
-                                      : () => Navigator.of(context).pop(),
-                                ),
-                                config.rowSpacer,
-                                EzTextIconButton(
-                                  config,
-                                  label: 'Save',
-                                  icon: EzIcon(config, Icons.save),
-                                  // TODO: write all caches
-                                  onPressed:
-                                      completed.isEmpty ? null : () => Navigator.of(context).pop(),
-                                ),
-                              ]
-                            : <Widget>[
-                                EzTextIconButton(
-                                  config,
-                                  label: config.ezL10n.gCancel,
-                                  icon: EzIcon(config, Icons.cancel),
-                                  onPressed: () {
-                                    arbController.clear();
-                                    setModal(() => adding = null);
-                                  },
-                                ),
-                                config.rowSpacer,
-                                EzTextIconButton(
-                                  config,
-                                  label: 'Add',
-                                  icon: EzIcon(config, Icons.add),
-                                  onPressed: () {
-                                    // TODO: create a local class/model for "cache"
-                                    // When big save is pressed, all the caches get append written (and sorted)
-                                    // ...prolly have some more stuff to classify/send to utils
-                                    completed.add(adding!);
-                                    arbController.clear();
-                                    setModal(() => adding = null);
-                                  },
-                                ),
                               ],
-                      ),
-                    ],
-                  ),
+                            ])
+                          : EzCol(children: <Widget>[
+                              // Flare
+                              Container(
+                                margin: EdgeInsets.all(config.marginVal),
+                                alignment:
+                                    config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
+                                constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                child: Text(
+                                  '{\n\t"@@locale": "${adding!.localeCode}",\n\t...',
+                                  textAlign: TextAlign.start,
+                                  style: config.bodyStyle,
+                                ),
+                              ),
+
+                              // Field
+                              EzTextField(
+                                maxLines: null,
+                                validator: validateARB,
+                                hintText: '\t"newKey(s)": "New value(s)",',
+                                controller: arbController,
+                                textAlign: TextAlign.start,
+                                constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                              ),
+
+                              // Flare
+                              Container(
+                                margin: EdgeInsets.all(config.marginVal),
+                                alignment:
+                                    config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
+                                constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                child: Text(
+                                  '\t...\n}',
+                                  textAlign: TextAlign.start,
+                                  style: config.bodyStyle,
+                                ),
+                              ),
+                            ]),
+                    ),
+                    config.spacer,
+
+                    // Add/submit && /cancel
+                    EzRow(
+                      config,
+                      children: (adding == null)
+                          ? <Widget>[
+                              EzTextIconButton(
+                                config,
+                                label: config.ezL10n.gCancel,
+                                icon: EzIcon(config, Icons.cancel),
+                                onPressed: (completed.length == workDir.files.length)
+                                    ? null
+                                    : () => Navigator.of(context).pop(),
+                              ),
+                              config.rowSpacer,
+                              EzTextIconButton(
+                                config,
+                                label: 'Save',
+                                icon: EzIcon(config, Icons.save),
+                                // TODO: write all caches
+                                onPressed:
+                                    completed.isEmpty ? null : () => Navigator.of(context).pop(),
+                              ),
+                            ]
+                          : <Widget>[
+                              EzTextIconButton(
+                                config,
+                                label: config.ezL10n.gCancel,
+                                icon: EzIcon(config, Icons.cancel),
+                                onPressed: () {
+                                  arbController.clear();
+                                  setModal(() => adding = null);
+                                },
+                              ),
+                              config.rowSpacer,
+                              EzTextIconButton(
+                                config,
+                                label: 'Add',
+                                icon: EzIcon(config, Icons.add),
+                                onPressed: () {
+                                  // TODO: create a local class/model for "cache"
+                                  // When big save is pressed, all the caches get append written (and sorted)
+                                  // ...prolly have some more stuff to classify/send to utils
+                                  completed.add(adding!);
+                                  arbController.clear();
+                                  setModal(() => adding = null);
+                                },
+                              ),
+                            ],
+                    ),
+                  ],
                 ),
               ),
             );
@@ -557,186 +548,177 @@ class _RemoveEntryAction extends HybridAction {
 
             // Return (modal) build //
 
-            await ezModal(
+            await ezFullScreenModal(
               config,
               context: context,
-              enableDrag: false,
-              isDismissible: false,
-              showDragHandle: false,
-              constraints: const BoxConstraints.expand(),
-              builder: (_) => StatefulBuilder(
-                builder: (BuildContext mCon, StateSetter setModal) => Container(
-                  alignment: Alignment.topCenter,
-                  constraints: const BoxConstraints.expand(),
-                  child: EzCol(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      EzHeader(config),
-                      Expanded(
-                        child: EzAnimSwitch(
-                          config,
-                          mod: 0.667,
-                          child: (keySource == null)
-                              ? // Choose key source
-                              EzCol(children: <Widget>[
-                                  Text(
-                                    'Key source',
-                                    textAlign: TextAlign.center,
-                                    style: config.titleStyle,
-                                  ),
-                                  EzWrap(
-                                    children: workDir.files
-                                        .map((ARBFile arb) => Padding(
-                                              padding: EzInsets.wrap(config.spacing),
-                                              child: EzElevatedButton(
-                                                config,
-                                                text: arb.localeCode,
-                                                onPressed: () => setModal(() => keySource = arb),
-                                              ),
-                                            ))
-                                        .toList(),
-                                  ),
-                                ])
-                              : // Choose keys to remove
-                              EzCol(children: <Widget>[
-                                  // Title
-                                  Text(
-                                    choppingBlock.isEmpty ? 'Select keys to remove' : 'Removing...',
-                                    style: config.bodyStyle,
-                                    textAlign: TextAlign.center,
-                                  ),
+              child: StatefulBuilder(
+                builder: (BuildContext mCon, StateSetter setModal) => EzCol(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    EzHeader(config),
+                    Expanded(
+                      child: EzAnimSwitch(
+                        config,
+                        mod: 0.667,
+                        child: (keySource == null)
+                            ? // Choose key source
+                            EzCol(children: <Widget>[
+                                Text(
+                                  'Key source',
+                                  textAlign: TextAlign.center,
+                                  style: config.titleStyle,
+                                ),
+                                EzWrap(
+                                  children: workDir.files
+                                      .map((ARBFile arb) => Padding(
+                                            padding: EzInsets.wrap(config.spacing),
+                                            child: EzElevatedButton(
+                                              config,
+                                              text: arb.localeCode,
+                                              onPressed: () => setModal(() => keySource = arb),
+                                            ),
+                                          ))
+                                      .toList(),
+                                ),
+                              ])
+                            : // Choose keys to remove
+                            EzCol(children: <Widget>[
+                                // Title
+                                Text(
+                                  choppingBlock.isEmpty ? 'Select keys to remove' : 'Removing...',
+                                  style: config.bodyStyle,
+                                  textAlign: TextAlign.center,
+                                ),
 
-                                  // Chopping block
-                                  choppingBlock.isEmpty
-                                      ? config.margin
-                                      : EzWrap(
-                                          children: choppingBlock
-                                              .map((String key) => Padding(
-                                                    padding: EzInsets.wrap(config.spacing),
-                                                    child: EzTextButton(
-                                                      config,
-                                                      key: ValueKey<String>(key),
-                                                      text: key,
-                                                      onPressed: doNothing,
-                                                      onLongPress: () {
-                                                        choppingBlock.remove(key);
-                                                        setModal(() {});
-                                                      },
-                                                    ),
-                                                  ))
-                                              .toList(),
-                                        ),
-                                  if (choppingBlock.isNotEmpty) ...<Widget>[
-                                    EzDivider(height: config.marginVal),
-                                    EzSpacer(config.spacing / 2),
-                                  ],
-
-                                  // Filter
-                                  EzRow(config, children: <Widget>[
-                                    config.rowSpacer,
-                                    Expanded(
-                                      child: EzTextField(
-                                        constraints: const BoxConstraints(),
-                                        hintText: 'Filter',
-                                        onChanged: (String entry) =>
-                                            setModal(() => filterString = entry),
-                                        validator: (_) => null,
-                                      ),
-                                    ),
-                                    config.rowMargin,
-                                    MenuAnchor(
-                                      controller: filterMC,
-                                      menuChildren: FilterType.values
-                                          .map((FilterType ft) => EzMenuButton(
-                                                config,
-                                                label: ft.name(config),
-                                                textAlign: TextAlign.start,
-                                                onPressed: () => setModal(() => filterType = ft),
-                                              ))
-                                          .toList(),
-                                      child: EzTextIconButton(
-                                        config,
-                                        label: filterType.name(config),
-                                        textAlign: TextAlign.start,
-                                        icon: EzIcon(config, Icons.filter_list),
-                                        onPressed: () => toggleMenu(filterMC),
-                                      ),
-                                    ),
-                                    config.rowMargin,
-                                    EzIconButton(
-                                      config,
-                                      fauxDisabled: !caseSensitive,
-                                      tooltip: 'Toggle case sensitivity',
-                                      icon: EzIcon(config, Icons.abc),
-                                      onPressed: () =>
-                                          setModal(() => caseSensitive = !caseSensitive),
-                                    ),
-                                    config.rowSpacer,
-                                  ]),
-
-                                  // Options
-                                  Expanded(
-                                    child: EzScrollView(
-                                      config,
-                                      mainAxisSize: MainAxisSize.max,
-                                      child: EzWrap(
-                                        children: keySource!.entries.keys
-                                            .where((String key) =>
-                                                !key.contains('@@locale') && checkFilter(key))
+                                // Chopping block
+                                choppingBlock.isEmpty
+                                    ? config.margin
+                                    : EzWrap(
+                                        children: choppingBlock
                                             .map((String key) => Padding(
                                                   padding: EzInsets.wrap(config.spacing),
-                                                  child: EzTextIconButton(
+                                                  child: EzTextButton(
                                                     config,
                                                     key: ValueKey<String>(key),
-                                                    label: key,
-                                                    icon: EzIcon(config, Icons.remove),
-                                                    onPressed: () {
-                                                      choppingBlock.add(key);
+                                                    text: key,
+                                                    onPressed: doNothing,
+                                                    onLongPress: () {
+                                                      choppingBlock.remove(key);
                                                       setModal(() {});
                                                     },
                                                   ),
                                                 ))
                                             .toList(),
                                       ),
+                                if (choppingBlock.isNotEmpty) ...<Widget>[
+                                  EzDivider(height: config.marginVal),
+                                  EzSpacer(config.spacing / 2),
+                                ],
+
+                                // Filter
+                                EzRow(config, children: <Widget>[
+                                  config.rowSpacer,
+                                  Expanded(
+                                    child: EzTextField(
+                                      constraints: const BoxConstraints(),
+                                      hintText: 'Filter',
+                                      onChanged: (String entry) =>
+                                          setModal(() => filterString = entry),
+                                      validator: (_) => null,
                                     ),
                                   ),
+                                  config.rowMargin,
+                                  MenuAnchor(
+                                    controller: filterMC,
+                                    menuChildren: FilterType.values
+                                        .map((FilterType ft) => EzMenuButton(
+                                              config,
+                                              label: ft.name(config),
+                                              textAlign: TextAlign.start,
+                                              onPressed: () => setModal(() => filterType = ft),
+                                            ))
+                                        .toList(),
+                                    child: EzTextIconButton(
+                                      config,
+                                      label: filterType.name(config),
+                                      textAlign: TextAlign.start,
+                                      icon: EzIcon(config, Icons.filter_list),
+                                      onPressed: () => toggleMenu(filterMC),
+                                    ),
+                                  ),
+                                  config.rowMargin,
+                                  EzIconButton(
+                                    config,
+                                    fauxDisabled: !caseSensitive,
+                                    tooltip: 'Toggle case sensitivity',
+                                    icon: EzIcon(config, Icons.abc),
+                                    onPressed: () => setModal(() => caseSensitive = !caseSensitive),
+                                  ),
+                                  config.rowSpacer,
                                 ]),
-                        ),
+
+                                // Options
+                                Expanded(
+                                  child: EzScrollView(
+                                    config,
+                                    mainAxisSize: MainAxisSize.max,
+                                    child: EzWrap(
+                                      children: keySource!.entries.keys
+                                          .where((String key) =>
+                                              !key.contains('@@locale') && checkFilter(key))
+                                          .map((String key) => Padding(
+                                                padding: EzInsets.wrap(config.spacing),
+                                                child: EzTextIconButton(
+                                                  config,
+                                                  key: ValueKey<String>(key),
+                                                  label: key,
+                                                  icon: EzIcon(config, Icons.remove),
+                                                  onPressed: () {
+                                                    choppingBlock.add(key);
+                                                    setModal(() {});
+                                                  },
+                                                ),
+                                              ))
+                                          .toList(),
+                                    ),
+                                  ),
+                                ),
+                              ]),
                       ),
+                    ),
 
-                      // Add/submit && /cancel
-                      EzRow(config, children: <Widget>[
-                        EzTextIconButton(
-                          config,
-                          label: config.ezL10n.gCancel,
-                          icon: EzIcon(config, Icons.cancel),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        config.rowSpacer,
-                        EzTextIconButton(
-                          config,
-                          label: 'Save',
-                          icon: EzIcon(config, Icons.save),
-                          onPressed: choppingBlock.isEmpty
-                              ? null
-                              : () => ezNoTouch(() async {
-                                    for (final ARBFile arb in workDir.files) {
-                                      arb.entries.removeWhere(
-                                          (String key, _) => choppingBlock.contains(key));
-                                    }
+                    // Add/submit && /cancel
+                    EzRow(config, children: <Widget>[
+                      EzTextIconButton(
+                        config,
+                        label: config.ezL10n.gCancel,
+                        icon: EzIcon(config, Icons.cancel),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      config.rowSpacer,
+                      EzTextIconButton(
+                        config,
+                        label: 'Save',
+                        icon: EzIcon(config, Icons.save),
+                        onPressed: choppingBlock.isEmpty
+                            ? null
+                            : () => ezNoTouch(() async {
+                                  for (final ARBFile arb in workDir.files) {
+                                    arb.entries.removeWhere(
+                                        (String key, _) => choppingBlock.contains(key));
+                                  }
 
-                                    for (final ARBFile arb in workDir.files) {
-                                      await writeSortedJson(file: File(arb.path), arb: arb);
-                                    }
+                                  for (final ARBFile arb in workDir.files) {
+                                    await writeSortedJson(file: File(arb.path), arb: arb);
+                                  }
 
-                                    if (context.mounted) Navigator.of(context).pop();
-                                  }),
-                        ),
-                      ]),
-                      config.spacer,
-                    ],
-                  ),
+                                  if (context.mounted) Navigator.of(context).pop();
+                                }),
+                      ),
+                    ]),
+                    config.spacer,
+                  ],
                 ),
               ),
             );
@@ -808,224 +790,212 @@ class _AddLocaleAction extends HybridAction {
 
             // Return (modal) build //
 
-            await ezModal(
+            await ezFullScreenModal(
               config,
               context: context,
-              enableDrag: false,
-              isDismissible: false,
-              showDragHandle: false,
-              constraints: const BoxConstraints.expand(),
-              builder: (_) => StatefulBuilder(
-                builder: (BuildContext mCon, StateSetter setModal) => EzScaffold(
-                  config,
-                  body: Container(
-                    margin: EdgeInsets.all(config.marginVal),
-                    constraints: const BoxConstraints.expand(),
-                    child: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
-                      // Source
-                      EzDropdownMenu<String>(
-                        config,
-                        label: 'Source locale',
-                        initialSelection: sourceCode,
-                        dropdownMenuEntries: workDir.files
-                            .map((ARBFile arb) => DropdownMenuEntry<String>(
-                                  label: arb.localeCode,
-                                  value: arb.localeCode,
-                                ))
-                            .toList(),
-                        widthEntry: 'en_US_BB',
-                        onSelected: (String? choice) {
-                          if (choice == null) return;
-                          setModal(() => sourceCode = choice);
-                        },
-                      ),
-                      config.margin,
+              child: StatefulBuilder(
+                builder: (BuildContext mCon, StateSetter setModal) =>
+                    EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                  // Source
+                  EzDropdownMenu<String>(
+                    config,
+                    label: 'Source locale',
+                    initialSelection: sourceCode,
+                    dropdownMenuEntries: workDir.files
+                        .map((ARBFile arb) => DropdownMenuEntry<String>(
+                              label: arb.localeCode,
+                              value: arb.localeCode,
+                            ))
+                        .toList(),
+                    widthEntry: 'en_US_BB',
+                    onSelected: (String? choice) {
+                      if (choice == null) return;
+                      setModal(() => sourceCode = choice);
+                    },
+                  ),
+                  config.margin,
 
-                      // Destination
-                      EzRow(config, children: <Widget>[
-                        Text('New locale:', style: config.bodyStyle),
-                        config.rowMargin,
-                        EzTextField(
-                          constraints: filterConstraints,
-                          hintText: 'xx_YY',
-                          controller: destController,
-                          onTapOutside: (_) => setModal(() {}),
-                          onEditingComplete: () => setModal(() {}),
-                          onFieldSubmitted: (_) => setModal(() {}),
-                          validator: validateDest,
-                        ),
-                      ]),
-                      config.separator,
+                  // Destination
+                  EzRow(config, children: <Widget>[
+                    Text('New locale:', style: config.bodyStyle),
+                    config.rowMargin,
+                    EzTextField(
+                      constraints: filterConstraints,
+                      hintText: 'xx_YY',
+                      controller: destController,
+                      onTapOutside: (_) => setModal(() {}),
+                      onEditingComplete: () => setModal(() {}),
+                      onFieldSubmitted: (_) => setModal(() {}),
+                      validator: validateDest,
+                    ),
+                  ]),
+                  config.separator,
 
-                      // Service
-                      EzRow(config, children: <Widget>[
-                        EzDropdownMenu<TranslationService>(
-                          config,
-                          label: 'Choose service',
-                          initialSelection: service,
-                          dropdownMenuEntries: TranslationService.values
-                              .map((TranslationService ts) => DropdownMenuEntry<TranslationService>(
-                                    label: ts.name(config),
-                                    value: ts,
-                                  ))
-                              .toList(),
-                          widthEntry: 'en_US_BB',
-                          onSelected: (TranslationService? choice) {
-                            if (choice == null) return;
-                            setModal(() => service = choice);
-                          },
-                        ),
-                        service.twoCents(config),
-                      ]),
-                      config.margin,
-                      EzTextIconButton(
-                        config,
-                        label: 'Copy prompt',
-                        icon: EzIcon(config, Icons.copy),
-                        onPressed: sourceCode == null
-                            ? null
-                            : () async {
-                                if (sourceCode == null ||
-                                    validateDest(destController.text) != null) {
-                                  ezSnackBar(
-                                    config,
-                                    context: mCon,
-                                    message: 'Please complete the form',
-                                  );
-                                  return;
-                                }
-                                final ARBFile sourceFile = workDir.files
-                                    .firstWhere((ARBFile arb) => arb.localeCode == sourceCode);
-
-                                final String jsonString =
-                                    const JsonEncoder.withIndent('  ').convert(sourceFile.entries);
-
-                                await Clipboard.setData(ClipboardData(
-                                  text: service.prompt(
-                                    source: sourceCode!,
-                                    dest: destController.text,
-                                    json: jsonString,
-                                  ),
-                                ));
-
-                                if (service.human) {
-                                  final Map<String, dynamic> blankEntries = <String, dynamic>{};
-
-                                  for (final MapEntry<String, dynamic> entry
-                                      in sourceFile.entries.entries) {
-                                    blankEntries[entry.key] =
-                                        entry.key.startsWith('@') ? destController.text : '';
-                                  }
-
-                                  final String blankJson =
-                                      const JsonEncoder.withIndent('  ').convert(blankEntries);
-
-                                  final Archive archive = Archive()
-                                    ..addFile(ArchiveFile(
-                                      '$sourceCode.arb',
-                                      jsonString.length,
-                                      utf8.encode(jsonString),
-                                    ))
-                                    ..addFile(ArchiveFile(
-                                      '${destController.text}.arb',
-                                      blankJson.length,
-                                      utf8.encode(blankJson),
-                                    ));
-
-                                  final List<int> zipData = ZipEncoder().encode(archive);
-
-                                  Directory? outDir = await getDownloadsDirectory();
-                                  outDir ??= await getApplicationDocumentsDirectory();
-                                  final String zipPath =
-                                      p.join(outDir.path, '${service.name(config)}_gig.zip');
-
-                                  try {
-                                    final File zipFile = File(zipPath);
-                                    await zipFile.writeAsBytes(zipData);
-                                  } catch (e) {
-                                    if (context.mounted) {
-                                      ezSnackBar(
-                                        config,
-                                        context: mCon,
-                                        message: 'Failed to create zip: $e',
-                                      );
-                                    }
-                                  }
-                                }
-
-                                await launchUrl(service.url);
-                              },
-                      ),
-                      config.divider,
-
-                      // Value/Field
-                      Expanded(
-                        child: EzTextField(
-                          maxLines: null,
-                          validator: validateARB,
-                          hintText:
-                              '{\n\t"@@locale": "${destController.text.isEmpty ? 'xx_YY' : destController.text}",\n\t"newKey(s)": "New value(s)"\n}',
-                          controller: arbController,
-                          textAlign: TextAlign.start,
-                          constraints: const BoxConstraints.expand(),
-                        ),
-                      ),
-                      config.spacer,
-
-                      // Submit/cancel
-                      EzRow(config, children: <Widget>[
-                        EzTextIconButton(
-                          config,
-                          label: config.ezL10n.gCancel,
-                          icon: EzIcon(config, Icons.cancel),
-                          onPressed: () => Navigator.of(mCon).pop(),
-                        ),
-                        config.rowSpacer,
-                        EzTextIconButton(
-                          config,
-                          label: 'Add',
-                          icon: EzIcon(config, Icons.add),
-                          onPressed: () async {
-                            if (validateDest(destController.text) != null ||
-                                validateARB(arbController.text) != null) {
+                  // Service
+                  EzRow(config, children: <Widget>[
+                    EzDropdownMenu<TranslationService>(
+                      config,
+                      label: 'Choose service',
+                      initialSelection: service,
+                      dropdownMenuEntries: TranslationService.values
+                          .map((TranslationService ts) => DropdownMenuEntry<TranslationService>(
+                                label: ts.name(config),
+                                value: ts,
+                              ))
+                          .toList(),
+                      widthEntry: 'en_US_BB',
+                      onSelected: (TranslationService? choice) {
+                        if (choice == null) return;
+                        setModal(() => service = choice);
+                      },
+                    ),
+                    service.twoCents(config),
+                  ]),
+                  config.margin,
+                  EzTextIconButton(
+                    config,
+                    label: 'Copy prompt',
+                    icon: EzIcon(config, Icons.copy),
+                    onPressed: sourceCode == null
+                        ? null
+                        : () async {
+                            if (sourceCode == null || validateDest(destController.text) != null) {
                               ezSnackBar(
                                 config,
                                 context: mCon,
-                                message: 'Resolve issues please',
+                                message: 'Please complete the form',
                               );
-
                               return;
                             }
+                            final ARBFile sourceFile = workDir.files
+                                .firstWhere((ARBFile arb) => arb.localeCode == sourceCode);
 
-                            String newPath = workDir.files.first.path;
-                            newPath = newPath.replaceFirst(
-                              RegExp(r'_[a-zA-Z_]+\.arb'),
-                              '_${destController.text}.arb',
-                            );
+                            final String jsonString =
+                                const JsonEncoder.withIndent('  ').convert(sourceFile.entries);
 
-                            // Save
-                            try {
-                              final File file = File(newPath);
-                              await file.writeAsString(arbController.text);
-                            } catch (e) {
-                              if (mCon.mounted) {
-                                ezSnackBar(
-                                  config,
-                                  context: mCon,
-                                  message: 'Failure saving: $e',
-                                );
+                            await Clipboard.setData(ClipboardData(
+                              text: service.prompt(
+                                source: sourceCode!,
+                                dest: destController.text,
+                                json: jsonString,
+                              ),
+                            ));
+
+                            if (service.human) {
+                              final Map<String, dynamic> blankEntries = <String, dynamic>{};
+
+                              for (final MapEntry<String, dynamic> entry
+                                  in sourceFile.entries.entries) {
+                                blankEntries[entry.key] =
+                                    entry.key.startsWith('@') ? destController.text : '';
+                              }
+
+                              final String blankJson =
+                                  const JsonEncoder.withIndent('  ').convert(blankEntries);
+
+                              final Archive archive = Archive()
+                                ..addFile(ArchiveFile(
+                                  '$sourceCode.arb',
+                                  jsonString.length,
+                                  utf8.encode(jsonString),
+                                ))
+                                ..addFile(ArchiveFile(
+                                  '${destController.text}.arb',
+                                  blankJson.length,
+                                  utf8.encode(blankJson),
+                                ));
+
+                              final List<int> zipData = ZipEncoder().encode(archive);
+
+                              Directory? outDir = await getDownloadsDirectory();
+                              outDir ??= await getApplicationDocumentsDirectory();
+                              final String zipPath =
+                                  p.join(outDir.path, '${service.name(config)}_gig.zip');
+
+                              try {
+                                final File zipFile = File(zipPath);
+                                await zipFile.writeAsBytes(zipData);
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ezSnackBar(
+                                    config,
+                                    context: mCon,
+                                    message: 'Failed to create zip: $e',
+                                  );
+                                }
                               }
                             }
 
-                            if (mCon.mounted) Navigator.of(mCon).pop();
+                            await launchUrl(service.url);
                           },
-                        ),
-                      ]),
-                      config.spacer,
-                    ]),
                   ),
-                  fabs: null,
-                ),
+                  config.divider,
+
+                  // Value/Field
+                  Expanded(
+                    child: EzTextField(
+                      maxLines: null,
+                      validator: validateARB,
+                      hintText:
+                          '{\n\t"@@locale": "${destController.text.isEmpty ? 'xx_YY' : destController.text}",\n\t"newKey(s)": "New value(s)"\n}',
+                      controller: arbController,
+                      textAlign: TextAlign.start,
+                      constraints: const BoxConstraints.expand(),
+                    ),
+                  ),
+                  config.spacer,
+
+                  // Submit/cancel
+                  EzRow(config, children: <Widget>[
+                    EzTextIconButton(
+                      config,
+                      label: config.ezL10n.gCancel,
+                      icon: EzIcon(config, Icons.cancel),
+                      onPressed: () => Navigator.of(mCon).pop(),
+                    ),
+                    config.rowSpacer,
+                    EzTextIconButton(
+                      config,
+                      label: 'Add',
+                      icon: EzIcon(config, Icons.add),
+                      onPressed: () async {
+                        if (validateDest(destController.text) != null ||
+                            validateARB(arbController.text) != null) {
+                          ezSnackBar(
+                            config,
+                            context: mCon,
+                            message: 'Resolve issues please',
+                          );
+
+                          return;
+                        }
+
+                        String newPath = workDir.files.first.path;
+                        newPath = newPath.replaceFirst(
+                          RegExp(r'_[a-zA-Z_]+\.arb'),
+                          '_${destController.text}.arb',
+                        );
+
+                        // Save
+                        try {
+                          final File file = File(newPath);
+                          await file.writeAsString(arbController.text);
+                        } catch (e) {
+                          if (mCon.mounted) {
+                            ezSnackBar(
+                              config,
+                              context: mCon,
+                              message: 'Failure saving: $e',
+                            );
+                          }
+                        }
+
+                        if (mCon.mounted) Navigator.of(mCon).pop();
+                      },
+                    ),
+                  ]),
+                  config.spacer,
+                ]),
               ),
             );
           },
