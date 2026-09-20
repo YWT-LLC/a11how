@@ -50,6 +50,7 @@ class _WorkScreenState extends State<WorkScreen> {
             : check.toLowerCase().endsWith(filterString.toLowerCase()),
       };
 
+  // TODO: redo... just switch data types then use a print for that. don't re-invent
   Future<void> _writeSortedJson(File file, {required bool truth}) async {
     final Map<String, dynamic> entries =
         truth ? widget.workPair.truth.entries : widget.workPair.compare.entries;
