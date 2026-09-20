@@ -15,12 +15,14 @@ const String appName = 'a11how';
 /// llc.ywt.a11how
 const String androidPackage = 'llc.ywt.a11how';
 
+const String developingKey = 'developing';
 const String recentProjectsKey = 'recentProjects';
 const String removeKeyFilterTypeKey = 'removeKeyFilterType';
 const String workFilterTypeKey = 'workFilterType';
 
 final Map<String, Object> a11HowMobile = <String, Object>{
   ...ywtMobileConfig,
+  developingKey: false,
   recentProjectsKey: <String>[],
   removeKeyFilterTypeKey: FilterType.contains.value,
   workFilterTypeKey: FilterType.startsWith.value,
@@ -28,6 +30,7 @@ final Map<String, Object> a11HowMobile = <String, Object>{
 
 final Map<String, Object> a11HowDesktop = <String, Object>{
   ...ywtDesktopConfig,
+  developingKey: false,
   recentProjectsKey: <String>[],
   removeKeyFilterTypeKey: FilterType.contains.value,
   workFilterTypeKey: FilterType.startsWith.value,
