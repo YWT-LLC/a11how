@@ -391,6 +391,7 @@ class _AddEntryAction extends HybridAction {
                                           for (final _AddCache cache in completed) {
                                             cache.file.entries.addAll(cache.entries);
                                             await writeSortedJson(
+                                              config,
                                               file: File(cache.file.path),
                                               arb: cache.file,
                                             );
@@ -758,7 +759,7 @@ class _RemoveEntryAction extends HybridAction {
                                   for (final ARBFile arb in workDir.files) {
                                     arb.entries.removeWhere(
                                         (String key, _) => choppingBlock.contains(key));
-                                    await writeSortedJson(file: File(arb.path), arb: arb);
+                                    await writeSortedJson(config, file: File(arb.path), arb: arb);
                                   }
 
                                   if (context.mounted) Navigator.of(context).pop();
@@ -1034,18 +1035,15 @@ class _AddLocaleAction extends HybridAction {
                         );
 
                         // Save
-                        try {
-                          final File file = File(newPath);
-                          await file.writeAsString(arbController.text);
-                        } catch (e) {
-                          if (mCon.mounted) {
-                            ezSnackBar(
-                              config,
-                              context: mCon,
-                              message: 'Failure saving: $e',
-                            );
-                          }
-                        }
+                        await writeSortedJson(
+                          config,
+                          file: File(newPath),
+                          arb: ARBFile(
+                            path: newPath,
+                            localeCode: destController.text,
+                            entries: jsonDecode(arbController.text),
+                          ),
+                        );
 
                         if (mCon.mounted) Navigator.of(mCon).pop();
                       },
