@@ -329,7 +329,7 @@ class _AddEntryAction extends HybridAction {
             // Define (modal) build data //
 
             ARBFile? adding = truth;
-            final Set<ARBFile> completed = <ARBFile>{};
+            final Set<_AddCache> completed = <_AddCache>{};
 
             final TextEditingController arbController = TextEditingController();
 
@@ -390,15 +390,15 @@ class _AddEntryAction extends HybridAction {
                                 config.margin,
                                 EzWrap(
                                   children: completed
-                                      .map((ARBFile arb) => Padding(
+                                      .map((_AddCache cache) => Padding(
                                             padding: EzInsets.wrap(config.spacing),
                                             child: EzElevatedButton(
                                               config,
                                               fauxDisabled: true,
-                                              text: arb.localeCode,
+                                              text: cache.file.localeCode,
                                               onPressed: doNothing,
                                               onLongPress: () {
-                                                completed.remove(arb);
+                                                completed.remove(cache);
                                                 setModal(() {});
                                               },
                                             ),
@@ -465,9 +465,19 @@ class _AddEntryAction extends HybridAction {
                                 config,
                                 label: 'Save',
                                 icon: EzIcon(config, Icons.save),
-                                // TODO: write all caches
-                                onPressed:
-                                    completed.isEmpty ? null : () => Navigator.of(context).pop(),
+                                onPressed: completed.isEmpty
+                                    ? null
+                                    : () => ezNoTouch(() async {
+                                          for (final _AddCache cache in completed) {
+                                            cache.file.entries.addAll(cache.entries);
+                                            await writeSortedJson(
+                                              file: File(cache.file.path),
+                                              arb: cache.file,
+                                            );
+                                          }
+
+                                          if (context.mounted) Navigator.of(context).pop();
+                                        }),
                               ),
                             ]
                           : <Widget>[
@@ -486,10 +496,10 @@ class _AddEntryAction extends HybridAction {
                                 label: 'Add',
                                 icon: EzIcon(config, Icons.add),
                                 onPressed: () {
-                                  // TODO: create a local class/model for "cache"
-                                  // When big save is pressed, all the caches get append written (and sorted)
-                                  // ...prolly have some more stuff to classify/send to utils
-                                  completed.add(adding!);
+                                  completed.add(_AddCache(
+                                    file: adding!,
+                                    entries: jsonDecode(arbController.text),
+                                  )); // TODO: validation (here and think through all others)
                                   arbController.clear();
                                   setModal(() => adding = null);
                                 },
@@ -502,6 +512,16 @@ class _AddEntryAction extends HybridAction {
             );
           },
         );
+}
+
+class _AddCache {
+  final ARBFile file;
+  final Map<String, dynamic> entries;
+
+  const _AddCache({
+    required this.file,
+    required this.entries,
+  });
 }
 
 class _RemoveEntryAction extends HybridAction {
@@ -707,9 +727,6 @@ class _RemoveEntryAction extends HybridAction {
                                   for (final ARBFile arb in workDir.files) {
                                     arb.entries.removeWhere(
                                         (String key, _) => choppingBlock.contains(key));
-                                  }
-
-                                  for (final ARBFile arb in workDir.files) {
                                     await writeSortedJson(file: File(arb.path), arb: arb);
                                   }
 
