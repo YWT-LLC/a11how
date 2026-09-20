@@ -115,21 +115,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Tooltip(
               message: config.ezL10n.gRemove,
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () async {
-                    recentProjects.remove(path);
-                    await EzCM.setStringList(recentProjectsKey, recentProjects);
-                    setState(() {});
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(config.marginVal),
-                    child: EzIcon(
-                      config,
-                      Icons.remove_circle_outline,
-                      color: config.colors.error,
-                    ),
+              child: InkWell(
+                mouseCursor: SystemMouseCursors.click,
+                onTap: () async {
+                  recentProjects.remove(path);
+                  await EzCM.setStringList(recentProjectsKey, recentProjects);
+                  setState(() {});
+                },
+                child: Container(
+                  padding: EzInsets.wrap(config.padding),
+                  decoration: const BoxDecoration(shape: BoxShape.circle),
+                  child: EzIcon(
+                    config,
+                    Icons.remove_circle_outline,
+                    color: config.colors.error,
                   ),
                 ),
               ),
