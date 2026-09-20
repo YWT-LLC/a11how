@@ -25,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Define the build data //
 
+  bool developing = EzCM.get(developingKey) ?? false;
   List<String> recentProjects = <String>[];
 
   // Define custom functions //
@@ -160,13 +161,60 @@ class _HomeScreenState extends State<HomeScreen> {
         config,
         body: EzScreen(
           config,
-          child: EzAnimSwitch(
-            config,
-            forceFade: true,
-            forceType: EzTransitionType.none,
-            child: Center(
-              child: EzSwapWidget(
-                restricted: EzScrollView(config, children: <Widget>[
+          child: EzSwapWidget(
+            restricted: EzScrollView(
+              config,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                EzFlipFlop(
+                  config,
+                  init: developing,
+                  onLabel: 'Developing',
+                  offLabel: 'Contributing',
+                  onChanged: (bool choice) => setState(() => developing = choice),
+                ),
+                config.spacer,
+
+                // Open new
+                EzTextIconButton(
+                  config,
+                  label: 'Open .arb directory',
+                  icon: EzIcon(config, Icons.folder_open),
+                  onPressed: () async => await processPath(config, null),
+                ),
+
+                // Div
+                EzDivider(
+                  height: config.spacing * 3,
+                  width: widthOf(context) * 0.667,
+                  color: config.colors.secondaryContainer,
+                ),
+
+                // Recent(s)
+                EzText(
+                  config,
+                  text: 'Recent projects',
+                  textAlign: TextAlign.start,
+                  style: config.titleStyle,
+                ),
+                EzSpacer(config.spacing / 2),
+                ...displayRecent(config),
+              ],
+            ),
+            expanded: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
+              EzFlipFlop(
+                config,
+                init: developing,
+                onLabel: 'Developing',
+                offLabel: 'Contributing',
+                onChanged: (bool choice) => setState(() => developing = choice),
+              ),
+              config.separator,
+              EzScrollView(
+                config,
+                reverseHands: true,
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
                   // Open new
                   EzTextIconButton(
                     config,
@@ -176,65 +224,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   // Div
-                  EzDivider(
-                    height: config.spacing * 3,
-                    width: widthOf(context) * 0.667,
-                    color: config.colors.secondaryContainer,
+                  SizedBox(
+                    height: heightOf(context) * 0.667,
+                    child: VerticalDivider(
+                      width: config.spacing * 3,
+                      color: config.colors.secondaryContainer,
+                    ),
                   ),
 
                   // Recent(s)
-                  EzText(
-                    config,
-                    text: 'Recent projects',
-                    textAlign: TextAlign.start,
-                    style: config.titleStyle,
-                  ),
-                  EzSpacer(config.spacing / 2),
-                  ...displayRecent(config),
-                ]),
-                expanded: EzScrollView(
-                  config,
-                  reverseHands: true,
-                  scrollDirection: Axis.horizontal,
-                  children: <Widget>[
-                    // Open new
-                    EzTextIconButton(
-                      config,
-                      label: 'Open .arb directory',
-                      icon: EzIcon(config, Icons.folder_open),
-                      onPressed: () async => await processPath(config, null),
+                  if (recentProjects.isNotEmpty) ...<Widget>[
+                    EzCol(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        EzText(
+                          config,
+                          text: 'Recent projects',
+                          textAlign: TextAlign.start,
+                          style: config.titleStyle,
+                        ),
+                        EzSpacer(config.spacing / 2),
+                        ...displayRecent(config),
+                      ],
                     ),
-
-                    // Div
-                    SizedBox(
-                      height: heightOf(context) * 0.667,
-                      child: VerticalDivider(
-                        width: config.spacing * 3,
-                        color: config.colors.secondaryContainer,
-                      ),
-                    ),
-
-                    // Recent(s)
-                    if (recentProjects.isNotEmpty) ...<Widget>[
-                      EzCol(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          EzText(
-                            config,
-                            text: 'Recent projects',
-                            textAlign: TextAlign.start,
-                            style: config.titleStyle,
-                          ),
-                          EzSpacer(config.spacing / 2),
-                          ...displayRecent(config),
-                        ],
-                      ),
-                    ],
                   ],
-                ),
+                ],
               ),
-            ),
+            ]),
           ),
         ),
         isHome: true,
