@@ -291,7 +291,7 @@ class _SelectScreenState extends State<SelectScreen> {
 
                     // Start removing locales
                     HybridAction(
-                      label: 'Remove locales',
+                      label: 'Remove locale(s)',
                       icon: Icons.group_remove_outlined,
                       onPressed: () => setState(() => removing = !removing),
                     ),
@@ -324,7 +324,7 @@ class _AddEntryAction extends HybridAction {
     required this.workDir,
     this.truth,
   }) : super(
-          label: 'Add entry',
+          label: 'Add entries',
           icon: Icons.playlist_add_outlined,
           onPressed: () async {
             // Define (modal) build data //
@@ -535,7 +535,8 @@ class _RemoveEntryAction extends HybridAction {
             final Set<String> choppingBlock = <String>{};
 
             String filterString = '';
-            FilterType filterType = FTConfig.safeLookup(EzCM.get(filterTypeKey));
+            FilterType filterType =
+                FTConfig.lookup(EzCM.get(removeKeyFilterTypeKey)) ?? FilterType.contains;
             final MenuController filterMC = MenuController();
             bool caseSensitive = false;
 
@@ -565,7 +566,6 @@ class _RemoveEntryAction extends HybridAction {
               builder: (_) => StatefulBuilder(
                 builder: (BuildContext mCon, StateSetter setModal) => Container(
                   alignment: Alignment.topCenter,
-                  margin: EdgeInsets.all(config.marginVal),
                   constraints: const BoxConstraints.expand(),
                   child: EzCol(
                     mainAxisSize: MainAxisSize.max,
@@ -607,26 +607,28 @@ class _RemoveEntryAction extends HybridAction {
                                   ),
 
                                   // Chopping block
-                                  EzWrap(
-                                    children: choppingBlock
-                                        .map((String key) => Padding(
-                                              padding: EzInsets.wrap(config.spacing),
-                                              child: EzTextButton(
-                                                config,
-                                                text: key,
-                                                onPressed: doNothing,
-                                                onLongPress: () {
-                                                  choppingBlock.remove(key);
-                                                  setModal(() {});
-                                                },
-                                              ),
-                                            ))
-                                        .toList(),
-                                  ),
+                                  choppingBlock.isEmpty
+                                      ? config.margin
+                                      : EzWrap(
+                                          children: choppingBlock
+                                              .map((String key) => Padding(
+                                                    padding: EzInsets.wrap(config.spacing),
+                                                    child: EzTextButton(
+                                                      config,
+                                                      text: key,
+                                                      onPressed: doNothing,
+                                                      onLongPress: () {
+                                                        choppingBlock.remove(key);
+                                                        setModal(() {});
+                                                      },
+                                                    ),
+                                                  ))
+                                              .toList(),
+                                        ),
 
                                   // Filter
                                   EzRow(config, children: <Widget>[
-                                    config.rowMargin,
+                                    config.rowSpacer,
                                     Expanded(
                                       child: EzTextField(
                                         constraints: const BoxConstraints(),
@@ -647,7 +649,7 @@ class _RemoveEntryAction extends HybridAction {
                                                 onPressed: () => setModal(() => filterType = ft),
                                               ))
                                           .toList(),
-                                      child: EzElevatedIconButton(
+                                      child: EzTextIconButton(
                                         config,
                                         label: filterType.name(config),
                                         textAlign: TextAlign.start,
@@ -655,7 +657,7 @@ class _RemoveEntryAction extends HybridAction {
                                         onPressed: () => toggleMenu(filterMC),
                                       ),
                                     ),
-                                    config.rowSpacer,
+                                    config.rowMargin,
                                     EzIconButton(
                                       config,
                                       fauxDisabled: !caseSensitive,
@@ -664,7 +666,7 @@ class _RemoveEntryAction extends HybridAction {
                                       onPressed: () =>
                                           setModal(() => caseSensitive = !caseSensitive),
                                     ),
-                                    config.rowMargin,
+                                    config.rowSpacer,
                                   ]),
 
                                   // Options
@@ -868,7 +870,7 @@ class _AddLocaleAction extends HybridAction {
                                   config,
                                   context: mCon,
                                   message: 'Please complete the form',
-                                );
+                                ); // TODO: fix these
                                 return;
                               }
                               final ARBFile sourceFile = workDir.files
