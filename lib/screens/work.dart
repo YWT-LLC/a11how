@@ -36,6 +36,9 @@ class _WorkScreenState extends State<WorkScreen> {
 
   // Define custom functions //
 
+  String? validateField(String? check) =>
+      (check == null || check.isEmpty) ? 'Cannot be empty' : null;
+
   bool checkFilter(String check) => switch (filterType) {
         FilterType.startsWith => caseSensitive
             ? check.startsWith(filterString)
@@ -259,29 +262,29 @@ class _WorkScreenState extends State<WorkScreen> {
                                     row.key = val;
                                     keyChanges = true;
                                   },
-                                  validator: (_) => null,
+                                  validator: validateField,
                                 ),
 
                                 // Truth
                                 EzTextField(
                                   constraints: BoxConstraints.tightFor(width: editMax * 0.4),
-                                  hintText: row.truth,
+                                  hintText: row.truth.isEmpty ? 'EMPTY!' : row.truth,
                                   initialValue: row.truth,
                                   style: config.bodyStyle,
                                   textAlign: TextAlign.start,
                                   onChanged: (String val) => row.truth = val,
-                                  validator: (_) => null,
+                                  validator: validateField,
                                 ),
 
                                 // Work
                                 EzTextField(
                                   constraints: BoxConstraints.tightFor(width: editMax * 0.4),
-                                  hintText: row.compare,
+                                  hintText: row.compare.isEmpty ? 'EMPTY!' : row.compare,
                                   initialValue: row.compare,
                                   style: config.bodyStyle,
                                   textAlign: TextAlign.start,
                                   onChanged: (String val) => row.compare = val,
-                                  validator: (_) => null,
+                                  validator: validateField,
                                 ),
                               ],
                             ))
