@@ -340,6 +340,21 @@ class _AddEntryAction extends HybridAction {
                 return 'Cannot be empty';
               }
 
+              // Allow for optional brackets
+              String textToParse = check.trim();
+              if (!textToParse.startsWith('{')) {
+                textToParse = '{$textToParse}';
+              }
+
+              try {
+                final dynamic decoded = jsonDecode(textToParse);
+                if (decoded is! Map<String, dynamic>) {
+                  return 'Must evaluate to a JSON object';
+                }
+              } catch (e) {
+                return 'Invalid JSON format';
+              }
+
               return null;
             }
 
@@ -401,10 +416,24 @@ class _AddEntryAction extends HybridAction {
                                 label: 'Add',
                                 icon: EzIcon(config, Icons.add),
                                 onPressed: () {
+                                  if (validateARB(arbController.text) != null) {
+                                    ezSnackBar(
+                                      config,
+                                      context: mCon,
+                                      message: 'Resolve issues please',
+                                    );
+                                    return;
+                                  }
+
+                                  String textToParse = arbController.text.trim();
+                                  if (!textToParse.startsWith('{')) {
+                                    textToParse = '{$textToParse}';
+                                  }
+
                                   completed.add(_AddCache(
                                     file: adding!,
-                                    entries: jsonDecode(arbController.text),
-                                  )); // TODO: validation (here and think through all others)
+                                    entries: jsonDecode(textToParse),
+                                  ));
                                   arbController.clear();
                                   setModal(() => adding = null);
                                 },
@@ -426,8 +455,11 @@ class _AddEntryAction extends HybridAction {
                                 config.margin,
                                 EzWrap(
                                   children: workDir.files
-                                      .where((ARBFile arb) =>
-                                          completed.isEmpty ? true : !completed.contains(arb))
+                                      .where((ARBFile arb) => completed.isEmpty
+                                          ? true
+                                          : !completed
+                                              .map((_AddCache cache) => cache.file)
+                                              .contains(arb))
                                       .map((ARBFile arb) => Padding(
                                             padding: EzInsets.wrap(config.spacing),
                                             child: EzElevatedButton(
@@ -786,6 +818,15 @@ class _AddLocaleAction extends HybridAction {
             String? validateARB(String? check) {
               if (check == null || check.trim().isEmpty) {
                 return 'Cannot be empty';
+              }
+
+              try {
+                final dynamic decoded = jsonDecode(check);
+                if (decoded is! Map<String, dynamic>) {
+                  return 'Must evaluate to a JSON object';
+                }
+              } catch (e) {
+                return 'Invalid JSON format';
               }
 
               return null;
