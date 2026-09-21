@@ -418,7 +418,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ...displayRecent(config),
               ],
             ),
-            expanded: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            expanded: EzScrollView(config, mainAxisSize: MainAxisSize.max, children: <Widget>[
               toggle(config),
               config.separator,
               EzScrollView(
