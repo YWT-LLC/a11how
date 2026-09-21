@@ -578,7 +578,7 @@ class _RemoveEntryAction extends HybridAction {
 
             String filterString = '';
             FilterType filterType =
-                FTConfig.lookup(EzCM.get(removeKeyFilterTypeKey)) ?? FilterType.contains;
+                FTypeCon.lookup(EzCM.get(removeKeyFilterTypeKey)) ?? FilterType.contains;
             final MenuController filterMC = MenuController();
             bool caseSensitive = false;
 

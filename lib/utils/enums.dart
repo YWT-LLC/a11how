@@ -6,13 +6,57 @@
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 
+//* Filter Target *//
+
+enum FilterTarget { key, truth, compare }
+
+const String esKey = 'key';
+const String esTruth = 'truth';
+const String esCompare = 'compare';
+
+extension FTargetCon on FilterTarget {
+  String get value => switch (this) {
+        FilterTarget.key => esKey,
+        FilterTarget.truth => esTruth,
+        FilterTarget.compare => esCompare,
+      };
+
+  Widget icon(EzCP config) => switch (this) {
+        FilterTarget.key => EzIcon(config, Icons.key),
+        FilterTarget.truth => EzIcon(config, Icons.balance),
+        FilterTarget.compare => EzIcon(config, Icons.compare),
+      };
+
+  String name(EzCP config) => switch (this) {
+        FilterTarget.key => 'Key',
+        FilterTarget.truth => 'Truth',
+        FilterTarget.compare => 'Compare',
+      };
+
+  static FilterTarget? lookup(String? value) => switch (value) {
+        esKey => FilterTarget.key,
+        esTruth => FilterTarget.truth,
+        esCompare => FilterTarget.compare,
+        _ => null,
+      };
+
+  /// Defaults to [FilterTarget.key]
+  static FilterTarget safeLookup(String? value) => switch (value) {
+        esTruth => FilterTarget.truth,
+        esCompare => FilterTarget.compare,
+        _ => FilterTarget.key,
+      };
+}
+
+//* Filter Type *//
+
 enum FilterType { startsWith, contains, endsWith }
 
 const String esStarts = 'startsWith';
 const String esContains = 'contains';
 const String esEnds = 'endsWith';
 
-extension FTConfig on FilterType {
+extension FTypeCon on FilterType {
   String get value => switch (this) {
         FilterType.startsWith => esStarts,
         FilterType.contains => esContains,
@@ -39,6 +83,8 @@ extension FTConfig on FilterType {
         _ => FilterType.startsWith,
       };
 }
+
+//* Translation Service *//
 
 enum TranslationService {
   proZ,
