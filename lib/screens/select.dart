@@ -805,6 +805,7 @@ class _AddLocaleAction extends HybridAction {
   final BoxConstraints filterConstraints;
   final ARBFile? truth;
 
+  // TODO: contributor save
   _AddLocaleAction(
     this.config, {
     required this.context,
