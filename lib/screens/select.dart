@@ -467,6 +467,13 @@ class _AddEntryAction extends HybridAction {
                                               config,
                                               text: arb.localeCode,
                                               onPressed: () => setModal(() => adding = arb),
+                                              onLongPress: () {
+                                                completed.add(_AddCache(
+                                                  file: arb,
+                                                  entries: <String, dynamic>{},
+                                                ));
+                                                setModal(() {});
+                                              },
                                             ),
                                           ))
                                       .toList(),
