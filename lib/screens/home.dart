@@ -19,8 +19,6 @@ import 'package:go_router/go_router.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:file_picker/file_picker.dart';
 
-// TODO: save/load recents list
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -41,8 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> flippityFloppity(bool choice) async {
     developing = choice;
+    await EzCM.setBool(developingKey, choice);
+
     recentProjectsKey = choice ? recentProjectDirKey : recentProjectUrlKey;
     recentProjects = await EzCM.getStringList(recentProjectsKey) ?? <String>[];
+
     setState(() {});
   }
 
@@ -297,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () async {
               try {
                 await FileSaver.instance.saveAs(
-                  name: 'a11how-projects.csv',
+                  name: 'a11how-${developing ? 'directories' : 'links'}.csv',
                   bytes: utf8.encode(recentProjects.join(',')),
                   mimeType: MimeType.csv,
                 );
@@ -323,7 +324,11 @@ class _HomeScreenState extends State<HomeScreen> {
               try {
                 final Uint8List fileBytes = await result.readAsBytes();
                 final String fileContent = utf8.decode(fileBytes);
+
                 recentProjects = fileContent.split(',');
+                await EzCM.setStringList(recentProjectsKey, recentProjects);
+
+                setState(() {});
               } catch (e) {
                 (mounted)
                     ? ezLogAlert(config, context: context, message: e.toString())
@@ -416,13 +421,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: config.colors.secondaryContainer,
                     ),
                   ),
-                  if (recentProjects.isNotEmpty) ...<Widget>[
-                    EzCol(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: displayRecent(config),
-                    ),
-                  ],
+                  EzCol(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: displayRecent(config),
+                  ),
                 ],
               ),
             ]),
