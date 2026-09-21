@@ -126,33 +126,74 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      // Get files
-      final Directory dir = Directory(url);
+      final Uri uri = Uri.parse(url);
+      if (uri.host != 'github.com') {
+        ezSnackBar(
+          config,
+          context: context,
+          message: 'Only GitHub URLs are supported at this time',
+        );
+        return;
+      }
+
+      final List<String> segments = uri.pathSegments;
+      if (segments.length < 5 || segments[2] != 'tree') {
+        ezSnackBar(
+          config,
+          context: context,
+          message: 'Please provide the full path the the .arb directory',
+        );
+        return;
+      }
+
+      final String owner = segments[0];
+      final String repo = segments[1];
+      final String branch = segments[3];
+      final String path = segments.sublist(4).join('/');
+
+      final Uri apiUrl =
+          Uri.parse('https://api.github.com/repos/$owner/$repo/contents/$path?ref=$branch');
       final List<ARBFile> loadedFiles = <ARBFile>[];
 
-      if (dir.existsSync()) {
-        final List<FileSystemEntity> entities = dir.listSync();
-        for (final FileSystemEntity entity in entities) {
-          if (entity is File && entity.path.endsWith('.arb')) {
-            // Save valid .arb files
-            try {
-              final String content = await entity.readAsString();
-              final Map<String, dynamic> json = jsonDecode(content);
+      try {
+        final http.Response response = await http.get(
+          apiUrl,
+          headers: <String, String>{'Accept': 'application/vnd.github.v3+json'},
+        );
 
-              final String fallbackName =
-                  entity.path.split(Platform.pathSeparator).last.replaceAll('.arb', '');
-              final String locale = json['@@locale'] ?? fallbackName;
+        if (response.statusCode == 200) {
+          final List<dynamic> contents = jsonDecode(response.body);
 
-              loadedFiles.add(ARBFile(
-                path: entity.path,
-                localeCode: locale,
-                entries: json,
-              ));
-            } catch (e) {
-              ezLog('Skipped invalid ARB file: ${entity.path}');
+          for (final dynamic item in contents) {
+            // Check if item is a file and ends with .arb
+            if (item['type'] == 'file' && item['name'].toString().endsWith('.arb')) {
+              final String downloadUrl = item['download_url'];
+              final http.Response fileResponse = await http.get(Uri.parse(downloadUrl));
+
+              if (fileResponse.statusCode == 200) {
+                try {
+                  final String content = utf8.decode(fileResponse.bodyBytes);
+                  final Map<String, dynamic> json = jsonDecode(content);
+
+                  final String fallbackName = item['name'].toString().replaceAll('.arb', '');
+                  final String locale = json['@@locale'] ?? fallbackName;
+
+                  loadedFiles.add(ARBFile(
+                    path: item['html_url'],
+                    localeCode: locale,
+                    entries: json,
+                  ));
+                } catch (e) {
+                  ezLog('Skipped invalid ARB file: ${item['name']}');
+                }
+              }
             }
           }
+        } else {
+          ezLog('GitHub API error: ${response.statusCode}...\n${response.body}');
         }
+      } catch (e) {
+        ezLog('Error fetching from GitHub: $e');
       }
 
       if (loadedFiles.isNotEmpty) {
