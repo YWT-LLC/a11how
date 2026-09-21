@@ -200,7 +200,7 @@ class _WorkScreenState extends State<WorkScreen> {
       final Response prRes = await post(
         Uri.parse('https://api.github.com/repos/$owner/$repo/pulls'),
         headers: headers,
-        body: jsonEncode({
+        body: jsonEncode(<String, String>{
           'title': 'Localization update: $filePath',
           'head': '$forkOwner:$branch',
           'base': branch,
