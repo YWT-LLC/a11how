@@ -74,16 +74,17 @@ class _SelectScreenState extends State<SelectScreen> {
                   constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
                   child: EzWrap(
                     children: files
-                        .where((ARBFile arb) => filter.isEmpty
-                            ? (arb.localeCode != truth?.localeCode)
-                            : arb.localeCode.contains(filter))
+                        .where((ARBFile arb) =>
+                            filter.isEmpty ? true : arb.localeCode.contains(filter))
                         .map((ARBFile arb) => Padding(
                               padding: EzInsets.wrap(config.spacing),
                               child: MouseRegion(
                                 onHover: (_) => hoverOption(arb),
                                 child: EzElevatedButton(
                                   config,
-                                  text: arb.localeCode,
+                                  text: (arb.localeCode == truth?.localeCode)
+                                      ? 'Self'
+                                      : arb.localeCode,
                                   onPressed: () async => await chooseOption(config, arb),
                                 ),
                               ),
@@ -95,16 +96,14 @@ class _SelectScreenState extends State<SelectScreen> {
             : EzScrollView(
                 config,
                 children: files
-                    .where((ARBFile arb) => filter.isEmpty
-                        ? (arb.localeCode != truth?.localeCode)
-                        : arb.localeCode.contains(filter))
+                    .where((ARBFile arb) => filter.isEmpty ? true : arb.localeCode.contains(filter))
                     .map((ARBFile arb) => Padding(
                           padding: EdgeInsets.symmetric(vertical: config.spacing / 2),
                           child: MouseRegion(
                             onHover: (_) => hoverOption(arb),
                             child: EzTextButton(
                               config,
-                              text: arb.localeCode,
+                              text: (arb.localeCode == truth?.localeCode) ? 'Self' : arb.localeCode,
                               onPressed: () async => await chooseOption(config, arb),
                             ),
                           ),
