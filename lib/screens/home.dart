@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Uri.parse(check).isAbsolute ? null : 'Invalid URL';
   }
 
-  Future<void> processURL(EzCP config, String? preSelected) async {
+  Future<void> processUrl(EzCP config, String? preSelected) async {
     await ezNoTouch(() async {
       // Valid url?
       final String url = preSelected ?? urlController.text;
@@ -274,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
             hintText: 'https://github.com/YWT-LLC/a11how/tree/main/lib/l10n',
             constraints: ezTextFieldConstraints(context, prop: 0.4),
             validator: validateUrl,
-            onFieldSubmitted: (String url) async => await processURL(config, url),
+            onFieldSubmitted: (String url) async => await processUrl(config, url),
           ),
           config.margin,
           EzTextIconButton(
@@ -282,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Open GitHub repo',
             textAlign: TextAlign.end,
             icon: EzIcon(config, Icons.folder_open),
-            onPressed: () async => await processURL(config, null),
+            onPressed: () async => await processUrl(config, null),
           ),
         ]);
 
@@ -372,7 +372,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     textAlign: TextAlign.start,
                     textColor: config.colors.onSurface,
                     hint: config.ezL10n.gOpen,
-                    onTap: () async => await processPath(config, path),
+                    onTap: () async => developing
+                        ? await processPath(config, path)
+                        : await processUrl(config, path),
                   ),
                   EzIconTouch(
                     config,
