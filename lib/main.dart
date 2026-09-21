@@ -12,6 +12,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// TODO: long URL + login to git => opens work page directly (after processing/thinking time ofc... ezNoTouch)
+// ...bonus: include the prefix for the page that the user clicked on the button from in the filter
+
 void main() async {
   // Configure the app //
 
