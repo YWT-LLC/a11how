@@ -273,21 +273,23 @@ class _SelectScreenState extends State<SelectScreen> {
                     ),
                   ]
                 : <HybridAction>[
-                    // Add entries
-                    _AddEntryAction(
-                      config,
-                      context: context,
-                      workDir: widget.workDir,
-                      truth: truth,
-                    ),
+                    if (widget.workDir.local) ...<HybridAction>[
+                      // Add entries
+                      _AddEntryAction(
+                        config,
+                        context: context,
+                        workDir: widget.workDir,
+                        truth: truth,
+                      ),
 
-                    // Remove entries
-                    _RemoveEntryAction(
-                      config,
-                      context: context,
-                      workDir: widget.workDir,
-                      truth: truth,
-                    ),
+                      // Remove entries
+                      _RemoveEntryAction(
+                        config,
+                        context: context,
+                        workDir: widget.workDir,
+                        truth: truth,
+                      ),
+                    ],
 
                     // Add locale
                     _AddLocaleAction(
@@ -298,20 +300,24 @@ class _SelectScreenState extends State<SelectScreen> {
                       truth: truth,
                     ),
 
-                    // Start removing locales
-                    HybridAction(
-                      label: 'Remove locale(s)',
-                      icon: Icons.group_remove_outlined,
-                      onPressed: () => setState(() => removing = !removing),
-                    ),
-
-                    // Undo select
-                    if (widget.workDir.local && truth != null)
+                    if (widget.workDir.local) ...<HybridAction>[
+                      // Start removing locales
                       HybridAction(
-                        label: 'Undo select',
-                        icon: Icons.undo,
-                        onPressed: () => setState(() => truth = null),
+                        label: 'Remove locale(s)',
+                        icon: Icons.group_remove_outlined,
+                        onPressed: () => setState(() => removing = !removing),
                       ),
+
+                      // Undo select
+                      if (truth != null)
+                        HybridAction(
+                          label: 'Undo select',
+                          icon: Icons.undo,
+                          onPressed: () => setState(() => truth = null),
+                        ),
+                    ],
+
+                    // Settings
                     settingsAction(config, context),
                   ],
           );
