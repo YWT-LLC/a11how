@@ -14,8 +14,12 @@ import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:file_picker/file_picker.dart';
+
+// TODO: save/load recents list
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -225,50 +229,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  Iterable<Widget> displayRecent(EzCP config) => recentProjects.map((String path) => Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: config.marginVal,
-          vertical: config.spacing / 2,
-        ),
-        child: EzScrollView(
-          config,
-          reverseHands: true,
-          thumbVisibility: false,
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            EzIconLink(
-              config,
-              icon: EzIcon(config, Icons.launch),
-              label: path,
-              textAlign: TextAlign.start,
-              textColor: config.colors.onSurface,
-              hint: config.ezL10n.gOpen,
-              onTap: () async => await processPath(config, path),
-            ),
-            Tooltip(
-              message: config.ezL10n.gRemove,
-              child: InkWell(
-                mouseCursor: SystemMouseCursors.click,
-                onTap: () async {
-                  recentProjects.remove(path);
-                  await EzCM.setStringList(recentProjectsKey, recentProjects);
-                  setState(() {});
-                },
-                child: Container(
-                  padding: EzInsets.wrap(config.padding),
-                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                  child: EzIcon(
-                    config,
-                    Icons.remove_circle_outline,
-                    color: config.colors.error,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ));
-
   // Init //
 
   Future<void> gatherRecent() async {
@@ -283,7 +243,15 @@ class _HomeScreenState extends State<HomeScreen> {
     gatherRecent();
   }
 
-  // Return the build //
+  // Define the build //
+
+  Widget toggle(EzCP config) => EzFlipFlop(
+        config,
+        init: developing,
+        onLabel: 'Developing',
+        offLabel: 'Contributing',
+        onChanged: flippityFloppity,
+      );
 
   Widget openButton(EzCP config) => developing
       ? EzTextIconButton(
@@ -296,17 +264,115 @@ class _HomeScreenState extends State<HomeScreen> {
           EzTextIconButton(
             config,
             label: 'Open GitHub repo',
+            textAlign: TextAlign.end,
             icon: EzIcon(config, Icons.search),
             onPressed: () async => await processURL(config, null),
           ),
           config.margin,
           EzTextField(
             controller: urlController,
+            textAlign: TextAlign.end,
             hintText: 'https://github.com/YWT-LLC/a11how/tree/main/lib/l10n',
-            constraints: ezTextFieldConstraints(context, prop: 0.667),
+            constraints: ezTextFieldConstraints(context, prop: 0.4),
             validator: validateUrl,
+            onFieldSubmitted: (String url) async => await processURL(config, url),
           ),
         ]);
+
+  List<Widget> displayRecent(EzCP config) => <Widget>[
+        // Title & options
+        EzRow(config, reverseHands: false, children: <Widget>[
+          EzText(
+            config,
+            text: 'Recent projects',
+            textAlign: TextAlign.start,
+            style: config.titleStyle,
+          ),
+          config.rowMargin,
+          EzIconTouch(
+            config,
+            enabled: recentProjects.isNotEmpty,
+            tooltip: 'Save config',
+            icon: Icons.download,
+            onPressed: () async {
+              try {
+                await FileSaver.instance.saveAs(
+                  name: 'a11how-projects.csv',
+                  bytes: utf8.encode(recentProjects.join(',')),
+                  mimeType: MimeType.csv,
+                );
+              } catch (e) {
+                (mounted)
+                    ? ezLogAlert(config, context: context, message: e.toString())
+                    : ezLog(e.toString());
+                return;
+              }
+            },
+          ),
+          EzIconTouch(
+            config,
+            tooltip: 'Upload config',
+            icon: Icons.upload,
+            onPressed: () async {
+              final PlatformFile? result = await FilePicker.pickFile(
+                type: FileType.custom,
+                allowedExtensions: <String>['csv', 'txt'],
+              );
+              if (result == null) return;
+
+              try {
+                final Uint8List fileBytes = await result.readAsBytes();
+                final String fileContent = utf8.decode(fileBytes);
+                recentProjects = fileContent.split(',');
+              } catch (e) {
+                (mounted)
+                    ? ezLogAlert(config, context: context, message: e.toString())
+                    : ezLog(e.toString());
+                return;
+              }
+            },
+          ),
+        ]),
+        EzSpacer(config.spacing / 2),
+
+        // Projects
+        ...recentProjects.map((String path) => Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: config.marginVal,
+                vertical: config.spacing / 2,
+              ),
+              child: EzScrollView(
+                config,
+                reverseHands: true,
+                thumbVisibility: false,
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  EzIconLink(
+                    config,
+                    icon: EzIcon(config, Icons.launch),
+                    label: path,
+                    textAlign: TextAlign.start,
+                    textColor: config.colors.onSurface,
+                    hint: config.ezL10n.gOpen,
+                    onTap: () async => await processPath(config, path),
+                  ),
+                  EzIconTouch(
+                    config,
+                    tooltip: config.ezL10n.gRemove,
+                    icon: Icons.remove_circle_outline,
+                    color: config.colors.error,
+                    onPressed: () async {
+                      recentProjects.remove(path);
+                      await EzCM.setStringList(recentProjectsKey, recentProjects);
+                      setState(() {});
+                    },
+                  ),
+                ],
+              ),
+            )),
+      ];
+
+  // Return the build //
 
   @override
   Widget build(BuildContext context) {
@@ -317,63 +383,32 @@ class _HomeScreenState extends State<HomeScreen> {
           config,
           child: EzSwapWidget(
             config,
-            animate: true, // TODO: fix
+            animate: true,
             mod: 0.667,
             restricted: EzScrollView(
               config,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                // Toggle
-                EzFlipFlop(
-                  config,
-                  init: developing,
-                  onLabel: 'Developing',
-                  offLabel: 'Contributing',
-                  onChanged: flippityFloppity,
-                ),
+                toggle(config),
                 config.spacer,
-
-                // Open new
                 openButton(config),
-
-                // Div
                 EzDivider(
                   height: config.spacing * 3,
                   width: widthOf(context) * 0.667,
                   color: config.colors.secondaryContainer,
                 ),
-
-                // Recent(s)
-                EzText(
-                  config,
-                  text: 'Recent projects',
-                  textAlign: TextAlign.start,
-                  style: config.titleStyle,
-                ),
-                EzSpacer(config.spacing / 2),
                 ...displayRecent(config),
               ],
             ),
             expanded: EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
-              // Toggle
-              EzFlipFlop(
-                config,
-                init: developing,
-                onLabel: 'Developing',
-                offLabel: 'Contributing',
-                onChanged: flippityFloppity,
-              ),
+              toggle(config),
               config.separator,
-
               EzScrollView(
                 config,
                 reverseHands: true,
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
-                  // Open new
                   openButton(config),
-
-                  // Div
                   SizedBox(
                     height: heightOf(context) * 0.667,
                     child: VerticalDivider(
@@ -381,22 +416,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: config.colors.secondaryContainer,
                     ),
                   ),
-
-                  // Recent(s)
                   if (recentProjects.isNotEmpty) ...<Widget>[
                     EzCol(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        EzText(
-                          config,
-                          text: 'Recent projects',
-                          textAlign: TextAlign.start,
-                          style: config.titleStyle,
-                        ),
-                        EzSpacer(config.spacing / 2),
-                        ...displayRecent(config),
-                      ],
+                      children: displayRecent(config),
                     ),
                   ],
                 ],
