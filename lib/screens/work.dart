@@ -28,7 +28,7 @@ class _WorkScreenState extends State<WorkScreen> {
 
   final MenuController highlightMC = MenuController();
   bool showEmpty = true;
-  bool showIdentical = false;
+  bool showIdentical = true;
 
   String filterString = '';
   FilterTarget filterTarget = FTargetCon.safeLookup(EzCM.get(workFilterTypeKey));
@@ -38,7 +38,6 @@ class _WorkScreenState extends State<WorkScreen> {
 
   bool caseSensitive = false;
 
-  bool keyChanges = false;
   bool saving = false;
 
   // Define custom functions //
@@ -344,16 +343,13 @@ class _WorkScreenState extends State<WorkScreen> {
                                         : config.colors.surface,
                                   ),
                                   child: EzTextField(
-                                    constraints: BoxConstraints.tightFor(width: editMax * 0.2),
+                                    constraints: BoxConstraints.tightFor(width: editMax * 0.15),
+                                    readOnly: true,
                                     hintText: row.key,
                                     initialValue: row.key,
                                     style: config.bodyStyle,
                                     textAlign: TextAlign.start,
-                                    onChanged: (String val) {
-                                      row.key = val;
-                                      keyChanges = true;
-                                    },
-                                    validator: validateField,
+                                    validator: (_) => null,
                                   ),
                                 ),
 
@@ -365,7 +361,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                         : config.colors.surface,
                                   ),
                                   child: EzTextField(
-                                    constraints: BoxConstraints.tightFor(width: editMax * 0.4),
+                                    constraints: BoxConstraints.tightFor(width: editMax * 0.425),
                                     hintText: row.truth,
                                     initialValue: row.truth,
                                     style: config.bodyStyle,
@@ -386,7 +382,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                             : config.colors.surface),
                                   ),
                                   child: EzTextField(
-                                    constraints: BoxConstraints.tightFor(width: editMax * 0.4),
+                                    constraints: BoxConstraints.tightFor(width: editMax * 0.425),
                                     hintText: row.compare,
                                     initialValue: row.compare,
                                     style: config.bodyStyle,
