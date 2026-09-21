@@ -26,14 +26,17 @@ class _WorkScreenState extends State<WorkScreen> {
 
   final List<WorkRow> workData = <WorkRow>[];
 
-  String filterString = '';
-  FilterType filterType = FTConfig.safeLookup(EzCM.get(workFilterTypeKey));
-  final MenuController filterMC = MenuController();
-  bool caseSensitive = false;
-
   final MenuController highlightMC = MenuController();
   bool showEmpty = true;
   bool showIdentical = false;
+
+  String filterString = '';
+  FilterTarget filterTarget = FTargetCon.safeLookup(EzCM.get(workFilterTypeKey));
+  final MenuController fTargetMC = MenuController();
+  FilterType filterType = FTypeCon.safeLookup(EzCM.get(workFilterTypeKey));
+  final MenuController fTypeMC = MenuController();
+
+  bool caseSensitive = false;
 
   bool keyChanges = false;
   bool saving = false;
@@ -261,14 +264,32 @@ class _WorkScreenState extends State<WorkScreen> {
                   Expanded(
                     child: EzTextField(
                       constraints: const BoxConstraints(),
-                      hintText: 'Filter (key)',
+                      hintText: 'Filter...\t>',
                       onChanged: (String entry) => setState(() => filterString = entry),
                       validator: (_) => null,
                     ),
                   ),
                   config.rowMargin,
                   MenuAnchor(
-                    controller: filterMC,
+                    controller: fTargetMC,
+                    menuChildren: FilterTarget.values
+                        .map((FilterTarget ft) => EzMenuButton(
+                              config,
+                              label: ft.name(config),
+                              textAlign: TextAlign.start,
+                              onPressed: () => setState(() => filterTarget = ft),
+                            ))
+                        .toList(),
+                    child: EzIconButton(
+                      config,
+                      tooltip: filterTarget.name(config),
+                      icon: filterTarget.icon(config),
+                      onPressed: () => toggleMenu(fTargetMC),
+                    ),
+                  ),
+                  config.rowMargin,
+                  MenuAnchor(
+                    controller: fTypeMC,
                     menuChildren: FilterType.values
                         .map((FilterType ft) => EzMenuButton(
                               config,
@@ -282,7 +303,7 @@ class _WorkScreenState extends State<WorkScreen> {
                       label: filterType.name(config),
                       textAlign: TextAlign.start,
                       icon: EzIcon(config, Icons.filter_list),
-                      onPressed: () => toggleMenu(filterMC),
+                      onPressed: () => toggleMenu(fTypeMC),
                     ),
                   ),
                   config.rowMargin,
@@ -300,7 +321,13 @@ class _WorkScreenState extends State<WorkScreen> {
                     config,
                     mainAxisSize: MainAxisSize.max,
                     children: workData
-                        .where((WorkRow row) => filterString.isEmpty ? true : checkFilter(row.key))
+                        .where((WorkRow row) => filterString.isEmpty
+                            ? true
+                            : checkFilter(switch (filterTarget) {
+                                FilterTarget.key => row.key,
+                                FilterTarget.truth => row.truth,
+                                FilterTarget.compare => row.compare,
+                              }))
                         .map((WorkRow row) => EzRow(
                               config,
                               key: ValueKey<String>(row.key),
