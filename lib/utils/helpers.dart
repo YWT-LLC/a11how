@@ -26,13 +26,13 @@ Future<void> writeSortedJson(EzCP config, {required File file, required ARBFile 
     await file.writeAsString(_encoder.convert(sortedMap));
   } catch (e) {
     if (ezRootIsMounted) {
-      unawaited(ezLogAlert(
+      ezLogAlert(
         config,
         // Handled above, dart doesn't realize though
         // ignore: use_build_context_synchronously
         context: ezRootContext,
         message: 'Failed to write to ${arb.path}:\n$e',
-      ));
+      );
     }
   }
 }
