@@ -251,7 +251,7 @@ class _WorkScreenState extends State<WorkScreen> {
               onFieldSubmitted: (String pat) => Navigator.of(dCon).pop(pat.trim()),
               validator: (_) => null,
             ),
-            config.separator,
+            config.spacer,
             EzLink(
               config,
               text: "What's a PAT?",
