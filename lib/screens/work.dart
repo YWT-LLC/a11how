@@ -264,7 +264,7 @@ class _WorkScreenState extends State<WorkScreen> {
                   Expanded(
                     child: EzTextField(
                       constraints: const BoxConstraints(),
-                      hintText: 'Filter...\t>',
+                      hintText: 'Filter...\t>>',
                       onChanged: (String entry) => setState(() => filterString = entry),
                       validator: (_) => null,
                     ),
@@ -276,6 +276,7 @@ class _WorkScreenState extends State<WorkScreen> {
                         .map((FilterTarget ft) => EzMenuButton(
                               config,
                               label: ft.name(config),
+                              icon: ft.icon(config),
                               textAlign: TextAlign.start,
                               onPressed: () => setState(() => filterTarget = ft),
                             ))
