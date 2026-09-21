@@ -298,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
             config,
             enabled: (developing ? recentDirs : recentUrls).isNotEmpty,
             tooltip: 'Save config',
-            icon: Icons.download,
+            icon: Icons.save,
             onPressed: () async {
               try {
                 await FileSaver.instance.saveAs(
