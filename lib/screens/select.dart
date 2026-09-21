@@ -878,23 +878,25 @@ class _AddLocaleAction extends HybridAction {
                 builder: (BuildContext mCon, StateSetter setModal) =>
                     EzCol(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   // Source
-                  EzDropdownMenu<String>(
-                    config,
-                    label: 'Source locale',
-                    initialSelection: sourceCode,
-                    dropdownMenuEntries: workDir.files
-                        .map((ARBFile arb) => DropdownMenuEntry<String>(
-                              label: arb.localeCode,
-                              value: arb.localeCode,
-                            ))
-                        .toList(),
-                    widthEntry: 'en_US_BB',
-                    onSelected: (String? choice) {
-                      if (choice == null) return;
-                      setModal(() => sourceCode = choice);
-                    },
-                  ),
-                  config.margin,
+                  if (workDir.local) ...<Widget>[
+                    EzDropdownMenu<String>(
+                      config,
+                      label: 'Source locale',
+                      initialSelection: sourceCode,
+                      dropdownMenuEntries: workDir.files
+                          .map((ARBFile arb) => DropdownMenuEntry<String>(
+                                label: arb.localeCode,
+                                value: arb.localeCode,
+                              ))
+                          .toList(),
+                      widthEntry: 'en_US_BB',
+                      onSelected: (String? choice) {
+                        if (choice == null) return;
+                        setModal(() => sourceCode = choice);
+                      },
+                    ),
+                    config.margin,
+                  ],
 
                   // Destination
                   EzRow(config, children: <Widget>[
@@ -912,105 +914,107 @@ class _AddLocaleAction extends HybridAction {
                   ]),
                   config.separator,
 
-                  // Service
-                  EzRow(config, children: <Widget>[
-                    EzDropdownMenu<TranslationService>(
-                      config,
-                      label: 'Choose service',
-                      initialSelection: service,
-                      dropdownMenuEntries: TranslationService.values
-                          .map((TranslationService ts) => DropdownMenuEntry<TranslationService>(
-                                label: ts.name(config),
-                                value: ts,
-                              ))
-                          .toList(),
-                      widthEntry: 'en_US_BB',
-                      onSelected: (TranslationService? choice) {
-                        if (choice == null) return;
-                        setModal(() => service = choice);
-                      },
-                    ),
-                    service.twoCents(config),
-                  ]),
-                  config.margin,
-                  EzTextIconButton(
-                    config,
-                    label: 'Copy prompt',
-                    icon: EzIcon(config, Icons.copy),
-                    onPressed: sourceCode == null
-                        ? null
-                        : () async {
-                            if (sourceCode == null || validateDest(destController.text) != null) {
-                              ezSnackBar(
-                                config,
-                                context: mCon,
-                                message: 'Please complete the form',
-                              );
-                              return;
-                            }
-                            final ARBFile sourceFile = workDir.files
-                                .firstWhere((ARBFile arb) => arb.localeCode == sourceCode);
-
-                            final String jsonString =
-                                const JsonEncoder.withIndent('  ').convert(sourceFile.entries);
-
-                            await Clipboard.setData(ClipboardData(
-                              text: service.prompt(
-                                source: sourceCode!,
-                                dest: destController.text,
-                                json: jsonString,
-                              ),
-                            ));
-
-                            if (service.human) {
-                              final Map<String, dynamic> blankEntries = <String, dynamic>{};
-
-                              for (final MapEntry<String, dynamic> entry
-                                  in sourceFile.entries.entries) {
-                                blankEntries[entry.key] =
-                                    entry.key.startsWith('@') ? destController.text : '';
-                              }
-
-                              final String blankJson =
-                                  const JsonEncoder.withIndent('  ').convert(blankEntries);
-
-                              final Archive archive = Archive()
-                                ..addFile(ArchiveFile(
-                                  '$sourceCode.arb',
-                                  jsonString.length,
-                                  utf8.encode(jsonString),
+                  if (workDir.local) ...<Widget>[
+                    // Service
+                    EzRow(config, children: <Widget>[
+                      EzDropdownMenu<TranslationService>(
+                        config,
+                        label: 'Choose service',
+                        initialSelection: service,
+                        dropdownMenuEntries: TranslationService.values
+                            .map((TranslationService ts) => DropdownMenuEntry<TranslationService>(
+                                  label: ts.name(config),
+                                  value: ts,
                                 ))
-                                ..addFile(ArchiveFile(
-                                  '${destController.text}.arb',
-                                  blankJson.length,
-                                  utf8.encode(blankJson),
-                                ));
+                            .toList(),
+                        widthEntry: 'en_US_BB',
+                        onSelected: (TranslationService? choice) {
+                          if (choice == null) return;
+                          setModal(() => service = choice);
+                        },
+                      ),
+                      service.twoCents(config),
+                    ]),
+                    config.margin,
+                    EzTextIconButton(
+                      config,
+                      label: 'Copy prompt',
+                      icon: EzIcon(config, Icons.copy),
+                      onPressed: sourceCode == null
+                          ? null
+                          : () async {
+                              if (sourceCode == null || validateDest(destController.text) != null) {
+                                ezSnackBar(
+                                  config,
+                                  context: mCon,
+                                  message: 'Please complete the form',
+                                );
+                                return;
+                              }
+                              final ARBFile sourceFile = workDir.files
+                                  .firstWhere((ARBFile arb) => arb.localeCode == sourceCode);
 
-                              final List<int> zipData = ZipEncoder().encode(archive);
+                              final String jsonString =
+                                  const JsonEncoder.withIndent('  ').convert(sourceFile.entries);
 
-                              Directory? outDir = await getDownloadsDirectory();
-                              outDir ??= await getApplicationDocumentsDirectory();
-                              final String zipPath =
-                                  p.join(outDir.path, '${service.name(config)}_gig.zip');
+                              await Clipboard.setData(ClipboardData(
+                                text: service.prompt(
+                                  source: sourceCode!,
+                                  dest: destController.text,
+                                  json: jsonString,
+                                ),
+                              ));
 
-                              try {
-                                final File zipFile = File(zipPath);
-                                await zipFile.writeAsBytes(zipData);
-                              } catch (e) {
-                                if (context.mounted) {
-                                  ezSnackBar(
-                                    config,
-                                    context: mCon,
-                                    message: 'Failed to create zip: $e',
-                                  );
+                              if (service.human) {
+                                final Map<String, dynamic> blankEntries = <String, dynamic>{};
+
+                                for (final MapEntry<String, dynamic> entry
+                                    in sourceFile.entries.entries) {
+                                  blankEntries[entry.key] =
+                                      entry.key.startsWith('@') ? destController.text : '';
+                                }
+
+                                final String blankJson =
+                                    const JsonEncoder.withIndent('  ').convert(blankEntries);
+
+                                final Archive archive = Archive()
+                                  ..addFile(ArchiveFile(
+                                    '$sourceCode.arb',
+                                    jsonString.length,
+                                    utf8.encode(jsonString),
+                                  ))
+                                  ..addFile(ArchiveFile(
+                                    '${destController.text}.arb',
+                                    blankJson.length,
+                                    utf8.encode(blankJson),
+                                  ));
+
+                                final List<int> zipData = ZipEncoder().encode(archive);
+
+                                Directory? outDir = await getDownloadsDirectory();
+                                outDir ??= await getApplicationDocumentsDirectory();
+                                final String zipPath =
+                                    p.join(outDir.path, '${service.name(config)}_gig.zip');
+
+                                try {
+                                  final File zipFile = File(zipPath);
+                                  await zipFile.writeAsBytes(zipData);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ezSnackBar(
+                                      config,
+                                      context: mCon,
+                                      message: 'Failed to create zip: $e',
+                                    );
+                                  }
                                 }
                               }
-                            }
 
-                            await launchUrl(service.url);
-                          },
-                  ),
-                  config.divider,
+                              await launchUrl(service.url);
+                            },
+                    ),
+                    config.divider,
+                  ],
 
                   // Value/Field
                   Expanded(
