@@ -29,9 +29,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Define the build data //
 
-  bool developing = EzCM.get(developingKey) ?? false;
-  late String recentProjectsKey = developing ? recentProjectDirKey : recentProjectUrlKey;
-  List<String> recentProjects = <String>[];
+  bool developing = false;
+  List<String> recentDirs = <String>[];
+  List<String> recentUrls = <String>[];
 
   TextEditingController urlController = TextEditingController();
 
@@ -40,10 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> flippityFloppity(bool choice) async {
     developing = choice;
     await EzCM.setBool(developingKey, choice);
-
-    recentProjectsKey = choice ? recentProjectDirKey : recentProjectUrlKey;
-    recentProjects = await EzCM.getStringList(recentProjectsKey) ?? <String>[];
-
     setState(() {});
   }
 
@@ -83,10 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       if (loadedFiles.isNotEmpty) {
+        final List<String> recentProjects = developing ? recentDirs : recentUrls;
         recentProjects.remove(selectedDirectory);
         recentProjects.insert(0, selectedDirectory);
 
-        await EzCM.setStringList(recentProjectsKey, recentProjects);
+        await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
 
         if (mounted) {
           context.goNamed(
@@ -103,8 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
         if (preSelected != null) {
+          final List<String> recentProjects = developing ? recentDirs : recentUrls;
           recentProjects.remove(preSelected);
-          await EzCM.setStringList(recentProjectsKey, recentProjects);
+          await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
         }
       }
     });
@@ -202,10 +200,12 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       if (loadedFiles.isNotEmpty) {
+        final List<String> recentProjects = developing ? recentDirs : recentUrls;
+
         recentProjects.remove(url);
         recentProjects.insert(0, url);
 
-        await EzCM.setStringList(recentProjectsKey, recentProjects);
+        await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
 
         if (mounted) {
           context.goNamed(
@@ -222,8 +222,9 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
         if (preSelected != null) {
+          final List<String> recentProjects = developing ? recentDirs : recentUrls;
           recentProjects.remove(preSelected);
-          await EzCM.setStringList(recentProjectsKey, recentProjects);
+          await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
         }
       }
     });
@@ -233,8 +234,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // Init //
 
   Future<void> gatherRecent() async {
-    recentProjects = await EzCM.getStringList(recentProjectsKey) ?? <String>[];
-    if (recentProjects.isNotEmpty) setState(() {});
+    developing = await EzCM.getBool(developingKey) ?? false;
+    recentDirs = await EzCM.getStringList(recentDirsKey) ?? <String>[];
+    recentUrls = await EzCM.getStringList(recentUrlsKey) ?? <String>[];
+    setState(() {});
   }
 
   @override
@@ -292,14 +295,14 @@ class _HomeScreenState extends State<HomeScreen> {
           config.rowMargin,
           EzIconTouch(
             config,
-            enabled: recentProjects.isNotEmpty,
+            enabled: (developing ? recentDirs : recentUrls).isNotEmpty,
             tooltip: 'Save config',
             icon: Icons.download,
             onPressed: () async {
               try {
                 await FileSaver.instance.saveAs(
                   name: 'a11how-${developing ? 'directories' : 'links'}.csv',
-                  bytes: utf8.encode(recentProjects.join(',')),
+                  bytes: utf8.encode((developing ? recentDirs : recentUrls).join(',')),
                   mimeType: MimeType.csv,
                 );
               } catch (e) {
@@ -325,8 +328,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 final Uint8List fileBytes = await result.readAsBytes();
                 final String fileContent = utf8.decode(fileBytes);
 
-                recentProjects = fileContent.split(',');
-                await EzCM.setStringList(recentProjectsKey, recentProjects);
+                if (developing) {
+                  final List<String> newDirs = fileContent.split(',');
+                  await EzCM.setStringList(recentDirsKey, newDirs);
+                  recentDirs = newDirs;
+                } else {
+                  final List<String> newUrls = fileContent.split(',');
+                  await EzCM.setStringList(recentUrlsKey, newUrls);
+                  recentUrls = newUrls;
+                }
 
                 setState(() {});
               } catch (e) {
@@ -341,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
         EzSpacer(config.spacing / 2),
 
         // Projects
-        ...recentProjects.map((String path) => Padding(
+        ...(developing ? recentDirs : recentUrls).map((String path) => Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: config.marginVal,
                 vertical: config.spacing / 2,
@@ -367,8 +377,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.remove_circle_outline,
                     color: config.colors.error,
                     onPressed: () async {
+                      final List<String> recentProjects = developing ? recentDirs : recentUrls;
                       recentProjects.remove(path);
-                      await EzCM.setStringList(recentProjectsKey, recentProjects);
+                      await EzCM.setStringList(
+                          developing ? recentDirsKey : recentUrlsKey, recentProjects);
                       setState(() {});
                     },
                   ),
