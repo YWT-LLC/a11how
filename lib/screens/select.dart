@@ -118,7 +118,7 @@ class _SelectScreenState extends State<SelectScreen> {
   void initState() {
     super.initState();
     if (!widget.workDir.local) {
-      truth = widget.workDir.files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US');
+      truth = files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US');
       setState(() {});
     }
   }
@@ -274,6 +274,19 @@ class _SelectScreenState extends State<SelectScreen> {
                   ]
                 : <HybridAction>[
                     if (widget.workDir.local) ...<HybridAction>[
+                      // Save all
+                      HybridAction(
+                        label: 'Save all',
+                        icon: Icons.save,
+                        onPressed: () async => await ezNoTouch(() async {
+                          for (final ARBFile arb in files) {
+                            await writeSortedJson(config, file: File(arb.path), arb: arb);
+                          }
+                        }).whenComplete(() => context.mounted
+                            ? ezSnackBar(config, context: context, message: 'All done!')
+                            : doNothing()),
+                      ),
+
                       // Add entries
                       _AddEntryAction(
                         config,
