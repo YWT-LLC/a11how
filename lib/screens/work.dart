@@ -8,6 +8,8 @@ import '../widgets/export.dart';
 
 import 'dart:io';
 import 'dart:math';
+import 'dart:convert';
+import 'package:http/http.dart';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -74,7 +76,7 @@ class _WorkScreenState extends State<WorkScreen> {
     }
 
     // Save Truth
-    if (!selfCompare) {
+    if (!selfCompare && widget.workPair.truth.local) {
       try {
         final File file = File(widget.workPair.truth.path);
         widget.workPair.truth.entries
@@ -88,20 +90,185 @@ class _WorkScreenState extends State<WorkScreen> {
     }
 
     // Save Compare
-    try {
-      final File file = File(widget.workPair.compare.path);
-      widget.workPair.compare.entries
-        ..clear()
-        ..addAll(updatedCompare);
+    if (widget.workPair.truth.local) {
+      try {
+        final File file = File(widget.workPair.compare.path);
+        widget.workPair.compare.entries
+          ..clear()
+          ..addAll(updatedCompare);
 
-      await writeSortedJson(config, file: file, arb: widget.workPair.compare);
-      if (mounted) ezSnackBar(config, context: context, message: 'Success!');
-    } catch (e) {
-      if (mounted) ezSnackBar(config, context: context, message: 'Failure saving compare: $e');
+        await writeSortedJson(config, file: file, arb: widget.workPair.compare);
+        if (mounted) ezSnackBar(config, context: context, message: 'Success!');
+      } catch (e) {
+        if (mounted) ezSnackBar(config, context: context, message: 'Failure saving compare: $e');
+      }
+    } else {
+      await _openPR(config, updatedCompare);
     }
 
     if (mounted) setState(() => saving = false);
   }
+
+  Future<void> _openPR(EzCP config, Map<String, dynamic> updatedCompare) async {
+    final String? token = await _getPAT(config);
+    if (token == null || token.isEmpty) {
+      if (mounted) {
+        ezSnackBar(config, context: context, message: 'Git PAT required to submit changes.');
+      }
+      return;
+    }
+
+    // Parse Url
+    final Uri url = Uri.parse(widget.workPair.compare.path);
+    final List<String> segments = url.pathSegments;
+
+    final String owner = segments[0];
+    final String repo = segments[1];
+    final String branch = segments[3];
+    final String filePath = segments.sublist(4).join('/');
+
+    // Build the request
+    final Map<String, String> headers = <String, String>{
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/vnd.github.v3+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    };
+
+    try {
+      // Get user info
+      final Response userRes = await get(
+        Uri.parse('https://api.github.com/user'),
+        headers: headers,
+      );
+      if (userRes.statusCode != 200) throw Exception('Authentication failed.');
+      final String forkOwner = jsonDecode(userRes.body)['login'];
+
+      // Make fork
+      final Response forkRes = await post(
+        Uri.parse('https://api.github.com/repos/$owner/$repo/forks'),
+        headers: headers,
+      );
+      if (forkRes.statusCode != 202 && forkRes.statusCode != 200) {
+        throw Exception('Failed to create fork.');
+      }
+
+      // Wait a bit
+      await wait(3);
+
+      // SHA-tay
+      final Response fileRes = await get(
+        Uri.parse('https://api.github.com/repos/$forkOwner/$repo/contents/$filePath?ref=$branch'),
+        headers: headers,
+      );
+
+      String? sha;
+      if (fileRes.statusCode == 200) {
+        sha = jsonDecode(fileRes.body)['sha'];
+      } else if (fileRes.statusCode != 404) {
+        throw Exception('Failed to fetch file status.');
+      }
+
+      // Commit changes
+      final List<String> sortedKeys = updatedCompare.keys.toList()
+        ..remove('@@locale')
+        ..sort();
+
+      final Map<String, dynamic> sortedMap = <String, dynamic>{
+        '@@locale': widget.workPair.compare.localeCode
+      };
+      for (final String key in sortedKeys) {
+        sortedMap[key] = updatedCompare[key];
+      }
+
+      final String newContent = base64Encode(utf8.encode(a11howEncoder.convert(sortedMap)));
+      final Response updateRes = await put(
+        Uri.parse('https://api.github.com/repos/$forkOwner/$repo/contents/$filePath'),
+        headers: headers,
+        body: jsonEncode(<String, String>{
+          'message': 'Update localization for $filePath',
+          'content': newContent,
+          'branch': branch,
+          if (sha != null) 'sha': sha,
+        }),
+      );
+
+      if (updateRes.statusCode != 200 && updateRes.statusCode != 201) {
+        throw Exception('Failed to commit changes: ${updateRes.body}');
+      }
+
+      // Open PR
+      final Response prRes = await post(
+        Uri.parse('https://api.github.com/repos/$owner/$repo/pulls'),
+        headers: headers,
+        body: jsonEncode({
+          'title': 'Localization update: $filePath',
+          'head': '$forkOwner:$branch',
+          'base': branch,
+          'body': 'Submitted via a11how.',
+        }),
+      );
+
+      if (prRes.statusCode == 201) {
+        if (mounted) {
+          ezSnackBar(config, context: context, message: 'PR opened!');
+        }
+      } else {
+        // HTTP 422 usually means a PR for this branch already exists.
+        final String errorMsg = jsonDecode(prRes.body)['errors']?[0]?['message'] ?? prRes.body;
+        throw Exception(prRes.statusCode == 422
+            ? 'PR might already exist: $errorMsg'
+            : 'Failed to open PR: $errorMsg');
+      }
+    } catch (e) {
+      if (mounted) ezSnackBar(config, context: context, message: 'GitHub Error: $e');
+    }
+  }
+
+  Future<String?> _getPAT(EzCP config) async => await showDialog<String?>(
+      context: context,
+      builder: (BuildContext dCon) {
+        final TextEditingController patController = TextEditingController();
+
+        return EzAlertDialog(
+          config,
+          title: const Text('Enter PAT', textAlign: TextAlign.center),
+          contents: <Widget>[
+            const Text(
+              'This is not saved anywhere. It disappears as soon as the function finishes.',
+              textAlign: TextAlign.center,
+            ),
+            EzLink(
+              config,
+              text: 'Source code',
+              hint: 'Open repo',
+              url: Uri.parse('https://github.com/YWT-LLC/a11how/blob/main/lib/screens/work.dart'),
+            ),
+            config.spacer,
+            EzTextField(
+              constraints: ezTextFieldConstraints(dCon),
+              hintText: 'Personal Access Token',
+              controller: patController,
+              onFieldSubmitted: (String pat) => Navigator.of(dCon).pop(pat.trim()),
+              validator: (_) => null,
+            ),
+            config.separator,
+            EzLink(
+              config,
+              text: "What's a PAT?",
+              hint: 'Open documentation',
+              url: Uri.parse(
+                  'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens'),
+            ),
+          ],
+          actions: <EzAction>[
+            EzAction(
+              config,
+              text: 'Submit',
+              onPressed: () => Navigator.of(dCon).pop(patController.text.trim()),
+            )
+          ],
+        );
+      });
 
   // Define custom Widgets //
 
@@ -409,7 +576,8 @@ class _WorkScreenState extends State<WorkScreen> {
             HybridAction(
               icon: saving ? Icons.timer : Icons.save,
               label: config.ezL10n.gSave,
-              onPressed: () => saving ? doNothing() : save(config),
+              onPressed: () async =>
+                  saving ? doNothing() : await ezNoTouch(() async => await save(config)),
             ),
           ],
         );
