@@ -25,10 +25,11 @@ class _WorkScreenState extends State<WorkScreen> {
   // Define the build data //
 
   final List<WorkRow> workData = <WorkRow>[];
+  late final bool selfCompare = widget.workPair.truth == widget.workPair.compare;
 
   final MenuController highlightMC = MenuController();
   bool showEmpty = true;
-  bool showIdentical = true;
+  late bool showIdentical = !selfCompare;
 
   String filterString = '';
   FilterTarget filterTarget = FTargetCon.safeLookup(EzCM.get(workFilterTypeKey));
@@ -73,15 +74,17 @@ class _WorkScreenState extends State<WorkScreen> {
     }
 
     // Save Truth
-    try {
-      final File file = File(widget.workPair.truth.path);
-      widget.workPair.truth.entries
-        ..clear()
-        ..addAll(updatedTruth);
+    if (!selfCompare) {
+      try {
+        final File file = File(widget.workPair.truth.path);
+        widget.workPair.truth.entries
+          ..clear()
+          ..addAll(updatedTruth);
 
-      await writeSortedJson(config, file: file, arb: widget.workPair.truth);
-    } catch (e) {
-      if (mounted) ezSnackBar(config, context: context, message: 'Failure saving truth: $e');
+        await writeSortedJson(config, file: file, arb: widget.workPair.truth);
+      } catch (e) {
+        if (mounted) ezSnackBar(config, context: context, message: 'Failure saving truth: $e');
+      }
     }
 
     // Save Compare
@@ -340,7 +343,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                   decoration: BoxDecoration(
                                     color: (showEmpty && row.key.isEmpty)
                                         ? config.colors.secondary.withValues(alpha: focusOpacity)
-                                        : config.colors.surface,
+                                        : config.colors.surfaceContainer,
                                   ),
                                   child: EzTextField(
                                     constraints: BoxConstraints.tightFor(width: editMax * 0.15),
@@ -358,10 +361,13 @@ class _WorkScreenState extends State<WorkScreen> {
                                   decoration: BoxDecoration(
                                     color: (showEmpty && row.key.isEmpty)
                                         ? config.colors.secondary.withValues(alpha: focusOpacity)
-                                        : config.colors.surface,
+                                        : (selfCompare
+                                            ? config.colors.surfaceContainer
+                                            : config.colors.surface),
                                   ),
                                   child: EzTextField(
                                     constraints: BoxConstraints.tightFor(width: editMax * 0.425),
+                                    readOnly: selfCompare,
                                     hintText: row.truth,
                                     initialValue: row.truth,
                                     style: config.bodyStyle,
