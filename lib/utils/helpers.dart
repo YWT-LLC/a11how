@@ -10,20 +10,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
 
-const JsonEncoder _encoder = JsonEncoder.withIndent('\t');
+const JsonEncoder a11howEncoder = JsonEncoder.withIndent('  ');
 
 Future<void> writeSortedJson(EzCP config, {required File file, required ARBFile arb}) async {
   try {
-    final List<String> keys = arb.entries.keys.toList()
+    final List<String> sortedKeys = arb.entries.keys.toList()
       ..remove('@@locale')
       ..sort();
 
     final Map<String, dynamic> sortedMap = <String, dynamic>{'@@locale': arb.localeCode};
-    for (final String key in keys) {
+    for (final String key in sortedKeys) {
       sortedMap[key] = arb.entries[key];
     }
 
-    await file.writeAsString(_encoder.convert(sortedMap));
+    await file.writeAsString(a11howEncoder.convert(sortedMap));
   } catch (e) {
     if (ezRootIsMounted) {
       ezLogAlert(
