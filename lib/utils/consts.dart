@@ -16,8 +16,8 @@ const String appName = 'a11how';
 const String androidPackage = 'llc.ywt.a11how';
 
 const String developingKey = 'developing';
-const String recentProjectUrlKey = 'recentProjectUrl';
-const String recentProjectDirKey = 'recentProjectDir';
+const String recentDirsKey = 'recentDirs';
+const String recentUrlsKey = 'recentUrls';
 
 const String removeKeyFilterTypeKey = 'removeKeyFilterType';
 const String workFilterTypeKey = 'workFilterType';
@@ -25,8 +25,8 @@ const String workFilterTypeKey = 'workFilterType';
 final Map<String, Object> a11HowMobile = <String, Object>{
   ...ywtMobileConfig,
   developingKey: false,
-  recentProjectUrlKey: <String>[],
-  recentProjectDirKey: <String>[],
+  recentDirsKey: <String>[],
+  recentUrlsKey: <String>[],
   removeKeyFilterTypeKey: FilterType.contains.value,
   workFilterTypeKey: FilterType.startsWith.value,
 };
@@ -34,8 +34,8 @@ final Map<String, Object> a11HowMobile = <String, Object>{
 final Map<String, Object> a11HowDesktop = <String, Object>{
   ...ywtDesktopConfig,
   developingKey: false,
-  recentProjectUrlKey: <String>[],
-  recentProjectDirKey: <String>[],
+  recentDirsKey: <String>[],
+  recentUrlsKey: <String>[],
   removeKeyFilterTypeKey: FilterType.contains.value,
   workFilterTypeKey: FilterType.startsWith.value,
 };
