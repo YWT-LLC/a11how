@@ -251,6 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget toggle(EzCP config) => EzFlipFlop(
         config,
+        key: ValueKey<bool>(developing),
         init: developing,
         onLabel: 'Developing',
         offLabel: 'Contributing',
@@ -265,14 +266,6 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () async => await processPath(config, null),
         )
       : EzCol(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
-          EzTextIconButton(
-            config,
-            label: 'Open GitHub repo',
-            textAlign: TextAlign.end,
-            icon: EzIcon(config, Icons.search),
-            onPressed: () async => await processURL(config, null),
-          ),
-          config.margin,
           EzTextField(
             controller: urlController,
             textAlign: TextAlign.end,
@@ -280,6 +273,14 @@ class _HomeScreenState extends State<HomeScreen> {
             constraints: ezTextFieldConstraints(context, prop: 0.4),
             validator: validateUrl,
             onFieldSubmitted: (String url) async => await processURL(config, url),
+          ),
+          config.margin,
+          EzTextIconButton(
+            config,
+            label: 'Open GitHub repo',
+            textAlign: TextAlign.end,
+            icon: EzIcon(config, Icons.folder_open),
+            onPressed: () async => await processURL(config, null),
           ),
         ]);
 
