@@ -11,21 +11,25 @@ import 'package:go_router/go_router.dart';
 
 class ARBDir {
   final String path;
+  final bool local;
   final List<ARBFile> files;
 
   ARBDir({
     required this.path,
+    required this.local,
     required this.files,
   });
 }
 
 class ARBFile {
   final String path;
+  final bool local;
   final String localeCode;
   final Map<String, dynamic> entries;
 
   ARBFile({
     required this.path,
+    required this.local,
     required this.localeCode,
     required this.entries,
   });

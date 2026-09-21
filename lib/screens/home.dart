@@ -68,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               loadedFiles.add(ARBFile(
                 path: entity.path,
+                local: developing,
                 localeCode: locale,
                 entries: json,
               ));
@@ -88,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (mounted) {
           context.goNamed(
             selectPath,
-            extra: ARBDir(path: selectedDirectory, files: loadedFiles),
+            extra: ARBDir(path: selectedDirectory, local: developing, files: loadedFiles),
           );
         }
       } else {
@@ -183,6 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   loadedFiles.add(ARBFile(
                     path: item['html_url'],
+                    local: developing,
                     localeCode: locale,
                     entries: json,
                   ));
@@ -210,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (mounted) {
           context.goNamed(
             selectPath,
-            extra: ARBDir(path: url, files: loadedFiles),
+            extra: ARBDir(path: url, local: developing, files: loadedFiles),
           );
         }
       } else {

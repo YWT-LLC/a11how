@@ -1046,6 +1046,7 @@ class _AddLocaleAction extends HybridAction {
                           file: File(newPath),
                           arb: ARBFile(
                             path: newPath,
+                            local: workDir.local,
                             localeCode: destController.text,
                             entries: jsonDecode(arbController.text),
                           ),
