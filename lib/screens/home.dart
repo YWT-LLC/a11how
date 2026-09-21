@@ -399,32 +399,30 @@ class _HomeScreenState extends State<HomeScreen> {
         config,
         body: EzScreen(
           config,
+          alignment: Alignment.topCenter,
           child: EzSwapWidget(
             config,
             animate: true,
             mod: 0.667,
-            restricted: EzScrollView(
-              config,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                toggle(config),
-                config.spacer,
-                openButton(config),
-                EzDivider(
-                  height: config.spacing * 3,
-                  width: widthOf(context) * 0.667,
-                  color: config.colors.secondaryContainer,
-                ),
-                ...displayRecent(config),
-              ],
-            ),
-            expanded: EzScrollView(config, mainAxisSize: MainAxisSize.max, children: <Widget>[
+            restricted: EzScrollView(config, children: <Widget>[
+              toggle(config),
+              config.spacer,
+              openButton(config),
+              EzDivider(
+                height: config.spacing * 3,
+                width: widthOf(context) * 0.667,
+                color: config.colors.secondaryContainer,
+              ),
+              ...displayRecent(config),
+            ]),
+            expanded: EzScrollView(config, children: <Widget>[
               toggle(config),
               config.separator,
               EzScrollView(
                 config,
                 reverseHands: true,
                 scrollDirection: Axis.horizontal,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   openButton(config),
                   SizedBox(
