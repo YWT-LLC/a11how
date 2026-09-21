@@ -277,13 +277,20 @@ class _HomeScreenState extends State<HomeScreen> {
             onFieldSubmitted: (String url) async => await processUrl(config, url),
           ),
           config.margin,
-          EzTextIconButton(
-            config,
-            label: 'Open GitHub repo',
-            textAlign: TextAlign.end,
-            icon: EzIcon(config, Icons.folder_open),
-            onPressed: () async => await processUrl(config, null),
-          ),
+          EzRow(config, children: <Widget>[
+            EzTextIconButton(
+              config,
+              label: 'Open GitHub repo',
+              textAlign: TextAlign.end,
+              icon: EzIcon(config, Icons.folder_open),
+              onPressed: () async => await processUrl(config, null),
+            ),
+            EzToolTipper(
+              config,
+              message:
+                  'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how',
+            )
+          ]),
         ]);
 
   List<Widget> displayRecent(EzCP config) => <Widget>[
