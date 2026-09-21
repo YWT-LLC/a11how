@@ -112,6 +112,17 @@ class _SelectScreenState extends State<SelectScreen> {
               ),
       );
 
+  // Init //
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.workDir.local) {
+      truth = widget.workDir.files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US');
+      setState(() {});
+    }
+  }
+
   // Return the build //
 
   @override
@@ -295,7 +306,7 @@ class _SelectScreenState extends State<SelectScreen> {
                     ),
 
                     // Undo select
-                    if (truth != null)
+                    if (widget.workDir.local && truth != null)
                       HybridAction(
                         label: 'Undo select',
                         icon: Icons.undo,
