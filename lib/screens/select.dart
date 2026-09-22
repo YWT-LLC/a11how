@@ -33,6 +33,7 @@ class _SelectScreenState extends State<SelectScreen> {
   // Define the build data //
 
   late final List<ARBFile> files = widget.workDir.files;
+  late final bool local = widget.workDir.local;
 
   bool wrap = true;
   String filter = '';
@@ -81,11 +82,19 @@ class _SelectScreenState extends State<SelectScreen> {
                               padding: EzInsets.wrap(config.spacing),
                               child: MouseRegion(
                                 onHover: (_) => hoverOption(arb),
-                                child: EzElevatedButton(
+                                child: EzElevatedIconButton(
                                   config,
-                                  text: (arb.localeCode == truth?.localeCode)
+                                  label: (arb.localeCode == truth?.localeCode)
                                       ? 'Self'
                                       : arb.localeCode,
+                                  icon: Text(
+                                    local
+                                        ? arb.entries.length.toString()
+                                        : ezLocaleName(ezLocale(arb.localeCode), context),
+                                    style: config.labelStyle?.copyWith(
+                                      color: config.colors.outline,
+                                    ),
+                                  ),
                                   onPressed: () async => await chooseOption(config, arb),
                                 ),
                               ),
@@ -118,7 +127,7 @@ class _SelectScreenState extends State<SelectScreen> {
   @override
   void initState() {
     super.initState();
-    if (!widget.workDir.local) {
+    if (!local) {
       truth = files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US');
       setState(() {});
     }
@@ -274,7 +283,7 @@ class _SelectScreenState extends State<SelectScreen> {
                     ),
                   ]
                 : <HybridAction>[
-                    if (widget.workDir.local) ...<HybridAction>[
+                    if (local) ...<HybridAction>[
                       // Save all
                       HybridAction(
                         label: 'Save all',
@@ -314,7 +323,7 @@ class _SelectScreenState extends State<SelectScreen> {
                       truth: truth,
                     ),
 
-                    if (widget.workDir.local) ...<HybridAction>[
+                    if (local) ...<HybridAction>[
                       // Start removing locales
                       HybridAction(
                         label: 'Remove locale(s)',
@@ -1076,13 +1085,13 @@ class _AddLocaleAction extends HybridAction {
                         );
 
                         // Save
-                        if (workDir.files.first.local) {
+                        if (workDir.local) {
                           await writeSortedJson(
                             config,
                             file: File(newPath),
                             arb: ARBFile(
                               path: newPath,
-                              local: workDir.local,
+                              local: true,
                               localeCode: destController.text,
                               entries: jsonDecode(arbController.text),
                             ),
