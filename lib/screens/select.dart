@@ -495,7 +495,15 @@ class _AddEntryAction extends HybridAction {
                                     file: adding!,
                                     entries: jsonDecode(textToParse),
                                   );
-                                  if (completed.isEmpty) previewTruth = toAdd;
+                                  if (completed.isEmpty) {
+                                    previewTruth = toAdd;
+                                  }
+                                  if (previewCompare == toAdd.file) {
+                                    previewCompare = workDir.files.firstWhere((ARBFile arb) =>
+                                        !completed
+                                            .map((_AddCache cache) => cache.file)
+                                            .contains(arb));
+                                  }
                                   completed.add(toAdd);
 
                                   arbController.clear();
@@ -542,6 +550,12 @@ class _AddEntryAction extends HybridAction {
                                                   entries: <String, String>{},
                                                 );
                                                 if (completed.isEmpty) previewTruth = toAdd;
+                                                if (previewCompare == toAdd.file) {
+                                                  previewCompare = workDir.files.firstWhere(
+                                                      (ARBFile arb) => !completed
+                                                          .map((_AddCache cache) => cache.file)
+                                                          .contains(arb));
+                                                }
                                                 completed.add(toAdd);
                                                 setModal(() {});
                                               },
