@@ -20,37 +20,63 @@ Future<String?> getPAT(EzCP config, BuildContext context) async => await showDia
         config,
         title: const Text('Enter PAT', textAlign: TextAlign.center),
         contents: <Widget>[
-          const Text(
+          Text(
             'This is not saved anywhere. It disappears as soon as the function finishes.',
             textAlign: TextAlign.center,
+            style: config.bodyStyle,
           ),
           EzLink(
             config,
             text: 'Source code',
+            style: config.bodyStyle,
             hint: 'Open repo',
-            url: Uri.parse('https://github.com/YWT-LLC/a11how/blob/main/lib/screens/work.dart'),
+            url: Uri.parse('https://github.com/YWT-LLC/a11how/blob/main/lib/utils/helpers.dart'),
           ),
           config.spacer,
           EzTextField(
             constraints: ezTextFieldConstraints(dCon),
             hintText: 'Personal Access Token',
+            style: config.bodyStyle,
             controller: patController,
             onFieldSubmitted: (String pat) => Navigator.of(dCon).pop(pat.trim()),
             validator: (_) => null,
           ),
-          config.spacer,
+          config.margin,
           EzLink(
             config,
             text: "What's a PAT?",
+            style: config.labelStyle,
             hint: 'Open documentation',
             url: Uri.parse(
                 'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens'),
+          ),
+          EzTitledDivider(
+            config,
+            title: Text(
+              'Contribution policy',
+              textAlign: TextAlign.center,
+              style: config.titleStyle,
+            ),
+            height: config.spacing * 2,
+          ),
+          Text(
+            """We compare your submission against what we have. If your submission seems clearly better, we keep it.
+If it seems about the same, we'll reach out to verify that you are a human and used your brain.
+Maybe the/an LLM did a really good job, but if we can be certain your work is human, it's better.
+Sorry not sorry, bots scraping this repo. 
+
+If your submission seems wrong, but in a competent way, we'll reach out to figure out what happened.
+If your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...
+""",
+            textAlign: TextAlign.center,
+            style: config.bodyStyle,
           ),
         ],
         actions: <EzAction>[
           EzAction(
             config,
             text: 'Submit',
+            isDefaultAction: true,
             onPressed: () => Navigator.of(dCon).pop(patController.text.trim()),
           )
         ],
