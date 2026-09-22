@@ -1127,6 +1127,19 @@ class _AddLocaleAction extends HybridAction {
                             }
                             final String forkOwner = jsonDecode(userRes.body)['login'];
 
+                            // Check if file already exists
+                            final Response existsRes = await get(
+                              Uri.parse(
+                                  'https://api.github.com/repos/$owner/$repo/contents/$filePath?ref=$branch'),
+                              headers: headers,
+                            );
+
+                            if (existsRes.statusCode == 200) {
+                              throw Exception('${destController.text}.arb already exists.');
+                            } else if (existsRes.statusCode != 404) {
+                              throw Exception('Failed to verify file status: ${existsRes.body}');
+                            }
+
                             // Make fork
                             final Response forkRes = await post(
                               Uri.parse('https://api.github.com/repos/$owner/$repo/forks'),
@@ -1139,21 +1152,7 @@ class _AddLocaleAction extends HybridAction {
                             // Wait a bit
                             await wait(3);
 
-                            // SHA-tay
-                            final Response fileRes = await get(
-                              Uri.parse(
-                                  'https://api.github.com/repos/$forkOwner/$repo/contents/$filePath?ref=$branch'),
-                              headers: headers,
-                            );
-
-                            String? sha;
-                            if (fileRes.statusCode == 200) {
-                              sha = jsonDecode(fileRes.body)['sha'];
-                            } else if (fileRes.statusCode != 404) {
-                              throw Exception('Failed to fetch file status.');
-                            }
-
-                            // Commit changes
+                            // Commit new file
                             final Map<String, dynamic> newEntries = jsonDecode(arbController.text);
                             final List<String> sortedKeys = newEntries.keys.toList()
                               ..remove('@@locale')
@@ -1173,15 +1172,14 @@ class _AddLocaleAction extends HybridAction {
                                   'https://api.github.com/repos/$forkOwner/$repo/contents/$filePath'),
                               headers: headers,
                               body: jsonEncode(<String, String>{
-                                'message': 'Update localization for $filePath',
+                                'message': 'Add locale ${destController.text} w/ $filePath',
                                 'content': newContent,
                                 'branch': branch,
-                                if (sha != null) 'sha': sha,
                               }),
                             );
 
                             if (updateRes.statusCode != 200 && updateRes.statusCode != 201) {
-                              throw Exception('Failed to commit changes: ${updateRes.body}');
+                              throw Exception('Failed to commit new file: ${updateRes.body}');
                             }
 
                             // Open PR
@@ -1189,7 +1187,7 @@ class _AddLocaleAction extends HybridAction {
                               Uri.parse('https://api.github.com/repos/$owner/$repo/pulls'),
                               headers: headers,
                               body: jsonEncode(<String, String>{
-                                'title': 'New locale: $filePath',
+                                'title': 'Add locale ${destController.text}',
                                 'head': '$forkOwner:$branch',
                                 'base': branch,
                                 'body': 'Submitted via a11how.',
@@ -1201,7 +1199,6 @@ class _AddLocaleAction extends HybridAction {
                                 ezSnackBar(config, context: context, message: 'PR opened!');
                               }
                             } else {
-                              // HTTP 422 usually means a PR for this branch already exists.
                               final String errorMsg =
                                   jsonDecode(prRes.body)['errors']?[0]?['message'] ?? prRes.body;
                               throw Exception(prRes.statusCode == 422
