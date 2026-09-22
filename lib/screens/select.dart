@@ -20,6 +20,8 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 
+// todo: reload after save/changes (specific goal: the labels)
+
 class SelectScreen extends StatefulWidget {
   final ARBDir workDir;
 
@@ -368,6 +370,8 @@ class _AddEntryAction extends HybridAction {
           onPressed: () async {
             // Define (modal) build data //
 
+            final double modalWidth = widthOf(context);
+
             ARBFile? adding = truth;
             final Set<_AddCache> completed = <_AddCache>{};
             bool showPreview = true;
@@ -424,8 +428,14 @@ class _AddEntryAction extends HybridAction {
             await ezFullScreenModal(
               config,
               context: context,
-              child: StatefulBuilder(
-                builder: (BuildContext mCon, StateSetter setModal) => EzCol(
+              child: StatefulBuilder(builder: (BuildContext mCon, StateSetter setModal) {
+                final Iterable<MapEntry<String, dynamic>> missingPreview =
+                    (previewTruth == null || previewCompare == null)
+                        ? <MapEntry<String, dynamic>>[]
+                        : (previewTruth!.entries.isEmpty ? getMissing() : previewTruth!.entries)
+                            .entries;
+
+                return EzCol(
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     // Add/submit && /cancel
@@ -667,32 +677,52 @@ class _AddEntryAction extends HybridAction {
                                       ),
                                       if (previewTruth != null &&
                                           previewCompare != null) ...<Widget>[
-                                        EzDivider(height: config.spacing * 2),
-                                        ...(previewTruth!.entries.isEmpty
-                                                ? getMissing()
-                                                : previewTruth!.entries)
-                                            .entries
+                                        EzTitledDivider(
+                                          config,
+                                          title: missingPreview.isEmpty
+                                              ? const SizedBox.shrink()
+                                              : EzTextIconButton(
+                                                  config,
+                                                  label: 'Copy .json',
+                                                  icon: EzIcon(config, Icons.copy),
+                                                  onPressed: () async =>
+                                                      await Clipboard.setData(ClipboardData(
+                                                    text: a11howEncoder.convert(
+                                                        Map<String, dynamic>.fromEntries(
+                                                            missingPreview)),
+                                                  )).whenComplete(() => context.mounted
+                                                          ? ezSnackBar(
+                                                              config,
+                                                              context: context,
+                                                              message: 'Copied!',
+                                                            )
+                                                          : doNothing()),
+                                                ),
+                                          height: config.spacing * 2,
+                                        ),
+                                        ...missingPreview
                                             .map((MapEntry<String, dynamic> entry) => EzRow(
                                                   config,
                                                   reverseHands: false,
                                                   children: <Widget>[
-                                                    Text(
-                                                      entry.key,
-                                                      style: config.bodyStyle,
-                                                      textAlign: TextAlign.start,
-                                                    ),
-                                                    SizedBox(
-                                                      height: config.marginVal,
-                                                      child: VerticalDivider(
-                                                        width: config.spacing,
-                                                        color: config.colors.secondaryContainer,
+                                                    ConstrainedBox(
+                                                      constraints: BoxConstraints.tightFor(
+                                                          width: modalWidth * 0.15),
+                                                      child: Text(
+                                                        entry.key,
+                                                        style: config.bodyStyle,
+                                                        textAlign: TextAlign.start,
                                                       ),
                                                     ),
-                                                    Text(
-                                                      entry.value,
-                                                      style: config.bodyStyle,
-                                                      textAlign: TextAlign.start,
-                                                    ),
+                                                    ConstrainedBox(
+                                                      constraints: BoxConstraints.tightFor(
+                                                          width: modalWidth * 0.425),
+                                                      child: Text(
+                                                        entry.value,
+                                                        style: config.bodyStyle,
+                                                        textAlign: TextAlign.start,
+                                                      ),
+                                                    )
                                                   ],
                                                 )),
                                       ],
@@ -706,7 +736,7 @@ class _AddEntryAction extends HybridAction {
                                   margin: EdgeInsets.all(config.marginVal),
                                   alignment:
                                       config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
-                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                  constraints: BoxConstraints(maxWidth: modalWidth * 0.8),
                                   child: Text(
                                     '{\n\t"@@locale": "${adding!.localeCode}",\n\t...',
                                     textAlign: TextAlign.start,
@@ -721,7 +751,7 @@ class _AddEntryAction extends HybridAction {
                                   hintText: '\t"newKey(s)": "New value(s)",',
                                   controller: arbController,
                                   textAlign: TextAlign.start,
-                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                  constraints: BoxConstraints(maxWidth: modalWidth * 0.8),
                                 ),
 
                                 // Flare
@@ -729,7 +759,7 @@ class _AddEntryAction extends HybridAction {
                                   margin: EdgeInsets.all(config.marginVal),
                                   alignment:
                                       config.isLTR ? Alignment.centerLeft : Alignment.centerRight,
-                                  constraints: BoxConstraints(maxWidth: widthOf(context) * 0.8),
+                                  constraints: BoxConstraints(maxWidth: modalWidth * 0.8),
                                   child: Text(
                                     '\t...\n}',
                                     textAlign: TextAlign.start,
@@ -741,8 +771,8 @@ class _AddEntryAction extends HybridAction {
                     ),
                     config.spacer,
                   ],
-                ),
-              ),
+                );
+              }),
             );
           },
         );
@@ -1128,9 +1158,7 @@ class _AddLocaleAction extends HybridAction {
                               }
                               final ARBFile sourceFile = workDir.files
                                   .firstWhere((ARBFile arb) => arb.localeCode == sourceCode);
-
-                              final String jsonString =
-                                  const JsonEncoder.withIndent('  ').convert(sourceFile.entries);
+                              final String jsonString = a11howEncoder.convert(sourceFile.entries);
 
                               await Clipboard.setData(ClipboardData(
                                 text: service.prompt(
@@ -1148,9 +1176,7 @@ class _AddLocaleAction extends HybridAction {
                                   blankEntries[entry.key] =
                                       entry.key.startsWith('@') ? destController.text : '';
                                 }
-
-                                final String blankJson =
-                                    const JsonEncoder.withIndent('  ').convert(blankEntries);
+                                final String blankJson = a11howEncoder.convert(blankEntries);
 
                                 final Archive archive = Archive()
                                   ..addFile(ArchiveFile(
