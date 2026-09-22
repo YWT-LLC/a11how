@@ -502,9 +502,15 @@ class _AddEntryAction extends HybridAction {
                                               .contains(arb))
                                       .map((ARBFile arb) => Padding(
                                             padding: EzInsets.wrap(config.spacing),
-                                            child: EzElevatedButton(
+                                            child: EzElevatedIconButton(
                                               config,
-                                              text: arb.localeCode,
+                                              label: arb.localeCode,
+                                              icon: Text(
+                                                arb.entries.length.toString(),
+                                                style: config.labelStyle?.copyWith(
+                                                  color: config.colors.outline,
+                                                ),
+                                              ),
                                               onPressed: () => setModal(() => adding = arb),
                                               onLongPress: () {
                                                 completed.add(_AddCache(
@@ -529,10 +535,17 @@ class _AddEntryAction extends HybridAction {
                                     children: completed
                                         .map((_AddCache cache) => Padding(
                                               padding: EzInsets.wrap(config.spacing),
-                                              child: EzElevatedButton(
+                                              child: EzElevatedIconButton(
                                                 config,
                                                 fauxDisabled: true,
-                                                text: cache.file.localeCode,
+                                                label: cache.file.localeCode,
+                                                icon: Text(
+                                                  (cache.file.entries.length + cache.entries.length)
+                                                      .toString(),
+                                                  style: config.labelStyle?.copyWith(
+                                                    color: config.colors.outline,
+                                                  ),
+                                                ),
                                                 onPressed: doNothing,
                                                 onLongPress: () {
                                                   completed.remove(cache);
