@@ -65,8 +65,8 @@ class _WorkScreenState extends State<WorkScreen> {
     setState(() => saving = true);
 
     // Prep
-    final Map<String, String> updatedTruth = <String, String>{};
-    final Map<String, String> updatedCompare = <String, String>{};
+    final Map<String, dynamic> updatedTruth = <String, dynamic>{};
+    final Map<String, dynamic> updatedCompare = <String, dynamic>{};
 
     for (final WorkRow row in workData) {
       if (row.key.trim().isEmpty) continue;
@@ -109,7 +109,7 @@ class _WorkScreenState extends State<WorkScreen> {
     if (mounted) setState(() => saving = false);
   }
 
-  Future<void> _openPR(EzCP config, Map<String, String> updatedCompare) async {
+  Future<void> _openPR(EzCP config, Map<String, dynamic> updatedCompare) async {
     final String? token = await getPAT(config, context);
     if (token == null || token.isEmpty) {
       if (mounted) {
@@ -173,7 +173,7 @@ class _WorkScreenState extends State<WorkScreen> {
         ..remove('@@locale')
         ..sort();
 
-      final Map<String, String> sortedMap = <String, String>{
+      final Map<String, dynamic> sortedMap = <String, dynamic>{
         '@@locale': widget.workPair.compare.localeCode
       };
       for (final String key in sortedKeys) {
@@ -184,7 +184,7 @@ class _WorkScreenState extends State<WorkScreen> {
       final Response updateRes = await put(
         Uri.parse('https://api.github.com/repos/$forkOwner/$repo/contents/$filePath'),
         headers: headers,
-        body: jsonEncode(<String, String>{
+        body: jsonEncode(<String, dynamic>{
           'message': 'Update localization for $filePath',
           'content': newContent,
           'branch': branch,
@@ -200,7 +200,7 @@ class _WorkScreenState extends State<WorkScreen> {
       final Response prRes = await post(
         Uri.parse('https://api.github.com/repos/$owner/$repo/pulls'),
         headers: headers,
-        body: jsonEncode(<String, String>{
+        body: jsonEncode(<String, dynamic>{
           'title': 'Localization update: $filePath',
           'head': '$forkOwner:$branch',
           'base': branch,

@@ -401,8 +401,8 @@ class _AddEntryAction extends HybridAction {
               return null;
             }
 
-            Map<String, String> getMissing() {
-              final Map<String, String> toReturn = <String, String>{};
+            Map<String, dynamic> getMissing() {
+              final Map<String, dynamic> toReturn = <String, dynamic>{};
               if (previewTruth == null ||
                   previewCompare == null ||
                   previewTruth?.file == previewCompare) {
@@ -554,7 +554,7 @@ class _AddEntryAction extends HybridAction {
                                               onLongPress: () {
                                                 final _AddCache toAdd = _AddCache(
                                                   file: arb,
-                                                  entries: <String, String>{},
+                                                  entries: <String, dynamic>{},
                                                 );
                                                 if (completed.isEmpty) previewTruth = toAdd;
                                                 if (previewCompare == toAdd.file) {
@@ -672,7 +672,7 @@ class _AddEntryAction extends HybridAction {
                                                 ? getMissing()
                                                 : previewTruth!.entries)
                                             .entries
-                                            .map((MapEntry<String, String> entry) => EzRow(
+                                            .map((MapEntry<String, dynamic> entry) => EzRow(
                                                   config,
                                                   reverseHands: false,
                                                   children: <Widget>[
@@ -750,7 +750,7 @@ class _AddEntryAction extends HybridAction {
 
 class _AddCache {
   final ARBFile file;
-  final Map<String, String> entries;
+  final Map<String, dynamic> entries;
 
   const _AddCache({
     required this.file,
@@ -1141,7 +1141,7 @@ class _AddLocaleAction extends HybridAction {
                               ));
 
                               if (service.human) {
-                                final Map<String, String> blankEntries = <String, String>{};
+                                final Map<String, dynamic> blankEntries = <String, dynamic>{};
 
                                 for (final MapEntry<String, dynamic> entry
                                     in sourceFile.entries.entries) {
@@ -1319,7 +1319,7 @@ class _AddLocaleAction extends HybridAction {
                               ..remove('@@locale')
                               ..sort();
 
-                            final Map<String, String> sortedMap = <String, String>{
+                            final Map<String, dynamic> sortedMap = <String, dynamic>{
                               '@@locale': destController.text
                             };
                             for (final String key in sortedKeys) {
@@ -1332,7 +1332,7 @@ class _AddLocaleAction extends HybridAction {
                               Uri.parse(
                                   'https://api.github.com/repos/$forkOwner/$repo/contents/$filePath'),
                               headers: headers,
-                              body: jsonEncode(<String, String>{
+                              body: jsonEncode(<String, dynamic>{
                                 'message': 'Add locale ${destController.text} w/ $filePath',
                                 'content': newContent,
                                 'branch': branch,
@@ -1347,7 +1347,7 @@ class _AddLocaleAction extends HybridAction {
                             final Response prRes = await post(
                               Uri.parse('https://api.github.com/repos/$owner/$repo/pulls'),
                               headers: headers,
-                              body: jsonEncode(<String, String>{
+                              body: jsonEncode(<String, dynamic>{
                                 'title': 'Add locale ${destController.text}',
                                 'head': '$forkOwner:$branch',
                                 'base': branch,
