@@ -369,6 +369,8 @@ class _AddEntryAction extends HybridAction {
 
             ARBFile? adding = truth;
             final Set<_AddCache> completed = <_AddCache>{};
+            bool showPreview = true;
+            _AddCache? previewValues;
 
             final TextEditingController arbController = TextEditingController();
 
@@ -387,7 +389,7 @@ class _AddEntryAction extends HybridAction {
 
               try {
                 final dynamic decoded = jsonDecode(textToParse);
-                if (decoded is! Map<String, dynamic>) {
+                if (decoded is! Map<String, String>) {
                   return 'Must evaluate to a JSON object';
                 }
               } catch (e) {
@@ -470,10 +472,13 @@ class _AddEntryAction extends HybridAction {
                                     textToParse = '{$textToParse}';
                                   }
 
-                                  completed.add(_AddCache(
+                                  final _AddCache toAdd = _AddCache(
                                     file: adding!,
                                     entries: jsonDecode(textToParse),
-                                  ));
+                                  );
+                                  completed.add(toAdd);
+                                  if (completed.length == 1) previewValues = toAdd;
+
                                   arbController.clear();
                                   setModal(() => adding = null);
                                 },
@@ -513,10 +518,12 @@ class _AddEntryAction extends HybridAction {
                                               ),
                                               onPressed: () => setModal(() => adding = arb),
                                               onLongPress: () {
-                                                completed.add(_AddCache(
+                                                final _AddCache toAdd = _AddCache(
                                                   file: arb,
-                                                  entries: <String, dynamic>{},
-                                                ));
+                                                  entries: <String, String>{},
+                                                );
+                                                completed.add(toAdd);
+                                                if (completed.length == 1) previewValues = toAdd;
                                                 setModal(() {});
                                               },
                                             ),
@@ -524,13 +531,15 @@ class _AddEntryAction extends HybridAction {
                                       .toList(),
                                 ),
                                 if (completed.isNotEmpty) ...<Widget>[
-                                  config.divider,
-                                  Text(
-                                    'toDONE:',
-                                    textAlign: TextAlign.center,
-                                    style: config.titleStyle,
+                                  EzTitledDivider(
+                                    config,
+                                    title: Text(
+                                      'toDONE:',
+                                      textAlign: TextAlign.center,
+                                      style: config.titleStyle,
+                                    ),
+                                    height: config.spacing * 3,
                                   ),
-                                  config.margin,
                                   EzWrap(
                                     children: completed
                                         .map((_AddCache cache) => Padding(
@@ -554,6 +563,52 @@ class _AddEntryAction extends HybridAction {
                                               ),
                                             ))
                                         .toList(),
+                                  ),
+                                  EzTitledDivider(
+                                    config,
+                                    title: EzSwitchPair(
+                                      config,
+                                      text: 'Preview:',
+                                      value: showPreview,
+                                      onChanged: (bool? choice) {
+                                        if (choice == null) return;
+                                        setModal(() => showPreview = choice);
+                                      },
+                                    ),
+                                    height: config.spacing * 3,
+                                  ),
+                                  EzAnimVis(
+                                    config,
+                                    visible: showPreview,
+                                    forceType: EzTransitionType.slideY,
+                                    kid: EzCol(children: <Widget>[
+                                      config.spacer,
+                                      if (previewValues != null)
+                                        EzCol(
+                                          children: previewValues!.entries.entries
+                                              .map((MapEntry<String, String> entry) => EzRow(
+                                                    config,
+                                                    reverseHands: false,
+                                                    children: <Widget>[
+                                                      Text(
+                                                        entry.key,
+                                                        style: config.bodyStyle,
+                                                        textAlign: TextAlign.start,
+                                                      ),
+                                                      VerticalDivider(
+                                                        width: config.spacing,
+                                                        color: config.colors.secondaryContainer,
+                                                      ),
+                                                      Text(
+                                                        entry.value,
+                                                        style: config.bodyStyle,
+                                                        textAlign: TextAlign.start,
+                                                      ),
+                                                    ],
+                                                  ))
+                                              .toList(),
+                                        ),
+                                    ]),
                                   ),
                                 ],
                               ])
@@ -607,7 +662,7 @@ class _AddEntryAction extends HybridAction {
 
 class _AddCache {
   final ARBFile file;
-  final Map<String, dynamic> entries;
+  final Map<String, String> entries;
 
   const _AddCache({
     required this.file,
@@ -882,7 +937,7 @@ class _AddLocaleAction extends HybridAction {
 
               try {
                 final dynamic decoded = jsonDecode(check);
-                if (decoded is! Map<String, dynamic>) {
+                if (decoded is! Map<String, String>) {
                   return 'Must evaluate to a JSON object';
                 }
               } catch (e) {
@@ -1002,9 +1057,9 @@ class _AddLocaleAction extends HybridAction {
                               ));
 
                               if (service.human) {
-                                final Map<String, dynamic> blankEntries = <String, dynamic>{};
+                                final Map<String, String> blankEntries = <String, String>{};
 
-                                for (final MapEntry<String, dynamic> entry
+                                for (final MapEntry<String, String> entry
                                     in sourceFile.entries.entries) {
                                   blankEntries[entry.key] =
                                       entry.key.startsWith('@') ? destController.text : '';
@@ -1175,16 +1230,16 @@ class _AddLocaleAction extends HybridAction {
                             await wait(3);
 
                             // Commit new file
-                            final Map<String, dynamic> newEntries = jsonDecode(arbController.text);
+                            final Map<String, String> newEntries = jsonDecode(arbController.text);
                             final List<String> sortedKeys = newEntries.keys.toList()
                               ..remove('@@locale')
                               ..sort();
 
-                            final Map<String, dynamic> sortedMap = <String, dynamic>{
+                            final Map<String, String> sortedMap = <String, String>{
                               '@@locale': destController.text
                             };
                             for (final String key in sortedKeys) {
-                              sortedMap[key] = newEntries[key];
+                              sortedMap[key] = newEntries[key] ?? '';
                             }
 
                             final String newContent =
