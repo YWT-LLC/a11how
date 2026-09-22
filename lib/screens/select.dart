@@ -9,6 +9,7 @@ import '../widgets/export.dart';
 
 import 'dart:io';
 import 'dart:convert';
+import 'package:http/http.dart';
 import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
 import 'package:open_ui/open_ui.dart';
@@ -818,7 +819,6 @@ class _AddLocaleAction extends HybridAction {
   final BoxConstraints filterConstraints;
   final ARBFile? truth;
 
-  // TODO: contributor save
   _AddLocaleAction(
     this.config, {
     required this.context,
@@ -1076,16 +1076,148 @@ class _AddLocaleAction extends HybridAction {
                         );
 
                         // Save
-                        await writeSortedJson(
-                          config,
-                          file: File(newPath),
-                          arb: ARBFile(
-                            path: newPath,
-                            local: workDir.local,
-                            localeCode: destController.text,
-                            entries: jsonDecode(arbController.text),
-                          ),
-                        );
+                        if (workDir.files.first.local) {
+                          await writeSortedJson(
+                            config,
+                            file: File(newPath),
+                            arb: ARBFile(
+                              path: newPath,
+                              local: workDir.local,
+                              localeCode: destController.text,
+                              entries: jsonDecode(arbController.text),
+                            ),
+                          );
+                        } else {
+                          final String? token = await getPAT(config, context);
+                          if (token == null || token.isEmpty) {
+                            if (context.mounted) {
+                              ezSnackBar(
+                                config,
+                                context: context,
+                                message: 'Git PAT required to submit changes.',
+                              );
+                            }
+                            return;
+                          }
+
+                          // Parse Url
+                          final Uri url = Uri.parse(newPath);
+                          final List<String> segments = url.pathSegments;
+
+                          final String owner = segments[0];
+                          final String repo = segments[1];
+                          final String branch = segments[3];
+                          final String filePath = segments.sublist(4).join('/');
+
+                          // Build the request
+                          final Map<String, String> headers = <String, String>{
+                            'Authorization': 'Bearer $token',
+                            'Accept': 'application/vnd.github.v3+json',
+                            'X-GitHub-Api-Version': '2022-11-28',
+                          };
+
+                          try {
+                            // Get user info
+                            final Response userRes = await get(
+                              Uri.parse('https://api.github.com/user'),
+                              headers: headers,
+                            );
+                            if (userRes.statusCode != 200) {
+                              throw Exception('Authentication failed.');
+                            }
+                            final String forkOwner = jsonDecode(userRes.body)['login'];
+
+                            // Make fork
+                            final Response forkRes = await post(
+                              Uri.parse('https://api.github.com/repos/$owner/$repo/forks'),
+                              headers: headers,
+                            );
+                            if (forkRes.statusCode != 202 && forkRes.statusCode != 200) {
+                              throw Exception('Failed to create fork.');
+                            }
+
+                            // Wait a bit
+                            await wait(3);
+
+                            // SHA-tay
+                            final Response fileRes = await get(
+                              Uri.parse(
+                                  'https://api.github.com/repos/$forkOwner/$repo/contents/$filePath?ref=$branch'),
+                              headers: headers,
+                            );
+
+                            String? sha;
+                            if (fileRes.statusCode == 200) {
+                              sha = jsonDecode(fileRes.body)['sha'];
+                            } else if (fileRes.statusCode != 404) {
+                              throw Exception('Failed to fetch file status.');
+                            }
+
+                            // Commit changes
+                            final Map<String, dynamic> newEntries = jsonDecode(arbController.text);
+                            final List<String> sortedKeys = newEntries.keys.toList()
+                              ..remove('@@locale')
+                              ..sort();
+
+                            final Map<String, dynamic> sortedMap = <String, dynamic>{
+                              '@@locale': destController.text
+                            };
+                            for (final String key in sortedKeys) {
+                              sortedMap[key] = newEntries[key];
+                            }
+
+                            final String newContent =
+                                base64Encode(utf8.encode(a11howEncoder.convert(sortedMap)));
+                            final Response updateRes = await put(
+                              Uri.parse(
+                                  'https://api.github.com/repos/$forkOwner/$repo/contents/$filePath'),
+                              headers: headers,
+                              body: jsonEncode(<String, String>{
+                                'message': 'Update localization for $filePath',
+                                'content': newContent,
+                                'branch': branch,
+                                if (sha != null) 'sha': sha,
+                              }),
+                            );
+
+                            if (updateRes.statusCode != 200 && updateRes.statusCode != 201) {
+                              throw Exception('Failed to commit changes: ${updateRes.body}');
+                            }
+
+                            // Open PR
+                            final Response prRes = await post(
+                              Uri.parse('https://api.github.com/repos/$owner/$repo/pulls'),
+                              headers: headers,
+                              body: jsonEncode(<String, String>{
+                                'title': 'New locale: $filePath',
+                                'head': '$forkOwner:$branch',
+                                'base': branch,
+                                'body': 'Submitted via a11how.',
+                              }),
+                            );
+
+                            if (prRes.statusCode == 201) {
+                              if (context.mounted) {
+                                ezSnackBar(config, context: context, message: 'PR opened!');
+                              }
+                            } else {
+                              // HTTP 422 usually means a PR for this branch already exists.
+                              final String errorMsg =
+                                  jsonDecode(prRes.body)['errors']?[0]?['message'] ?? prRes.body;
+                              throw Exception(prRes.statusCode == 422
+                                  ? 'PR might already exist: $errorMsg'
+                                  : 'Failed to open PR: $errorMsg');
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ezSnackBar(
+                                config,
+                                context: context,
+                                message: 'GitHub Error: $e',
+                              );
+                            }
+                          }
+                        }
 
                         if (mCon.mounted) Navigator.of(mCon).pop();
                       },
