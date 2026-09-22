@@ -20,8 +20,6 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 
-// todo: reload after save/changes (specific goal: the labels)
-
 class SelectScreen extends StatefulWidget {
   final ARBDir workDir;
 
@@ -306,6 +304,7 @@ class _SelectScreenState extends State<SelectScreen> {
                         context: context,
                         workDir: widget.workDir,
                         truth: truth,
+                        setState: () => setState(() {}),
                       ),
 
                       // Remove entries
@@ -314,6 +313,7 @@ class _SelectScreenState extends State<SelectScreen> {
                         context: context,
                         workDir: widget.workDir,
                         truth: truth,
+                        setState: () => setState(() {}),
                       ),
                     ],
 
@@ -324,6 +324,7 @@ class _SelectScreenState extends State<SelectScreen> {
                       workDir: widget.workDir,
                       filterConstraints: filterConstraints,
                       truth: truth,
+                      setState: () => setState(() {}),
                     ),
 
                     if (local) ...<HybridAction>[
@@ -358,12 +359,14 @@ class _AddEntryAction extends HybridAction {
   final BuildContext context;
   final ARBDir workDir;
   final ARBFile? truth;
+  final VoidCallback setState;
 
   _AddEntryAction(
     this.config, {
     required this.context,
     required this.workDir,
     this.truth,
+    required this.setState,
   }) : super(
           label: 'Add entries',
           icon: Icons.playlist_add_outlined,
@@ -425,6 +428,11 @@ class _AddEntryAction extends HybridAction {
 
             // Return (modal) build //
 
+            final Widget div = ConstrainedBox(
+              constraints: BoxConstraints.tight(Size.square(config.marginVal)),
+              child: VerticalDivider(color: config.colors.outline),
+            );
+
             await ezFullScreenModal(
               config,
               context: context,
@@ -470,7 +478,7 @@ class _AddEntryAction extends HybridAction {
                                           }
 
                                           if (context.mounted) Navigator.of(context).pop();
-                                        }),
+                                        }).whenComplete(setState),
                               ),
                             ]
                           // For one
@@ -706,6 +714,7 @@ class _AddEntryAction extends HybridAction {
                                                   scrollDirection: Axis.horizontal,
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: <Widget>[
+                                                    div,
                                                     ConstrainedBox(
                                                       constraints: BoxConstraints.tightFor(
                                                           width: modalWidth * 0.15),
@@ -715,6 +724,7 @@ class _AddEntryAction extends HybridAction {
                                                         textAlign: TextAlign.start,
                                                       ),
                                                     ),
+                                                    div,
                                                     ConstrainedBox(
                                                       constraints: BoxConstraints.tightFor(
                                                           width: modalWidth * 0.425),
@@ -723,7 +733,8 @@ class _AddEntryAction extends HybridAction {
                                                         style: config.bodyStyle,
                                                         textAlign: TextAlign.start,
                                                       ),
-                                                    )
+                                                    ),
+                                                    div,
                                                   ],
                                                 )),
                                       ],
@@ -794,12 +805,14 @@ class _RemoveEntryAction extends HybridAction {
   final BuildContext context;
   final ARBDir workDir;
   final ARBFile? truth;
+  final VoidCallback setState;
 
   _RemoveEntryAction(
     this.config, {
     required this.context,
     required this.workDir,
     this.truth,
+    required this.setState,
   }) : super(
           label: 'Remove entries',
           icon: Icons.playlist_remove_outlined,
@@ -996,7 +1009,7 @@ class _RemoveEntryAction extends HybridAction {
                                   }
 
                                   if (context.mounted) Navigator.of(context).pop();
-                                }),
+                                }).whenComplete(setState),
                       ),
                     ]),
                     config.spacer,
@@ -1014,6 +1027,7 @@ class _AddLocaleAction extends HybridAction {
   final ARBDir workDir;
   final BoxConstraints filterConstraints;
   final ARBFile? truth;
+  final VoidCallback setState;
 
   _AddLocaleAction(
     this.config, {
@@ -1021,6 +1035,7 @@ class _AddLocaleAction extends HybridAction {
     required this.workDir,
     required this.filterConstraints,
     this.truth,
+    required this.setState,
   }) : super(
           label: 'Add locale',
           icon: Icons.group_add_outlined,
@@ -1405,6 +1420,7 @@ class _AddLocaleAction extends HybridAction {
                         }
 
                         if (mCon.mounted) Navigator.of(mCon).pop();
+                        setState();
                       },
                     ),
                   ]),
