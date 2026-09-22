@@ -129,6 +129,7 @@ class _SelectScreenState extends State<SelectScreen> {
     super.initState();
     if (!local) {
       truth = files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US');
+      // No or else, we know it exists
       setState(() {});
     }
   }
@@ -499,10 +500,11 @@ class _AddEntryAction extends HybridAction {
                                     previewTruth = toAdd;
                                   }
                                   if (previewCompare == toAdd.file) {
-                                    previewCompare = workDir.files.firstWhere((ARBFile arb) =>
-                                        !completed
+                                    previewCompare = workDir.files
+                                        .where((ARBFile arb) => !completed
                                             .map((_AddCache cache) => cache.file)
-                                            .contains(arb));
+                                            .contains(arb))
+                                        .firstOrNull;
                                   }
                                   completed.add(toAdd);
 
@@ -551,10 +553,11 @@ class _AddEntryAction extends HybridAction {
                                                 );
                                                 if (completed.isEmpty) previewTruth = toAdd;
                                                 if (previewCompare == toAdd.file) {
-                                                  previewCompare = workDir.files.firstWhere(
-                                                      (ARBFile arb) => !completed
+                                                  previewCompare = workDir.files
+                                                      .where((ARBFile arb) => !completed
                                                           .map((_AddCache cache) => cache.file)
-                                                          .contains(arb));
+                                                          .contains(arb))
+                                                      .firstOrNull;
                                                 }
                                                 completed.add(toAdd);
                                                 setModal(() {});
@@ -1019,16 +1022,12 @@ class _AddLocaleAction extends HybridAction {
 
             // Init (modal) //
 
-            if (truth == null) {
-              try {
-                sourceCode =
-                    workDir.files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US').localeCode;
-              } catch (_) {
-                // Contains with extra steps, if above fails sourceCode remains null (and that's okay)
-              }
-            } else {
-              sourceCode = truth.localeCode;
-            }
+            sourceCode = (truth == null)
+                ? workDir.files
+                    .where((ARBFile arb) => arb.localeCode == 'en_US')
+                    .firstOrNull
+                    ?.localeCode
+                : truth.localeCode;
 
             // Return (modal) build //
 
