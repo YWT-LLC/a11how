@@ -701,9 +701,10 @@ class _AddEntryAction extends HybridAction {
                                           height: config.spacing * 2,
                                         ),
                                         ...missingPreview
-                                            .map((MapEntry<String, dynamic> entry) => EzRow(
+                                            .map((MapEntry<String, dynamic> entry) => EzScrollView(
                                                   config,
-                                                  reverseHands: false,
+                                                  scrollDirection: Axis.horizontal,
+                                                  mainAxisAlignment: MainAxisAlignment.center,
                                                   children: <Widget>[
                                                     ConstrainedBox(
                                                       constraints: BoxConstraints.tightFor(
