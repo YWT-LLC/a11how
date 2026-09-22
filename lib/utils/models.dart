@@ -25,7 +25,7 @@ class ARBFile {
   final String path;
   final bool local;
   final String localeCode;
-  final Map<String, dynamic> entries;
+  final Map<String, String> entries;
 
   ARBFile({
     required this.path,

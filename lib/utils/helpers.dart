@@ -91,9 +91,9 @@ Future<void> writeSortedJson(EzCP config, {required File file, required ARBFile 
       ..remove('@@locale')
       ..sort();
 
-    final Map<String, dynamic> sortedMap = <String, dynamic>{'@@locale': arb.localeCode};
+    final Map<String, String> sortedMap = <String, String>{'@@locale': arb.localeCode};
     for (final String key in sortedKeys) {
-      sortedMap[key] = arb.entries[key];
+      sortedMap[key] = arb.entries[key] ?? '';
     }
 
     await file.writeAsString(a11howEncoder.convert(sortedMap));

@@ -65,8 +65,8 @@ class _WorkScreenState extends State<WorkScreen> {
     setState(() => saving = true);
 
     // Prep
-    final Map<String, dynamic> updatedTruth = <String, dynamic>{};
-    final Map<String, dynamic> updatedCompare = <String, dynamic>{};
+    final Map<String, String> updatedTruth = <String, String>{};
+    final Map<String, String> updatedCompare = <String, String>{};
 
     for (final WorkRow row in workData) {
       if (row.key.trim().isEmpty) continue;
@@ -109,7 +109,7 @@ class _WorkScreenState extends State<WorkScreen> {
     if (mounted) setState(() => saving = false);
   }
 
-  Future<void> _openPR(EzCP config, Map<String, dynamic> updatedCompare) async {
+  Future<void> _openPR(EzCP config, Map<String, String> updatedCompare) async {
     final String? token = await getPAT(config, context);
     if (token == null || token.isEmpty) {
       if (mounted) {
@@ -173,11 +173,11 @@ class _WorkScreenState extends State<WorkScreen> {
         ..remove('@@locale')
         ..sort();
 
-      final Map<String, dynamic> sortedMap = <String, dynamic>{
+      final Map<String, String> sortedMap = <String, String>{
         '@@locale': widget.workPair.compare.localeCode
       };
       for (final String key in sortedKeys) {
-        sortedMap[key] = updatedCompare[key];
+        sortedMap[key] = updatedCompare[key] ?? '';
       }
 
       final String newContent = base64Encode(utf8.encode(a11howEncoder.convert(sortedMap)));

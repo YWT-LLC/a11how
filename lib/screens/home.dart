@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Save valid .arb files
             try {
               final String content = await entity.readAsString();
-              final Map<String, dynamic> json = jsonDecode(content);
+              final Map<String, String> json = jsonDecode(content);
 
               final String fallbackName =
                   entity.path.split(Platform.pathSeparator).last.replaceAll('.arb', '');
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (fileResponse.statusCode == 200) {
                 try {
                   final String content = utf8.decode(fileResponse.bodyBytes);
-                  final Map<String, dynamic> json = jsonDecode(content);
+                  final Map<String, String> json = jsonDecode(content);
 
                   final String fallbackName = item['name'].toString().replaceAll('.arb', '');
                   final String locale = json['@@locale'] ?? fallbackName;
