@@ -391,7 +391,7 @@ class _AddEntryAction extends HybridAction {
 
               try {
                 final dynamic decoded = jsonDecode(textToParse);
-                if (decoded is! Map<String, String>) {
+                if (decoded is! Map<String, dynamic>) {
                   return 'Must evaluate to a JSON object';
                 }
               } catch (e) {
@@ -432,6 +432,7 @@ class _AddEntryAction extends HybridAction {
                     EzRow(
                       config,
                       children: (adding == null)
+                          // For all
                           ? <Widget>[
                               EzTextIconButton(
                                 config,
@@ -462,6 +463,7 @@ class _AddEntryAction extends HybridAction {
                                         }),
                               ),
                             ]
+                          // For one
                           : <Widget>[
                               EzTextIconButton(
                                 config,
@@ -515,18 +517,21 @@ class _AddEntryAction extends HybridAction {
                             ],
                     ),
                     config.spacer,
+
+                    // Main work
                     Expanded(
                       child: EzAnimSwitch(
                         config,
                         mod: 0.667,
                         child: (adding == null)
                             ? EzScrollView(config, children: <Widget>[
+                                // To-do section
                                 Text(
                                   'TODO:',
                                   textAlign: TextAlign.center,
                                   style: config.titleStyle,
                                 ),
-                                config.margin,
+                                config.spacer,
                                 EzWrap(
                                   children: workDir.files
                                       .where((ARBFile arb) => completed.isEmpty
@@ -566,6 +571,8 @@ class _AddEntryAction extends HybridAction {
                                           ))
                                       .toList(),
                                 ),
+
+                                // To-done section
                                 if (completed.isNotEmpty) ...<Widget>[
                                   EzTitledDivider(
                                     config,
@@ -600,10 +607,17 @@ class _AddEntryAction extends HybridAction {
                                             ))
                                         .toList(),
                                   ),
+
+                                  // Preview toggle
                                   EzTitledDivider(
                                     config,
+                                    color: showPreview
+                                        ? config.colors.secondaryContainer
+                                        : Colors.transparent,
+                                    height: config.spacing * 2,
                                     title: EzSwitchPair(
                                       config,
+                                      key: ValueKey<bool>(showPreview),
                                       text: 'Preview missing',
                                       value: showPreview,
                                       onChanged: (bool? choice) {
@@ -611,8 +625,9 @@ class _AddEntryAction extends HybridAction {
                                         setModal(() => showPreview = choice);
                                       },
                                     ),
-                                    height: config.spacing * 2,
                                   ),
+
+                                  // Preview
                                   EzAnimVis(
                                     config,
                                     visible: showPreview,
@@ -652,7 +667,7 @@ class _AddEntryAction extends HybridAction {
                                       ),
                                       if (previewTruth != null &&
                                           previewCompare != null) ...<Widget>[
-                                        config.separator,
+                                        EzDivider(height: config.spacing * 2),
                                         ...(previewTruth!.entries.isEmpty
                                                 ? getMissing()
                                                 : previewTruth!.entries)
@@ -1010,7 +1025,7 @@ class _AddLocaleAction extends HybridAction {
 
               try {
                 final dynamic decoded = jsonDecode(check);
-                if (decoded is! Map<String, String>) {
+                if (decoded is! Map<String, dynamic>) {
                   return 'Must evaluate to a JSON object';
                 }
               } catch (e) {
