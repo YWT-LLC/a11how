@@ -476,8 +476,8 @@ class _AddEntryAction extends HybridAction {
                                     file: adding!,
                                     entries: jsonDecode(textToParse),
                                   );
+                                  if (completed.isEmpty) previewValues = toAdd;
                                   completed.add(toAdd);
-                                  if (completed.length == 1) previewValues = toAdd;
 
                                   arbController.clear();
                                   setModal(() => adding = null);
@@ -522,8 +522,8 @@ class _AddEntryAction extends HybridAction {
                                                   file: arb,
                                                   entries: <String, String>{},
                                                 );
+                                                if (completed.isEmpty) previewValues = toAdd;
                                                 completed.add(toAdd);
-                                                if (completed.length == 1) previewValues = toAdd;
                                                 setModal(() {});
                                               },
                                             ),
