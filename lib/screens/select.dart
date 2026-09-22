@@ -370,7 +370,8 @@ class _AddEntryAction extends HybridAction {
             ARBFile? adding = truth;
             final Set<_AddCache> completed = <_AddCache>{};
             bool showPreview = true;
-            _AddCache? previewValues;
+            _AddCache? previewTruth;
+            ARBFile? previewCompare = workDir.files.first;
 
             final TextEditingController arbController = TextEditingController();
 
@@ -397,6 +398,24 @@ class _AddEntryAction extends HybridAction {
               }
 
               return null;
+            }
+
+            Map<String, String> getMissing() {
+              final Map<String, String> toReturn = <String, String>{};
+              if (previewTruth == null ||
+                  previewCompare == null ||
+                  previewTruth?.file == previewCompare) {
+                return toReturn;
+              }
+
+              final Set<String> missing = previewTruth!.file.entries.keys
+                  .toSet()
+                  .difference(previewCompare!.entries.keys.toSet());
+              for (final String key in missing) {
+                toReturn[key] = previewTruth!.file.entries[key];
+              }
+
+              return toReturn;
             }
 
             // Return (modal) build //
@@ -476,7 +495,7 @@ class _AddEntryAction extends HybridAction {
                                     file: adding!,
                                     entries: jsonDecode(textToParse),
                                   );
-                                  if (completed.isEmpty) previewValues = toAdd;
+                                  if (completed.isEmpty) previewTruth = toAdd;
                                   completed.add(toAdd);
 
                                   arbController.clear();
@@ -522,7 +541,7 @@ class _AddEntryAction extends HybridAction {
                                                   file: arb,
                                                   entries: <String, String>{},
                                                 );
-                                                if (completed.isEmpty) previewValues = toAdd;
+                                                if (completed.isEmpty) previewTruth = toAdd;
                                                 completed.add(toAdd);
                                                 setModal(() {});
                                               },
@@ -538,7 +557,7 @@ class _AddEntryAction extends HybridAction {
                                       textAlign: TextAlign.center,
                                       style: config.titleStyle,
                                     ),
-                                    height: config.spacing * 3,
+                                    height: config.spacing * 2,
                                   ),
                                   EzWrap(
                                     children: completed
@@ -568,46 +587,83 @@ class _AddEntryAction extends HybridAction {
                                     config,
                                     title: EzSwitchPair(
                                       config,
-                                      text: 'Preview:',
+                                      text: 'Preview missing',
                                       value: showPreview,
                                       onChanged: (bool? choice) {
                                         if (choice == null) return;
                                         setModal(() => showPreview = choice);
                                       },
                                     ),
-                                    height: config.spacing * 3,
+                                    height: config.spacing * 2,
                                   ),
                                   EzAnimVis(
                                     config,
                                     visible: showPreview,
                                     forceType: EzTransitionType.slideY,
                                     kid: EzCol(children: <Widget>[
-                                      config.spacer,
-                                      if (previewValues != null)
-                                        EzCol(
-                                          children: previewValues!.entries.entries
-                                              .map((MapEntry<String, String> entry) => EzRow(
-                                                    config,
-                                                    reverseHands: false,
-                                                    children: <Widget>[
-                                                      Text(
-                                                        entry.key,
-                                                        style: config.bodyStyle,
-                                                        textAlign: TextAlign.start,
-                                                      ),
-                                                      VerticalDivider(
+                                      EzDropdownMenu<_AddCache>(
+                                        config,
+                                        label: 'Truth (keys & values)',
+                                        initialSelection: previewTruth,
+                                        dropdownMenuEntries: completed
+                                            .map((_AddCache cache) => DropdownMenuEntry<_AddCache>(
+                                                  label: cache.file.localeCode,
+                                                  value: cache,
+                                                ))
+                                            .toList(),
+                                        widthEntry: 'en_US_BB',
+                                        onSelected: (_AddCache? selected) =>
+                                            setModal(() => previewTruth = selected),
+                                      ),
+                                      config.margin,
+                                      EzDropdownMenu<ARBFile>(
+                                        config,
+                                        label: 'Compare (keys)',
+                                        initialSelection: previewCompare,
+                                        dropdownMenuEntries: workDir.files
+                                            .where((ARBFile file) => !completed
+                                                .map((_AddCache cache) => cache.file)
+                                                .contains(file))
+                                            .map((ARBFile arb) => DropdownMenuEntry<ARBFile>(
+                                                  label: arb.localeCode,
+                                                  value: arb,
+                                                ))
+                                            .toList(),
+                                        widthEntry: 'en_US_BB',
+                                        onSelected: (ARBFile? selected) =>
+                                            setModal(() => previewCompare = selected),
+                                      ),
+                                      if (previewTruth != null &&
+                                          previewCompare != null) ...<Widget>[
+                                        config.separator,
+                                        ...(previewTruth!.entries.isEmpty
+                                                ? getMissing()
+                                                : previewTruth!.entries)
+                                            .entries
+                                            .map((MapEntry<String, String> entry) => EzRow(
+                                                  config,
+                                                  reverseHands: false,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      entry.key,
+                                                      style: config.bodyStyle,
+                                                      textAlign: TextAlign.start,
+                                                    ),
+                                                    SizedBox(
+                                                      height: config.marginVal,
+                                                      child: VerticalDivider(
                                                         width: config.spacing,
                                                         color: config.colors.secondaryContainer,
                                                       ),
-                                                      Text(
-                                                        entry.value,
-                                                        style: config.bodyStyle,
-                                                        textAlign: TextAlign.start,
-                                                      ),
-                                                    ],
-                                                  ))
-                                              .toList(),
-                                        ),
+                                                    ),
+                                                    Text(
+                                                      entry.value,
+                                                      style: config.bodyStyle,
+                                                      textAlign: TextAlign.start,
+                                                    ),
+                                                  ],
+                                                )),
+                                      ],
                                     ]),
                                   ),
                                 ],
