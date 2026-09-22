@@ -1059,7 +1059,7 @@ class _AddLocaleAction extends HybridAction {
                               if (service.human) {
                                 final Map<String, String> blankEntries = <String, String>{};
 
-                                for (final MapEntry<String, String> entry
+                                for (final MapEntry<String, dynamic> entry
                                     in sourceFile.entries.entries) {
                                   blankEntries[entry.key] =
                                       entry.key.startsWith('@') ? destController.text : '';
@@ -1230,7 +1230,7 @@ class _AddLocaleAction extends HybridAction {
                             await wait(3);
 
                             // Commit new file
-                            final Map<String, String> newEntries = jsonDecode(arbController.text);
+                            final Map<String, dynamic> newEntries = jsonDecode(arbController.text);
                             final List<String> sortedKeys = newEntries.keys.toList()
                               ..remove('@@locale')
                               ..sort();
