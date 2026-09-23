@@ -708,35 +708,43 @@ class _AddEntryAction extends HybridAction {
                                                 ),
                                           height: config.spacing * 2,
                                         ),
-                                        ...missingPreview
-                                            .map((MapEntry<String, dynamic> entry) => EzScrollView(
-                                                  config,
-                                                  scrollDirection: Axis.horizontal,
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    div,
-                                                    ConstrainedBox(
-                                                      constraints: BoxConstraints.tightFor(
-                                                          width: modalWidth * 0.15),
-                                                      child: Text(
-                                                        entry.key,
-                                                        style: config.bodyStyle,
-                                                        textAlign: TextAlign.start,
-                                                      ),
-                                                    ),
-                                                    div,
-                                                    ConstrainedBox(
-                                                      constraints: BoxConstraints.tightFor(
-                                                          width: modalWidth * 0.425),
-                                                      child: Text(
-                                                        entry.value,
-                                                        style: config.bodyStyle,
-                                                        textAlign: TextAlign.start,
-                                                      ),
-                                                    ),
-                                                    div,
-                                                  ],
-                                                )),
+                                        EzTextBackground(
+                                          config,
+                                          backgroundColor: config.colors.surface,
+                                          text: EzCol(
+                                            children: missingPreview
+                                                .map((MapEntry<String, dynamic> entry) =>
+                                                    EzScrollView(
+                                                      config,
+                                                      scrollDirection: Axis.horizontal,
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: <Widget>[
+                                                        div,
+                                                        ConstrainedBox(
+                                                          constraints: BoxConstraints.tightFor(
+                                                              width: modalWidth * 0.15),
+                                                          child: Text(
+                                                            entry.key,
+                                                            style: config.bodyStyle,
+                                                            textAlign: TextAlign.start,
+                                                          ),
+                                                        ),
+                                                        div,
+                                                        ConstrainedBox(
+                                                          constraints: BoxConstraints.tightFor(
+                                                              width: modalWidth * 0.425),
+                                                          child: Text(
+                                                            entry.value,
+                                                            style: config.bodyStyle,
+                                                            textAlign: TextAlign.start,
+                                                          ),
+                                                        ),
+                                                        div,
+                                                      ],
+                                                    ))
+                                                .toList(),
+                                          ),
+                                        ),
                                       ],
                                     ]),
                                   ),
@@ -1275,157 +1283,159 @@ class _AddLocaleAction extends HybridAction {
                     ),
                   ]),
                   config.spacer,
-                  // Source
-                  EzScrollView(config, children: <Widget>[
-                    if (workDir.local) ...<Widget>[
-                      EzDropdownMenu<String>(
-                        config,
-                        label: 'Source locale',
-                        initialSelection: sourceCode,
-                        dropdownMenuEntries: workDir.files
-                            .map((ARBFile arb) => DropdownMenuEntry<String>(
-                                  label: arb.localeCode,
-                                  value: arb.localeCode,
-                                ))
-                            .toList(),
-                        widthEntry: 'en_US_BB',
-                        onSelected: (String? choice) {
-                          if (choice == null) return;
-                          setModal(() => sourceCode = choice);
-                        },
-                      ),
-                      config.margin,
-                    ],
-
-                    // Destination
-                    EzRow(config, children: <Widget>[
-                      Text('New locale:', style: config.bodyStyle),
-                      config.rowMargin,
-                      EzTextField(
-                        constraints: filterConstraints,
-                        hintText: 'xx_YY',
-                        controller: destController,
-                        onTapOutside: (_) => setModal(() {}),
-                        onEditingComplete: () => setModal(() {}),
-                        onFieldSubmitted: (_) => setModal(() {}),
-                        validator: validateDest,
-                      ),
-                    ]),
-                    config.separator,
-
-                    if (workDir.local) ...<Widget>[
-                      // Service
-                      EzRow(config, children: <Widget>[
-                        EzDropdownMenu<TranslationService>(
+                  Expanded(
+                    child: EzScrollView(config, children: <Widget>[
+                      if (workDir.local) ...<Widget>[
+                        // Source
+                        EzDropdownMenu<String>(
                           config,
-                          label: 'Choose service',
-                          initialSelection: service,
-                          dropdownMenuEntries: TranslationService.values
-                              .map((TranslationService ts) => DropdownMenuEntry<TranslationService>(
-                                    label: ts.name(config),
-                                    value: ts,
+                          label: 'Source locale',
+                          initialSelection: sourceCode,
+                          dropdownMenuEntries: workDir.files
+                              .map((ARBFile arb) => DropdownMenuEntry<String>(
+                                    label: arb.localeCode,
+                                    value: arb.localeCode,
                                   ))
                               .toList(),
                           widthEntry: 'en_US_BB',
-                          onSelected: (TranslationService? choice) {
+                          onSelected: (String? choice) {
                             if (choice == null) return;
-                            setModal(() => service = choice);
+                            setModal(() => sourceCode = choice);
                           },
                         ),
-                        service.twoCents(config),
+                        config.margin,
+                      ],
+
+                      // Destination
+                      EzRow(config, children: <Widget>[
+                        Text('New locale:', style: config.bodyStyle),
+                        config.rowMargin,
+                        EzTextField(
+                          constraints: filterConstraints,
+                          hintText: 'xx_YY',
+                          controller: destController,
+                          onTapOutside: (_) => setModal(() {}),
+                          onEditingComplete: () => setModal(() {}),
+                          onFieldSubmitted: (_) => setModal(() {}),
+                          validator: validateDest,
+                        ),
                       ]),
-                      config.margin,
-                      EzTextIconButton(
-                        config,
-                        label: 'Copy prompt',
-                        icon: EzIcon(config, Icons.copy),
-                        onPressed: sourceCode == null
-                            ? null
-                            : () async {
-                                if (sourceCode == null ||
-                                    validateDest(destController.text) != null) {
-                                  ezSnackBar(
-                                    config,
-                                    context: mCon,
-                                    message: 'Please complete the form',
-                                  );
-                                  return;
-                                }
-                                final ARBFile sourceFile = workDir.files
-                                    .firstWhere((ARBFile arb) => arb.localeCode == sourceCode);
-                                final String jsonString = a11howEncoder.convert(sourceFile.entries);
+                      config.separator,
 
-                                await Clipboard.setData(ClipboardData(
-                                  text: service.prompt(
-                                    source: sourceCode!,
-                                    dest: destController.text,
-                                    json: jsonString,
-                                  ),
-                                ));
-
-                                if (service.human) {
-                                  final Map<String, dynamic> blankEntries = <String, dynamic>{};
-
-                                  for (final MapEntry<String, dynamic> entry
-                                      in sourceFile.entries.entries) {
-                                    blankEntries[entry.key] =
-                                        entry.key.startsWith('@') ? destController.text : '';
-                                  }
-                                  final String blankJson = a11howEncoder.convert(blankEntries);
-
-                                  final Archive archive = Archive()
-                                    ..addFile(ArchiveFile(
-                                      '$sourceCode.arb',
-                                      jsonString.length,
-                                      utf8.encode(jsonString),
+                      if (workDir.local) ...<Widget>[
+                        // Service
+                        EzRow(config, children: <Widget>[
+                          EzDropdownMenu<TranslationService>(
+                            config,
+                            label: 'Choose service',
+                            initialSelection: service,
+                            dropdownMenuEntries: TranslationService.values
+                                .map((TranslationService ts) =>
+                                    DropdownMenuEntry<TranslationService>(
+                                      label: ts.name(config),
+                                      value: ts,
                                     ))
-                                    ..addFile(ArchiveFile(
-                                      '${destController.text}.arb',
-                                      blankJson.length,
-                                      utf8.encode(blankJson),
-                                    ));
+                                .toList(),
+                            widthEntry: 'en_US_BB',
+                            onSelected: (TranslationService? choice) {
+                              if (choice == null) return;
+                              setModal(() => service = choice);
+                            },
+                          ),
+                          service.twoCents(config),
+                        ]),
+                        config.margin,
+                        EzTextIconButton(
+                          config,
+                          label: 'Copy prompt',
+                          icon: EzIcon(config, Icons.copy),
+                          onPressed: sourceCode == null
+                              ? null
+                              : () async {
+                                  if (sourceCode == null ||
+                                      validateDest(destController.text) != null) {
+                                    ezSnackBar(
+                                      config,
+                                      context: mCon,
+                                      message: 'Please complete the form',
+                                    );
+                                    return;
+                                  }
+                                  final ARBFile sourceFile = workDir.files
+                                      .firstWhere((ARBFile arb) => arb.localeCode == sourceCode);
+                                  final String jsonString =
+                                      a11howEncoder.convert(sourceFile.entries);
 
-                                  final List<int> zipData = ZipEncoder().encode(archive);
+                                  await Clipboard.setData(ClipboardData(
+                                    text: service.prompt(
+                                      source: sourceCode!,
+                                      dest: destController.text,
+                                      json: jsonString,
+                                    ),
+                                  ));
 
-                                  Directory? outDir = await getDownloadsDirectory();
-                                  outDir ??= await getApplicationDocumentsDirectory();
-                                  final String zipPath =
-                                      p.join(outDir.path, '${service.name(config)}_gig.zip');
+                                  if (service.human) {
+                                    final Map<String, dynamic> blankEntries = <String, dynamic>{};
 
-                                  try {
-                                    final File zipFile = File(zipPath);
-                                    await zipFile.writeAsBytes(zipData);
-                                  } catch (e) {
-                                    if (context.mounted) {
-                                      ezSnackBar(
-                                        config,
-                                        context: mCon,
-                                        message: 'Failed to create zip: $e',
-                                      );
+                                    for (final MapEntry<String, dynamic> entry
+                                        in sourceFile.entries.entries) {
+                                      blankEntries[entry.key] =
+                                          entry.key.startsWith('@') ? destController.text : '';
+                                    }
+                                    final String blankJson = a11howEncoder.convert(blankEntries);
+
+                                    final Archive archive = Archive()
+                                      ..addFile(ArchiveFile(
+                                        '$sourceCode.arb',
+                                        jsonString.length,
+                                        utf8.encode(jsonString),
+                                      ))
+                                      ..addFile(ArchiveFile(
+                                        '${destController.text}.arb',
+                                        blankJson.length,
+                                        utf8.encode(blankJson),
+                                      ));
+
+                                    final List<int> zipData = ZipEncoder().encode(archive);
+
+                                    Directory? outDir = await getDownloadsDirectory();
+                                    outDir ??= await getApplicationDocumentsDirectory();
+                                    final String zipPath =
+                                        p.join(outDir.path, '${service.name(config)}_gig.zip');
+
+                                    try {
+                                      final File zipFile = File(zipPath);
+                                      await zipFile.writeAsBytes(zipData);
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ezSnackBar(
+                                          config,
+                                          context: mCon,
+                                          message: 'Failed to create zip: $e',
+                                        );
+                                      }
                                     }
                                   }
-                                }
 
-                                await launchUrl(service.url);
-                              },
+                                  await launchUrl(service.url);
+                                },
+                        ),
+                        config.divider,
+                      ],
+
+                      // Value/Field
+                      EzTextField(
+                        maxLines: null,
+                        validator: validateARB,
+                        hintText:
+                            '{\n\t"@@locale": "${destController.text.isEmpty ? 'xx_YY' : destController.text}",\n\t"newKey(s)": "New value(s)"\n}',
+                        controller: arbController,
+                        textAlign: TextAlign.start,
+                        constraints: BoxConstraints.tightFor(width: widthOf(context) * 0.8),
                       ),
-                      config.divider,
-                    ],
-                  ]),
-
-                  // Value/Field
-                  EzScrollView(config, children: <Widget>[
-                    EzTextField(
-                      maxLines: null,
-                      validator: validateARB,
-                      hintText:
-                          '{\n\t"@@locale": "${destController.text.isEmpty ? 'xx_YY' : destController.text}",\n\t"newKey(s)": "New value(s)"\n}',
-                      controller: arbController,
-                      textAlign: TextAlign.start,
-                      constraints: BoxConstraints.tightFor(width: widthOf(context) * 0.8),
-                    ),
-                    config.spacer,
-                  ]),
+                      config.spacer,
+                    ]),
+                  ),
                 ]),
               ),
             );
