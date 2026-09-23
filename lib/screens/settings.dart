@@ -20,108 +20,109 @@ class SettingsHubScreen extends StatelessWidget {
     return Consumer<EzCP>(
       builder: (_, EzCP config, __) => A11howScaffold(
         config,
-        body: EzScreen(config,
-            child: EzSettingsHub(
-              config,
-              pages: <EzSettingsSection>[
-                // Global //
+        body: EzScreen(
+          config,
+          safeArea: true,
+          child: EzSettingsHub(
+            config,
+            pages: <EzSettingsSection>[
+              // Global //
 
-                EzSettingsSection(
-                  position: 0,
-                  title: config.ezL10n.gGlobal,
-                  icon: EzIcon(
-                    config,
-                    EzCM.onMobile
-                        ? EzCM.platform == TargetPlatform.iOS
-                            ? Icons.phone_iphone
-                            : Icons.phone_android
-                        : Icons.computer,
-                    semanticLabel: config.ezL10n.gGlobal,
-                  ),
-                  subSettings: <EzSubSetting>[],
-                  fromStorage: () => EzSubSetting.blank,
-                  build: (_) => EzGlobalSettings(
-                    config,
-                    skipLocales: <Locale>{
-                      arabic,
-                      egyptianArabic,
-                      english, // Dupe
-                      filipino,
-                      chinese,
-                      hindi,
-                      creole,
-                      japanese,
-                      korean,
-                      russian,
-                      swahili,
-                      ukrainian,
-                      simplifiedChinese,
-                    }, // Will hopefully catch up soon
-                  ),
+              EzSettingsSection(
+                position: 0,
+                title: config.ezL10n.gGlobal,
+                icon: EzIcon(
+                  config,
+                  EzCM.onMobile
+                      ? EzCM.platform == TargetPlatform.iOS
+                          ? Icons.phone_iphone
+                          : Icons.phone_android
+                      : Icons.computer,
+                  semanticLabel: config.ezL10n.gGlobal,
                 ),
-
-                // Color //
-
-                EzSettingsSection(
-                  position: 1,
-                  title: config.ezL10n.gColor,
-                  icon: EzIcon(
-                    config,
-                    Icons.palette,
-                    semanticLabel: config.ezL10n.gColor,
-                  ),
-                  subSettings: <EzSubSetting>[
-                    EzSubSetting.qckColor,
-                    EzSubSetting.advColor,
-                  ],
-                  fromStorage: () => EzCM.get(advancedColorsKey) == true
-                      ? EzSubSetting.advColor
-                      : EzSubSetting.qckColor,
-                  build: (EzSubSetting subSec) => EzColorSettings(config, target: subSec),
+                subSettings: <EzSubSetting>[],
+                fromStorage: () => EzSubSetting.blank,
+                build: (_) => EzGlobalSettings(
+                  config,
+                  skipLocales: <Locale>{
+                    arabic,
+                    egyptianArabic,
+                    english, // Dupe
+                    filipino,
+                    chinese,
+                    hindi,
+                    creole,
+                    japanese,
+                    korean,
+                    russian,
+                    swahili,
+                    ukrainian,
+                    simplifiedChinese,
+                  }, // Will hopefully catch up soon
                 ),
+              ),
 
-                // Design //
+              // Color //
 
-                EzSettingsSection(
-                  position: 2,
-                  title: config.ezL10n.gDesign,
-                  icon: EzIcon(
-                    config,
-                    Icons.design_services,
-                    semanticLabel: config.ezL10n.gDesign,
-                  ),
-                  subSettings: <EzSubSetting>[
-                    EzSubSetting.butDesign,
-                    EzSubSetting.pagDesign,
-                  ],
-                  fromStorage: () => EzCM.get(pageTabKey) == true
-                      ? EzSubSetting.pagDesign
-                      : EzSubSetting.butDesign,
-                  build: (EzSubSetting subSec) => EzDesignSettings(config, target: subSec),
+              EzSettingsSection(
+                position: 1,
+                title: config.ezL10n.gColor,
+                icon: EzIcon(
+                  config,
+                  Icons.palette,
+                  semanticLabel: config.ezL10n.gColor,
                 ),
+                subSettings: <EzSubSetting>[
+                  EzSubSetting.qckColor,
+                  EzSubSetting.advColor,
+                ],
+                fromStorage: () => EzCM.get(advancedColorsKey) == true
+                    ? EzSubSetting.advColor
+                    : EzSubSetting.qckColor,
+                build: (EzSubSetting subSec) => EzColorSettings(config, target: subSec),
+              ),
 
-                // Text //
+              // Design //
 
-                EzSettingsSection(
-                  position: 3,
-                  title: config.ezL10n.gText,
-                  icon: EzIcon(
-                    config,
-                    Icons.text_format,
-                    semanticLabel: config.ezL10n.gText,
-                  ),
-                  subSettings: <EzSubSetting>[
-                    EzSubSetting.qckText,
-                    EzSubSetting.advText,
-                  ],
-                  fromStorage: () => EzCM.get(advancedTextKey) == true
-                      ? EzSubSetting.advText
-                      : EzSubSetting.qckText,
-                  build: (EzSubSetting subSec) => EzTextSettings(config, target: subSec),
+              EzSettingsSection(
+                position: 2,
+                title: config.ezL10n.gDesign,
+                icon: EzIcon(
+                  config,
+                  Icons.design_services,
+                  semanticLabel: config.ezL10n.gDesign,
                 ),
-              ],
-              target: targetPass,
-            )),
+                subSettings: <EzSubSetting>[
+                  EzSubSetting.butDesign,
+                  EzSubSetting.pagDesign,
+                ],
+                fromStorage: () =>
+                    EzCM.get(pageTabKey) == true ? EzSubSetting.pagDesign : EzSubSetting.butDesign,
+                build: (EzSubSetting subSec) => EzDesignSettings(config, target: subSec),
+              ),
+
+              // Text //
+
+              EzSettingsSection(
+                position: 3,
+                title: config.ezL10n.gText,
+                icon: EzIcon(
+                  config,
+                  Icons.text_format,
+                  semanticLabel: config.ezL10n.gText,
+                ),
+                subSettings: <EzSubSetting>[
+                  EzSubSetting.qckText,
+                  EzSubSetting.advText,
+                ],
+                fromStorage: () =>
+                    EzCM.get(advancedTextKey) == true ? EzSubSetting.advText : EzSubSetting.qckText,
+                build: (EzSubSetting subSec) => EzTextSettings(config, target: subSec),
+              ),
+            ],
+            target: targetPass,
+          ),
+        ),
         actions: <HybridAction>[
           HybridAction(label: 'a11how', icon: Icons.settings, onPressed: null),
         ],

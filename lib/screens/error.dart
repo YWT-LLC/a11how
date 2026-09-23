@@ -20,6 +20,7 @@ class ErrorScreen extends StatelessWidget {
         config,
         body: EzScreen(
           config,
+          safeArea: true,
           child: Center(
             child: EzScrollView(config, children: <Widget>[
               EzText(

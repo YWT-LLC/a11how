@@ -154,6 +154,7 @@ class _SelectScreenState extends State<SelectScreen> {
             config,
             body: EzScreen(
               config,
+              safeArea: true,
               child: EzCol(children: <Widget>[
                 // Header
                 EzText(
