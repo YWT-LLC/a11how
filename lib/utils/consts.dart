@@ -39,3 +39,9 @@ final Map<String, Object> a11HowDesktop = <String, Object>{
   removeKeyFilterTypeKey: FilterType.contains.value,
   workFilterTypeKey: FilterType.startsWith.value,
 };
+
+const Set<String> neverResetKeys = <String>{
+  developingKey,
+  recentDirsKey,
+  recentUrlsKey,
+};

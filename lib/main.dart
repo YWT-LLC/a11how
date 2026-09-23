@@ -34,6 +34,7 @@ void main() async {
       ),
     ),
     defaults: isMobile() ? a11HowMobile : a11HowDesktop,
+    neverReset: neverResetKeys,
   );
 
   await setMindWindow();
