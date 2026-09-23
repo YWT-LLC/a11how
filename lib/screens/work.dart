@@ -327,6 +327,7 @@ class _WorkScreenState extends State<WorkScreen> {
             ),
             child: EzScreen(
               config,
+              safeArea: true,
               margin: EdgeInsets.zero,
               child: EzCol(children: <Widget>[
                 EzRow(config, children: <Widget>[

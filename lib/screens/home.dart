@@ -410,6 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
         config,
         body: EzScreen(
           config,
+          safeArea: true,
           alignment: Alignment.topCenter,
           child: EzSwapWidget(
             config,
