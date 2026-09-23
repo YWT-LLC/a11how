@@ -97,6 +97,7 @@ class A11howScaffold extends StatelessWidget {
             title: EzScrollView(
               config,
               reverseHands: true,
+              showScrollHint: true,
               thumbVisibility: false,
               scrollDirection: Axis.horizontal,
               mainAxisAlignment: MainAxisAlignment.center,
