@@ -633,6 +633,7 @@ class _AddEntryAction extends HybridAction {
                                         ? config.colors.secondaryContainer
                                         : Colors.transparent,
                                     height: config.spacing * 2,
+                                    width: 250,
                                     title: EzSwitchPair(
                                       config,
                                       key: ValueKey<bool>(showPreview),
