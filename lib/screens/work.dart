@@ -85,7 +85,9 @@ class _WorkScreenState extends State<WorkScreen> {
 
         await writeSortedJson(config, file: file, arb: widget.workPair.truth);
       } catch (e) {
-        if (mounted) ezSnackBar(config, context: context, message: 'Failure saving truth: $e');
+        if (mounted) {
+          ezSnackBar(config, context: context, message: l10n(config).gFailedSave(e.toString()));
+        }
       }
     }
 
@@ -100,7 +102,9 @@ class _WorkScreenState extends State<WorkScreen> {
         await writeSortedJson(config, file: file, arb: widget.workPair.compare);
         if (mounted) ezSnackBar(config, context: context, message: config.ezL10n.gSuccess);
       } catch (e) {
-        if (mounted) ezSnackBar(config, context: context, message: 'Failure saving compare: $e');
+        if (mounted) {
+          ezSnackBar(config, context: context, message: l10n(config).gFailedSave(e.toString()));
+        }
       }
     } else {
       await _openPR(config, updatedCompare);
@@ -113,7 +117,7 @@ class _WorkScreenState extends State<WorkScreen> {
     final String? token = await getPAT(config, context);
     if (token == null || token.isEmpty) {
       if (mounted) {
-        ezSnackBar(config, context: context, message: 'Git PAT required to submit changes.');
+        ezSnackBar(config, context: context, message: l10n(config).gNeedPAT);
       }
       return;
     }
@@ -165,7 +169,7 @@ class _WorkScreenState extends State<WorkScreen> {
       if (fileRes.statusCode == 200) {
         sha = jsonDecode(fileRes.body)['sha'];
       } else if (fileRes.statusCode != 404) {
-        throw Exception('Failed to fetch file status.');
+        throw Exception(l10n(config).gFailedFileStatus);
       }
 
       // Commit changes
@@ -193,7 +197,7 @@ class _WorkScreenState extends State<WorkScreen> {
       );
 
       if (updateRes.statusCode != 200 && updateRes.statusCode != 201) {
-        throw Exception('Failed to commit changes: ${updateRes.body}');
+        throw Exception(l10n(config).wFailedCommit(updateRes.body));
       }
 
       // Open PR
@@ -210,17 +214,19 @@ class _WorkScreenState extends State<WorkScreen> {
 
       if (prRes.statusCode == 201) {
         if (mounted) {
-          ezSnackBar(config, context: context, message: 'PR opened!');
+          ezSnackBar(config, context: context, message: l10n(config).gPROpened);
         }
       } else {
         // HTTP 422 usually means a PR for this branch already exists.
         final String errorMsg = jsonDecode(prRes.body)['errors']?[0]?['message'] ?? prRes.body;
         throw Exception(prRes.statusCode == 422
-            ? 'PR might already exist: $errorMsg'
-            : 'Failed to open PR: $errorMsg');
+            ? l10n(config).gPRExists(errorMsg)
+            : l10n(config).gFailedPR(errorMsg));
       }
     } catch (e) {
-      if (mounted) ezSnackBar(config, context: context, message: 'GitHub Error: $e');
+      if (mounted) {
+        ezSnackBar(config, context: context, message: l10n(config).gGitError(e.toString()));
+      }
     }
   }
 
@@ -230,11 +236,7 @@ class _WorkScreenState extends State<WorkScreen> {
         index: index,
         child: MouseRegion(
           cursor: SystemMouseCursors.grab,
-          child: EzIcon(
-            config,
-            Icons.drag_handle,
-            color: config.colors.outline,
-          ),
+          child: EzIcon(config, Icons.drag_handle, color: config.colors.outline),
         ),
       );
 
@@ -360,7 +362,7 @@ class _WorkScreenState extends State<WorkScreen> {
                     ],
                     child: EzTextIconButton(
                       config,
-                      label: 'Highlight',
+                      label: l10n(config).wsHighlight,
                       icon: EzRow(config, children: <Widget>[
                         if (!showEmpty && !showIdentical)
                           Icon(
@@ -388,7 +390,7 @@ class _WorkScreenState extends State<WorkScreen> {
                   Expanded(
                     child: EzTextField(
                       constraints: const BoxConstraints(),
-                      hintText: 'Filter...\t>>',
+                      hintText: '${l10n(config).gFilter}...\t>>',
                       onChanged: (String entry) => setState(() => filterString = entry),
                       validator: (_) => null,
                     ),
@@ -435,7 +437,7 @@ class _WorkScreenState extends State<WorkScreen> {
                   EzIconButton(
                     config,
                     fauxDisabled: !caseSensitive,
-                    tooltip: 'Toggle case sensitivity',
+                    tooltip: l10n(config).gToggleCase,
                     icon: EzIcon(config, Icons.abc),
                     onPressed: () => setState(() => caseSensitive = !caseSensitive),
                   ),

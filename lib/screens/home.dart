@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ezSnackBar(
           config,
           context: context,
-          message: 'Only GitHub URLs are supported at this time',
+          message: l10n(config).hsOnlyGit,
         );
         return;
       }
@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ezSnackBar(
           config,
           context: context,
-          message: 'Please provide the full path the the .arb directory',
+          message: l10n(config).hsFullPath,
         );
         return;
       }
@@ -221,7 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ezSnackBar(
             config,
             context: context,
-            message: 'Nothing found${preSelected == null ? '' : ' - removing from recent'}',
+            message:
+                '${l10n(config).hsNothingFound}${preSelected == null ? '' : l10n(config).hsRemovingRecent}',
           );
         }
         if (preSelected != null) {
@@ -256,8 +257,8 @@ class _HomeScreenState extends State<HomeScreen> {
         config,
         key: ValueKey<bool>(developing),
         init: developing,
-        onLabel: 'Developing',
-        offLabel: 'Contributing',
+        onLabel: l10n(config).hsDeveloping,
+        offLabel: l10n(config).hsContributing,
         onChanged: flippityFloppity,
       );
 

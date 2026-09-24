@@ -59,7 +59,13 @@ class _SelectScreenState extends State<SelectScreen> {
         files.remove(arb);
         setState(() {});
       } catch (e) {
-        if (mounted) ezSnackBar(config, context: context, message: 'Failure to delete file: $e');
+        if (mounted) {
+          ezSnackBar(
+            config,
+            context: context,
+            message: l10n(config).gDeleteFailure(e.toString()),
+          );
+        }
       }
     } else {
       (truth == null)
@@ -85,7 +91,7 @@ class _SelectScreenState extends State<SelectScreen> {
                                 child: EzElevatedIconButton(
                                   config,
                                   label: (arb.localeCode == truth?.localeCode)
-                                      ? 'Self'
+                                      ? l10n(config).ssSelf
                                       : arb.localeCode,
                                   icon: Text(
                                     local
@@ -113,7 +119,9 @@ class _SelectScreenState extends State<SelectScreen> {
                             onHover: (_) => hoverOption(arb),
                             child: EzTextButton(
                               config,
-                              text: (arb.localeCode == truth?.localeCode) ? 'Self' : arb.localeCode,
+                              text: (arb.localeCode == truth?.localeCode)
+                                  ? l10n(config).ssSelf
+                                  : arb.localeCode,
                               onPressed: () async => await chooseOption(config, arb),
                             ),
                           ),
@@ -185,7 +193,7 @@ class _SelectScreenState extends State<SelectScreen> {
                           child: truth == null
                               ? EzRichText(config, children: <InlineSpan>[
                                   EzPlainText(
-                                    text: 'Source locale:',
+                                    text: l10n(config).ssSource,
                                     style: config.titleStyle?.copyWith(
                                       decoration: TextDecoration.underline,
                                       decorationColor: config.colors.primary,
@@ -197,7 +205,7 @@ class _SelectScreenState extends State<SelectScreen> {
                                   ),
                                 ])
                               : EzRichText(config, children: <InlineSpan>[
-                                  EzPlainText(text: 'Source locale:', style: config.bodyStyle),
+                                  EzPlainText(text: l10n(config).ssSource, style: config.bodyStyle),
                                   EzPlainText(
                                       text: ' ${truth!.localeCode}', style: config.bodyStyle),
                                 ]),
@@ -212,12 +220,13 @@ class _SelectScreenState extends State<SelectScreen> {
                           forceType: EzTransitionType.none,
                           child: truth == null
                               ? EzRichText(config, children: <InlineSpan>[
-                                  EzPlainText(text: 'Compare locale:', style: config.labelStyle),
+                                  EzPlainText(
+                                      text: l10n(config).ssCompare, style: config.labelStyle),
                                   EzPlainText(text: comparePreview, style: config.labelStyle),
                                 ])
                               : EzRichText(config, children: <InlineSpan>[
                                   EzPlainText(
-                                    text: 'Compare locale:',
+                                    text: l10n(config).ssCompare,
                                     style: config.titleStyle?.copyWith(
                                       decoration: TextDecoration.underline,
                                       decorationColor: config.colors.primary,
@@ -245,8 +254,8 @@ class _SelectScreenState extends State<SelectScreen> {
                       EzFlipFlop(
                         config,
                         init: wrap,
-                        onLabel: 'Wrap',
-                        offLabel: 'List',
+                        onLabel: l10n(config).ssWrap,
+                        offLabel: l10n(config).ssList,
                         onChanged: (bool choice) => setState(() => wrap = choice),
                       ),
                       config.margin,
@@ -254,7 +263,7 @@ class _SelectScreenState extends State<SelectScreen> {
                       // Filter
                       EzTextField(
                         constraints: filterConstraints,
-                        hintText: 'Filter',
+                        hintText: l10n(config).gFilter,
                         validator: (String? check) {
                           if (check == null) return null;
 
@@ -369,7 +378,7 @@ class _AddEntryAction extends HybridAction {
     this.truth,
     required this.setState,
   }) : super(
-          label: 'Add entries',
+          label: l10n(config).ssAddEntries,
           icon: Icons.playlist_add_outlined,
           onPressed: () async {
             // Define (modal) build data //
@@ -400,10 +409,10 @@ class _AddEntryAction extends HybridAction {
               try {
                 final dynamic decoded = jsonDecode(textToParse);
                 if (decoded is! Map<String, dynamic>) {
-                  return 'Must evaluate to a JSON object';
+                  return l10n(config).ssInvalidJSON;
                 }
               } catch (e) {
-                return 'Invalid JSON format';
+                return l10n(config).ssInvalidJSON;
               }
 
               return null;
@@ -496,14 +505,14 @@ class _AddEntryAction extends HybridAction {
                               config.rowSpacer,
                               EzTextIconButton(
                                 config,
-                                label: 'Add',
+                                label: l10n(config).gAdd,
                                 icon: EzIcon(config, Icons.add),
                                 onPressed: () {
                                   if (validateARB(arbController.text) != null) {
                                     ezSnackBar(
                                       config,
                                       context: mCon,
-                                      message: 'Resolve issues please',
+                                      message: l10n(config).gResolveIssues,
                                     );
                                     return;
                                   }
@@ -546,7 +555,7 @@ class _AddEntryAction extends HybridAction {
                             ? EzScrollView(config, children: <Widget>[
                                 // To-do section
                                 Text(
-                                  'TODO:',
+                                  l10n(config).ssTODO,
                                   textAlign: TextAlign.center,
                                   style: config.titleStyle,
                                 ),
@@ -596,7 +605,7 @@ class _AddEntryAction extends HybridAction {
                                   EzTitledDivider(
                                     config,
                                     title: Text(
-                                      'toDONE:',
+                                      l10n(config).ssToDone,
                                       textAlign: TextAlign.center,
                                       style: config.titleStyle,
                                     ),
@@ -638,7 +647,7 @@ class _AddEntryAction extends HybridAction {
                                     title: EzSwitchPair(
                                       config,
                                       key: ValueKey<bool>(showPreview),
-                                      text: 'Preview missing',
+                                      text: l10n(config).ssPreview,
                                       value: showPreview,
                                       onChanged: (bool? choice) {
                                         if (choice == null) return;
@@ -655,7 +664,7 @@ class _AddEntryAction extends HybridAction {
                                     kid: EzCol(children: <Widget>[
                                       EzDropdownMenu<_AddCache>(
                                         config,
-                                        label: 'Truth (keys & values)',
+                                        label: l10n(config).ssPreviewTruth,
                                         initialSelection: previewTruth,
                                         dropdownMenuEntries: completed
                                             .map((_AddCache cache) => DropdownMenuEntry<_AddCache>(
@@ -670,7 +679,7 @@ class _AddEntryAction extends HybridAction {
                                       config.margin,
                                       EzDropdownMenu<ARBFile>(
                                         config,
-                                        label: 'Compare (keys)',
+                                        label: l10n(config).ssPreviewCompare,
                                         initialSelection: previewCompare,
                                         dropdownMenuEntries: workDir.files
                                             .where((ARBFile file) => !completed
@@ -693,7 +702,7 @@ class _AddEntryAction extends HybridAction {
                                               ? const SizedBox.shrink()
                                               : EzTextIconButton(
                                                   config,
-                                                  label: 'Copy .json',
+                                                  label: l10n(config).ssCopyJSON,
                                                   icon: EzIcon(config, Icons.copy),
                                                   onPressed: () async =>
                                                       await Clipboard.setData(ClipboardData(
@@ -704,7 +713,7 @@ class _AddEntryAction extends HybridAction {
                                                           ? ezSnackBar(
                                                               config,
                                                               context: context,
-                                                              message: 'Copied!',
+                                                              message: l10n(config).gCopied,
                                                             )
                                                           : doNothing()),
                                                 ),
@@ -770,7 +779,7 @@ class _AddEntryAction extends HybridAction {
                                 EzTextField(
                                   maxLines: null,
                                   validator: validateARB,
-                                  hintText: '\t"newKey(s)": "New value(s)",',
+                                  hintText: l10n(config).ssNewKV,
                                   controller: arbController,
                                   textAlign: TextAlign.start,
                                   constraints: BoxConstraints(maxWidth: modalWidth * 0.8),
@@ -824,7 +833,7 @@ class _RemoveEntryAction extends HybridAction {
     this.truth,
     required this.setState,
   }) : super(
-          label: 'Remove entries',
+          label: l10n(config).ssRemoveEntry,
           icon: Icons.playlist_remove_outlined,
           onPressed: () async {
             // Define (modal) build data //
@@ -899,7 +908,7 @@ class _RemoveEntryAction extends HybridAction {
                             ? // Choose key source
                             EzCol(children: <Widget>[
                                 Text(
-                                  'Key source',
+                                  l10n(config).ssKeySource,
                                   textAlign: TextAlign.center,
                                   style: config.titleStyle,
                                 ),
@@ -920,7 +929,9 @@ class _RemoveEntryAction extends HybridAction {
                             EzCol(children: <Widget>[
                                 // Title
                                 Text(
-                                  choppingBlock.isEmpty ? 'Select keys to remove' : 'Removing...',
+                                  choppingBlock.isEmpty
+                                      ? l10n(config).ssToRemove
+                                      : l10n(config).ssRemoving,
                                   style: config.bodyStyle,
                                   textAlign: TextAlign.center,
                                 ),
@@ -956,7 +967,7 @@ class _RemoveEntryAction extends HybridAction {
                                   Expanded(
                                     child: EzTextField(
                                       constraints: const BoxConstraints(),
-                                      hintText: 'Filter',
+                                      hintText: l10n(config).gFilter,
                                       onChanged: (String entry) =>
                                           setModal(() => filterString = entry),
                                       validator: (_) => null,
@@ -985,7 +996,7 @@ class _RemoveEntryAction extends HybridAction {
                                   EzIconButton(
                                     config,
                                     fauxDisabled: !caseSensitive,
-                                    tooltip: 'Toggle case sensitivity',
+                                    tooltip: l10n(config).gToggleCase,
                                     icon: EzIcon(config, Icons.abc),
                                     onPressed: () => setModal(() => caseSensitive = !caseSensitive),
                                   ),
@@ -1046,7 +1057,7 @@ class _AddLocaleAction extends HybridAction {
     this.truth,
     required this.setState,
   }) : super(
-          label: 'Add locale',
+          label: l10n(config).ssAddLocale,
           icon: Icons.group_add_outlined,
           onPressed: () async {
             // Define (modal) build data //
@@ -1067,7 +1078,7 @@ class _AddLocaleAction extends HybridAction {
               const String pattern = r'^[a-z]+_?[A-Z]*$';
               final RegExp regex = RegExp(pattern);
               if (!regex.hasMatch(check)) {
-                return 'Invalid; $pattern';
+                return l10n(config).gInvalidRegex(pattern);
               }
 
               return null;
@@ -1081,10 +1092,10 @@ class _AddLocaleAction extends HybridAction {
               try {
                 final dynamic decoded = jsonDecode(check);
                 if (decoded is! Map<String, dynamic>) {
-                  return 'Must evaluate to a JSON object';
+                  return l10n(config).ssInvalidJSON;
                 }
               } catch (e) {
-                return 'Invalid JSON format';
+                return l10n(config).ssInvalidJSON;
               }
 
               return null;
@@ -1118,7 +1129,7 @@ class _AddLocaleAction extends HybridAction {
                     config.rowSpacer,
                     EzTextIconButton(
                       config,
-                      label: 'Add',
+                      label: l10n(config).gAdd,
                       icon: EzIcon(config, Icons.add),
                       onPressed: () async {
                         if (validateDest(destController.text) != null ||
@@ -1126,7 +1137,7 @@ class _AddLocaleAction extends HybridAction {
                           ezSnackBar(
                             config,
                             context: mCon,
-                            message: 'Resolve issues please',
+                            message: l10n(config).gResolveIssues,
                           );
 
                           return;
@@ -1157,7 +1168,7 @@ class _AddLocaleAction extends HybridAction {
                               ezSnackBar(
                                 config,
                                 context: context,
-                                message: 'Git PAT required to submit changes.',
+                                message: l10n(config).gNeedPAT,
                               );
                             }
                             return;
@@ -1186,7 +1197,7 @@ class _AddLocaleAction extends HybridAction {
                               headers: headers,
                             );
                             if (userRes.statusCode != 200) {
-                              throw Exception('Authentication failed.');
+                              throw Exception(l10n(config).gAuthFailed);
                             }
                             final String forkOwner = jsonDecode(userRes.body)['login'];
 
@@ -1198,9 +1209,9 @@ class _AddLocaleAction extends HybridAction {
                             );
 
                             if (existsRes.statusCode == 200) {
-                              throw Exception('${destController.text}.arb already exists.');
+                              throw Exception(l10n(config).gARBExists(destController.text));
                             } else if (existsRes.statusCode != 404) {
-                              throw Exception('Failed to verify file status: ${existsRes.body}');
+                              throw Exception(l10n(config).gFailedFileStatus);
                             }
 
                             // Make fork
@@ -1209,7 +1220,7 @@ class _AddLocaleAction extends HybridAction {
                               headers: headers,
                             );
                             if (forkRes.statusCode != 202 && forkRes.statusCode != 200) {
-                              throw Exception('Failed to create fork.');
+                              throw Exception(l10n(config).gFailedFork);
                             }
 
                             // Wait a bit
@@ -1242,7 +1253,7 @@ class _AddLocaleAction extends HybridAction {
                             );
 
                             if (updateRes.statusCode != 200 && updateRes.statusCode != 201) {
-                              throw Exception('Failed to commit new file: ${updateRes.body}');
+                              throw Exception(l10n(config).gFailedSave(updateRes.body));
                             }
 
                             // Open PR
@@ -1259,21 +1270,25 @@ class _AddLocaleAction extends HybridAction {
 
                             if (prRes.statusCode == 201) {
                               if (context.mounted) {
-                                ezSnackBar(config, context: context, message: 'PR opened!');
+                                ezSnackBar(
+                                  config,
+                                  context: context,
+                                  message: l10n(config).gPROpened,
+                                );
                               }
                             } else {
                               final String errorMsg =
                                   jsonDecode(prRes.body)['errors']?[0]?['message'] ?? prRes.body;
                               throw Exception(prRes.statusCode == 422
-                                  ? 'PR might already exist: $errorMsg'
-                                  : 'Failed to open PR: $errorMsg');
+                                  ? l10n(config).gPRExists(errorMsg)
+                                  : l10n(config).gFailedPR(errorMsg));
                             }
                           } catch (e) {
                             if (context.mounted) {
                               ezSnackBar(
                                 config,
                                 context: context,
-                                message: 'GitHub Error: $e',
+                                message: l10n(config).gGitError(e.toString()),
                               );
                             }
                           }
@@ -1291,7 +1306,7 @@ class _AddLocaleAction extends HybridAction {
                         // Source
                         EzDropdownMenu<String>(
                           config,
-                          label: 'Source locale',
+                          label: l10n(config).ssSource,
                           initialSelection: sourceCode,
                           dropdownMenuEntries: workDir.files
                               .map((ARBFile arb) => DropdownMenuEntry<String>(
@@ -1310,7 +1325,7 @@ class _AddLocaleAction extends HybridAction {
 
                       // Destination
                       EzRow(config, children: <Widget>[
-                        Text('New locale:', style: config.bodyStyle),
+                        Text(l10n(config).ssNewLocale, style: config.bodyStyle),
                         config.rowMargin,
                         EzTextField(
                           constraints: filterConstraints,
@@ -1329,7 +1344,7 @@ class _AddLocaleAction extends HybridAction {
                         EzRow(config, children: <Widget>[
                           EzDropdownMenu<TranslationService>(
                             config,
-                            label: 'Choose service',
+                            label: l10n(config).ssChooseService,
                             initialSelection: service,
                             dropdownMenuEntries: TranslationService.values
                                 .map((TranslationService ts) =>
@@ -1349,7 +1364,7 @@ class _AddLocaleAction extends HybridAction {
                         config.margin,
                         EzTextIconButton(
                           config,
-                          label: 'Copy prompt',
+                          label: l10n(config).ssCopyPrompt,
                           icon: EzIcon(config, Icons.copy),
                           onPressed: sourceCode == null
                               ? null
@@ -1359,7 +1374,7 @@ class _AddLocaleAction extends HybridAction {
                                     ezSnackBar(
                                       config,
                                       context: mCon,
-                                      message: 'Please complete the form',
+                                      message: l10n(config).ssPleaseComplete,
                                     );
                                     return;
                                   }
@@ -1413,7 +1428,7 @@ class _AddLocaleAction extends HybridAction {
                                         ezSnackBar(
                                           config,
                                           context: mCon,
-                                          message: 'Failed to create zip: $e',
+                                          message: l10n(config).ssFailedZIP(e.toString()),
                                         );
                                       }
                                     }
@@ -1430,7 +1445,7 @@ class _AddLocaleAction extends HybridAction {
                         maxLines: null,
                         validator: validateARB,
                         hintText:
-                            '{\n\t"@@locale": "${destController.text.isEmpty ? 'xx_YY' : destController.text}",\n\t"newKey(s)": "New value(s)"\n}',
+                            '{\n\t"@@locale": "${destController.text.isEmpty ? 'xx_YY' : destController.text}",\n${l10n(config).ssNewKV}\n}',
                         controller: arbController,
                         textAlign: TextAlign.start,
                         constraints: BoxConstraints.tightFor(width: widthOf(context) * 0.8),
