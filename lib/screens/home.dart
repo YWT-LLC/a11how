@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> processPath(EzCP config, String? preSelected) async {
-    await ezNoTouch(() async {
+    await ezNoTouch(config, () async {
       // Valid dir?
       final String? selectedDirectory = preSelected ?? await FilePicker.getDirectoryPath();
       if (selectedDirectory == null) return;
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> processUrl(EzCP config, String? preSelected) async {
-    await ezNoTouch(() async {
+    await ezNoTouch(config, () async {
       // Valid url?
       final String url = preSelected ?? urlController.text;
       if (validateUrl(config, url) != null) {

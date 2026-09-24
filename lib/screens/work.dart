@@ -534,7 +534,7 @@ class _WorkScreenState extends State<WorkScreen> {
               icon: saving ? Icons.timer : Icons.save,
               label: config.ezL10n.gSave,
               onPressed: () async =>
-                  saving ? doNothing() : await ezNoTouch(() async => await save(config)),
+                  saving ? doNothing() : await ezNoTouch(config, () async => await save(config)),
             ),
           ],
         );
