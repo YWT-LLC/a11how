@@ -45,8 +45,8 @@ class _WorkScreenState extends State<WorkScreen> {
 
   // Define custom functions //
 
-  String? validateField(String? check) =>
-      (check == null || check.isEmpty) ? 'Cannot be empty' : null;
+  String? validateField(EzCP config, String? check) =>
+      (check == null || check.isEmpty) ? l10n(config).gNoEmpty : null;
 
   bool checkFilter(String check) => switch (filterType) {
         FilterType.startsWith => caseSensitive
@@ -98,7 +98,7 @@ class _WorkScreenState extends State<WorkScreen> {
           ..addAll(updatedCompare);
 
         await writeSortedJson(config, file: file, arb: widget.workPair.compare);
-        if (mounted) ezSnackBar(config, context: context, message: 'Success!');
+        if (mounted) ezSnackBar(config, context: context, message: config.ezL10n.gSuccess);
       } catch (e) {
         if (mounted) ezSnackBar(config, context: context, message: 'Failure saving compare: $e');
       }
@@ -495,7 +495,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                     style: config.bodyStyle,
                                     textAlign: TextAlign.start,
                                     onChanged: (String val) => row.truth = val,
-                                    validator: validateField,
+                                    validator: (String? check) => validateField(config, check),
                                   ),
                                 ),
 
@@ -516,7 +516,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                     style: config.bodyStyle,
                                     textAlign: TextAlign.start,
                                     onChanged: (String val) => row.compare = val,
-                                    validator: validateField,
+                                    validator: (String? check) => validateField(config, check),
                                   ),
                                 ),
                               ],

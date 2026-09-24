@@ -388,7 +388,7 @@ class _AddEntryAction extends HybridAction {
 
             String? validateARB(String? check) {
               if (check == null || check.trim().isEmpty) {
-                return 'Cannot be empty';
+                return l10n(config).gNoEmpty;
               }
 
               // Allow for optional brackets
@@ -464,7 +464,7 @@ class _AddEntryAction extends HybridAction {
                               config.rowSpacer,
                               EzTextIconButton(
                                 config,
-                                label: 'Save',
+                                label: config.ezL10n.gSave,
                                 icon: EzIcon(config, Icons.save),
                                 onPressed: completed.isEmpty
                                     ? null
@@ -875,7 +875,7 @@ class _RemoveEntryAction extends HybridAction {
                       config.rowSpacer,
                       EzTextIconButton(
                         config,
-                        label: 'Save',
+                        label: config.ezL10n.gSave,
                         icon: EzIcon(config, Icons.save),
                         onPressed: choppingBlock.isEmpty
                             ? null
@@ -1061,7 +1061,7 @@ class _AddLocaleAction extends HybridAction {
 
             String? validateDest(String? check) {
               if (check == null || check.trim().isEmpty) {
-                return 'Cannot be empty';
+                return l10n(config).gNoEmpty;
               }
 
               const String pattern = r'^[a-z]+_?[A-Z]*$';
@@ -1075,7 +1075,7 @@ class _AddLocaleAction extends HybridAction {
 
             String? validateARB(String? check) {
               if (check == null || check.trim().isEmpty) {
-                return 'Cannot be empty';
+                return l10n(config).gNoEmpty;
               }
 
               try {

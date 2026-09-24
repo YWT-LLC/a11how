@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 entries: json,
               ));
             } catch (e) {
-              ezLog('Skipped invalid ARB file: ${entity.path}');
+              ezLog(l10n(config).hsSkippedInvalid(entity.path));
             }
           }
         }
@@ -97,7 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ezSnackBar(
             config,
             context: context,
-            message: 'Nothing found${preSelected == null ? '' : ' - removing from recent'}',
+            message:
+                '${l10n(config).hsNothingFound}${preSelected == null ? '' : l10n(config).hsRemovingRecent}',
           );
         }
         if (preSelected != null) {
@@ -110,9 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  String? validateUrl(String? check) {
+  String? validateUrl(EzCP config, String? check) {
     if (check == null || check.isEmpty) {
-      return 'Cannot be empty';
+      return l10n(config).gNoEmpty;
     }
     return Uri.parse(check).isAbsolute ? null : 'Invalid URL';
   }
@@ -121,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await ezNoTouch(() async {
       // Valid url?
       final String url = preSelected ?? urlController.text;
-      if (validateUrl(url) != null) {
+      if (validateUrl(config, url) != null) {
         ezSnackBar(
           config,
           context: context,
@@ -273,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
             textAlign: TextAlign.end,
             hintText: 'https://github.com/YWT-LLC/a11how/tree/main/lib/l10n',
             constraints: ezTextFieldConstraints(context, prop: 0.4),
-            validator: validateUrl,
+            validator: (String? check) => validateUrl(config, check),
             onFieldSubmitted: (String url) async => await processUrl(config, url),
           ),
           config.margin,
@@ -306,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
           EzIconTouch(
             config,
             enabled: (developing ? recentDirs : recentUrls).isNotEmpty,
-            tooltip: 'Save config',
+            tooltip: config.ezL10n.ssSaveConfig,
             icon: Icons.save,
             onPressed: () async {
               try {
@@ -325,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           EzIconTouch(
             config,
-            tooltip: 'Upload config',
+            tooltip: config.ezL10n.ssLoadConfig,
             icon: Icons.upload,
             onPressed: () async {
               final PlatformFile? result = await FilePicker.pickFile(
