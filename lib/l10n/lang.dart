@@ -460,6 +460,102 @@ abstract class Lang {
   /// In en, this message translates to:
   /// **'Skipped invalid ARB file: \${path}'**
   String hsSkippedInvalid(Object path);
+
+  /// No description provided for @gKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Key'**
+  String get gKey;
+
+  /// No description provided for @gTruth.
+  ///
+  /// In en, this message translates to:
+  /// **'Truth'**
+  String get gTruth;
+
+  /// No description provided for @gCompare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare'**
+  String get gCompare;
+
+  /// No description provided for @gPAT.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Access Token'**
+  String get gPAT;
+
+  /// No description provided for @gEnterPAT.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PAT'**
+  String get gEnterPAT;
+
+  /// No description provided for @gPATPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not saved anywhere. It disappears as soon as the function finishes.'**
+  String get gPATPolicy;
+
+  /// No description provided for @gSourceCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Source code'**
+  String get gSourceCode;
+
+  /// No description provided for @gOpenRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'Open repo'**
+  String get gOpenRepo;
+
+  /// No description provided for @gWhatsPAT.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s a PAT?'**
+  String get gWhatsPAT;
+
+  /// No description provided for @gPolicyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contribution policy'**
+  String get gPolicyTitle;
+
+  /// No description provided for @gPolicyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...'**
+  String get gPolicyPolicy;
+
+  /// No description provided for @gWriteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to write to {path}:\n{error}'**
+  String gWriteFailed(Object error, Object path);
+
+  /// No description provided for @gSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get gSubmit;
+
+  /// No description provided for @gStarts.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts with'**
+  String get gStarts;
+
+  /// No description provided for @gContains.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains'**
+  String get gContains;
+
+  /// No description provided for @gEnds.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends with'**
+  String get gEnds;
 }
 
 class _LangDelegate extends LocalizationsDelegate<Lang> {

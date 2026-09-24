@@ -59,5 +59,21 @@
   "gPRExists": "PR might already exist: {error}",
   "gGitError": "GitHub error: {error}",
   "gPROpened": "PR opened!",
-  "hsSkippedInvalid": "Skipped invalid ARB file: ${path}"
+  "hsSkippedInvalid": "Skipped invalid ARB file: ${path}",
+  "gKey": "Key",
+  "gTruth": "Truth",
+  "gCompare": "Compare",
+  "gPAT": "Personal Access Token",
+  "gEnterPAT": "Enter PAT",
+  "gPATPolicy": "This is not saved anywhere. It disappears as soon as the function finishes.",
+  "gSourceCode": "Source code",
+  "gOpenRepo": "Open repo",
+  "gWhatsPAT": "What's a PAT?",
+  "gPolicyTitle": "Contribution policy",
+  "gPolicyPolicy": "We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we'll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it's better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we'll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...",
+  "gWriteFailed": "Failed to write to {path}:\n{error}",
+  "gSubmit": "Submit",
+  "gStarts": "Starts with",
+  "gContains": "Contains",
+  "gEnds": "Ends with"
 }
