@@ -3,7 +3,6 @@
  * See LICENSE for distribution and usage details.
  */
 
-import '../screens/export.dart';
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
@@ -32,8 +31,9 @@ class SelectScreen extends StatefulWidget {
 class _SelectScreenState extends State<SelectScreen> {
   // Define the build data //
 
-  late final List<ARBFile> files = widget.workDir.files;
+  late final String workPath = widget.workDir.path;
   late final bool local = widget.workDir.local;
+  late final List<ARBFile> files = widget.workDir.files;
 
   bool wrap = true;
   String filter = '';
@@ -167,7 +167,7 @@ class _SelectScreenState extends State<SelectScreen> {
                 // Header
                 EzText(
                   config,
-                  text: widget.workDir.path,
+                  text: workPath,
                   style: config.labelStyle?.copyWith(color: config.colors.outline),
                   textAlign: TextAlign.center,
                 ),
@@ -312,7 +312,8 @@ class _SelectScreenState extends State<SelectScreen> {
                       _AddEntryAction(
                         config,
                         context: context,
-                        workDir: widget.workDir,
+                        local: local,
+                        files: files,
                         truth: truth,
                         setState: () => setState(() {}),
                       ),
@@ -321,7 +322,8 @@ class _SelectScreenState extends State<SelectScreen> {
                       _RemoveEntryAction(
                         config,
                         context: context,
-                        workDir: widget.workDir,
+                        local: local,
+                        files: files,
                         truth: truth,
                         setState: () => setState(() {}),
                       ),
@@ -331,10 +333,16 @@ class _SelectScreenState extends State<SelectScreen> {
                     _AddLocaleAction(
                       config,
                       context: context,
-                      workDir: widget.workDir,
+                      local: local,
+                      files: files,
                       filterConstraints: filterConstraints,
                       truth: truth,
-                      setState: () => setState(() {}),
+                      setState: (ARBFile? newFile) {
+                        if (newFile != null) {
+                          files.add(newFile);
+                          setState(() {});
+                        }
+                      },
                     ),
 
                     if (local) ...<HybridAction>[
@@ -367,14 +375,16 @@ class _SelectScreenState extends State<SelectScreen> {
 class _AddEntryAction extends HybridAction {
   final EzCP config;
   final BuildContext context;
-  final ARBDir workDir;
+  final bool local;
+  final List<ARBFile> files;
   final ARBFile? truth;
   final VoidCallback setState;
 
   _AddEntryAction(
     this.config, {
     required this.context,
-    required this.workDir,
+    required this.local,
+    required this.files,
     this.truth,
     required this.setState,
   }) : super(
@@ -389,7 +399,7 @@ class _AddEntryAction extends HybridAction {
             final Set<_AddCache> completed = <_AddCache>{};
             bool showPreview = true;
             _AddCache? previewTruth;
-            ARBFile? previewCompare = workDir.files.first;
+            ARBFile? previewCompare = files.first;
 
             final TextEditingController arbController = TextEditingController();
 
@@ -466,7 +476,7 @@ class _AddEntryAction extends HybridAction {
                                 config,
                                 label: config.ezL10n.gCancel,
                                 icon: EzIcon(config, Icons.cancel),
-                                onPressed: (completed.length == workDir.files.length)
+                                onPressed: (completed.length == files.length)
                                     ? null
                                     : () => Navigator.of(context).pop(),
                               ),
@@ -530,7 +540,7 @@ class _AddEntryAction extends HybridAction {
                                     previewTruth = toAdd;
                                   }
                                   if (previewCompare == toAdd.file) {
-                                    previewCompare = workDir.files
+                                    previewCompare = files
                                         .where((ARBFile arb) => !completed
                                             .map((_AddCache cache) => cache.file)
                                             .contains(arb))
@@ -561,7 +571,7 @@ class _AddEntryAction extends HybridAction {
                                 ),
                                 config.spacer,
                                 EzWrap(
-                                  children: workDir.files
+                                  children: files
                                       .where((ARBFile arb) => completed.isEmpty
                                           ? true
                                           : !completed
@@ -586,7 +596,7 @@ class _AddEntryAction extends HybridAction {
                                                 );
                                                 if (completed.isEmpty) previewTruth = toAdd;
                                                 if (previewCompare == toAdd.file) {
-                                                  previewCompare = workDir.files
+                                                  previewCompare = files
                                                       .where((ARBFile arb) => !completed
                                                           .map((_AddCache cache) => cache.file)
                                                           .contains(arb))
@@ -681,7 +691,7 @@ class _AddEntryAction extends HybridAction {
                                         config,
                                         label: l10n(config).ssPreviewCompare,
                                         initialSelection: previewCompare,
-                                        dropdownMenuEntries: workDir.files
+                                        dropdownMenuEntries: files
                                             .where((ARBFile file) => !completed
                                                 .map((_AddCache cache) => cache.file)
                                                 .contains(file))
@@ -822,14 +832,16 @@ class _AddCache {
 class _RemoveEntryAction extends HybridAction {
   final EzCP config;
   final BuildContext context;
-  final ARBDir workDir;
+  final bool local;
+  final List<ARBFile> files;
   final ARBFile? truth;
   final VoidCallback setState;
 
   _RemoveEntryAction(
     this.config, {
     required this.context,
-    required this.workDir,
+    required this.local,
+    required this.files,
     this.truth,
     required this.setState,
   }) : super(
@@ -889,7 +901,7 @@ class _RemoveEntryAction extends HybridAction {
                         onPressed: choppingBlock.isEmpty
                             ? null
                             : () => ezNoTouch(() async {
-                                  for (final ARBFile arb in workDir.files) {
+                                  for (final ARBFile arb in files) {
                                     arb.entries.removeWhere(
                                         (String key, _) => choppingBlock.contains(key));
                                     await writeSortedJson(config, file: File(arb.path), arb: arb);
@@ -913,7 +925,7 @@ class _RemoveEntryAction extends HybridAction {
                                   style: config.titleStyle,
                                 ),
                                 EzWrap(
-                                  children: workDir.files
+                                  children: files
                                       .map((ARBFile arb) => Padding(
                                             padding: EzInsets.wrap(config.spacing),
                                             child: EzElevatedButton(
@@ -1044,15 +1056,17 @@ class _RemoveEntryAction extends HybridAction {
 class _AddLocaleAction extends HybridAction {
   final EzCP config;
   final BuildContext context;
-  final ARBDir workDir;
+  final bool local;
+  final List<ARBFile> files;
   final BoxConstraints filterConstraints;
   final ARBFile? truth;
-  final VoidCallback setState;
+  final void Function(ARBFile?) setState;
 
   _AddLocaleAction(
     this.config, {
     required this.context,
-    required this.workDir,
+    required this.local,
+    required this.files,
     required this.filterConstraints,
     this.truth,
     required this.setState,
@@ -1104,10 +1118,7 @@ class _AddLocaleAction extends HybridAction {
             // Init (modal) //
 
             sourceCode = (truth == null)
-                ? workDir.files
-                    .where((ARBFile arb) => arb.localeCode == 'en_US')
-                    .firstOrNull
-                    ?.localeCode
+                ? files.where((ARBFile arb) => arb.localeCode == 'en_US').firstOrNull?.localeCode
                 : truth.localeCode;
 
             // Return (modal) build //
@@ -1143,24 +1154,23 @@ class _AddLocaleAction extends HybridAction {
                           return;
                         }
 
-                        String newPath = workDir.files.first.path;
+                        String newPath = files.first.path;
                         newPath = newPath.replaceFirst(
                           RegExp(r'_[a-zA-Z_]+\.arb'),
                           '_${destController.text}.arb',
                         );
 
                         // Save
-                        if (workDir.local) {
-                          await writeSortedJson(
-                            config,
-                            file: File(newPath),
-                            arb: ARBFile(
-                              path: newPath,
-                              local: true,
-                              localeCode: destController.text,
-                              entries: jsonDecode(arbController.text),
-                            ),
+                        ARBFile? added;
+
+                        if (local) {
+                          added = ARBFile(
+                            path: newPath,
+                            local: true,
+                            localeCode: destController.text,
+                            entries: jsonDecode(arbController.text),
                           );
+                          await writeSortedJson(config, file: File(newPath), arb: added);
                         } else {
                           final String? token = await getPAT(config, context);
                           if (token == null || token.isEmpty) {
@@ -1295,20 +1305,20 @@ class _AddLocaleAction extends HybridAction {
                         }
 
                         if (mCon.mounted) Navigator.of(mCon).pop();
-                        setState();
+                        setState(added);
                       },
                     ),
                   ]),
                   config.spacer,
                   Expanded(
                     child: EzScrollView(config, children: <Widget>[
-                      if (workDir.local) ...<Widget>[
+                      if (local) ...<Widget>[
                         // Source
                         EzDropdownMenu<String>(
                           config,
                           label: l10n(config).ssSource,
                           initialSelection: sourceCode,
-                          dropdownMenuEntries: workDir.files
+                          dropdownMenuEntries: files
                               .map((ARBFile arb) => DropdownMenuEntry<String>(
                                     label: arb.localeCode,
                                     value: arb.localeCode,
@@ -1339,7 +1349,7 @@ class _AddLocaleAction extends HybridAction {
                       ]),
                       config.separator,
 
-                      if (workDir.local) ...<Widget>[
+                      if (local) ...<Widget>[
                         // Service
                         EzRow(config, children: <Widget>[
                           EzDropdownMenu<TranslationService>(
@@ -1378,7 +1388,7 @@ class _AddLocaleAction extends HybridAction {
                                     );
                                     return;
                                   }
-                                  final ARBFile sourceFile = workDir.files
+                                  final ARBFile sourceFile = files
                                       .firstWhere((ARBFile arb) => arb.localeCode == sourceCode);
                                   final String jsonString =
                                       a11howEncoder.convert(sourceFile.entries);
