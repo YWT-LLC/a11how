@@ -1,6 +1,6 @@
 name: a11how
 description: "Localization management for .arb based projects."
-version: 1.0.0
+version: 1.0.1
 publish_to: 'none'
 repository: https://github.com/YWT-LLC/a11how
 

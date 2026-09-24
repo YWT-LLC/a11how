@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2026-XX-XX
+## [1.0.1] - 2026-09-24
 ### Added
 - a11how V1
 
