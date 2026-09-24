@@ -101,11 +101,365 @@ abstract class Lang {
     Locale('fr')
   ];
 
-  /// No description provided for @hsCounterLabel.
+  /// No description provided for @hsNothingFound.
   ///
   /// In en, this message translates to:
-  /// **'You have pushed the button this many times:'**
-  String get hsCounterLabel;
+  /// **'Nothing found'**
+  String get hsNothingFound;
+
+  /// No description provided for @hsRemovingRecent.
+  ///
+  /// In en, this message translates to:
+  /// **' - removing from recent'**
+  String get hsRemovingRecent;
+
+  /// No description provided for @gNoEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot be empty'**
+  String get gNoEmpty;
+
+  /// No description provided for @gInvalidURL.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid URL'**
+  String get gInvalidURL;
+
+  /// No description provided for @hsOnlyGit.
+  ///
+  /// In en, this message translates to:
+  /// **'Only GitHub URLs are supported at this time'**
+  String get hsOnlyGit;
+
+  /// No description provided for @hsFullPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide the full path to the .arb directory'**
+  String get hsFullPath;
+
+  /// No description provided for @hsDeveloping.
+  ///
+  /// In en, this message translates to:
+  /// **'Developing'**
+  String get hsDeveloping;
+
+  /// No description provided for @hsContributing.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributing'**
+  String get hsContributing;
+
+  /// No description provided for @hsOpenDir.
+  ///
+  /// In en, this message translates to:
+  /// **'Open .arb directory'**
+  String get hsOpenDir;
+
+  /// No description provided for @hsOpenGit.
+  ///
+  /// In en, this message translates to:
+  /// **'Open GitHub repo'**
+  String get hsOpenGit;
+
+  /// No description provided for @hsGitTip.
+  ///
+  /// In en, this message translates to:
+  /// **'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how'**
+  String get hsGitTip;
+
+  /// No description provided for @hsRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent projects'**
+  String get hsRecent;
+
+  /// No description provided for @gDeleteFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failure to delete file: {error}'**
+  String gDeleteFailure(Object error);
+
+  /// No description provided for @ssSelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Self'**
+  String get ssSelf;
+
+  /// No description provided for @ssSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source locale:'**
+  String get ssSource;
+
+  /// No description provided for @ssCompare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare locale:'**
+  String get ssCompare;
+
+  /// No description provided for @ssWrap.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrap'**
+  String get ssWrap;
+
+  /// No description provided for @ssList.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get ssList;
+
+  /// No description provided for @gFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get gFilter;
+
+  /// No description provided for @ssRemoving.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing'**
+  String get ssRemoving;
+
+  /// No description provided for @ssSaveAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Save all'**
+  String get ssSaveAll;
+
+  /// No description provided for @ssAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All done!'**
+  String get ssAllDone;
+
+  /// No description provided for @ssRemoveLocale.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove locale(s)'**
+  String get ssRemoveLocale;
+
+  /// No description provided for @ssUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo select'**
+  String get ssUndo;
+
+  /// No description provided for @ssAddEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Add entries'**
+  String get ssAddEntries;
+
+  /// No description provided for @ssAddLocale.
+  ///
+  /// In en, this message translates to:
+  /// **'Add locale'**
+  String get ssAddLocale;
+
+  /// No description provided for @ssInvalidJSON.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid JSON format'**
+  String get ssInvalidJSON;
+
+  /// No description provided for @gAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get gAdd;
+
+  /// No description provided for @gResolveIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve issues please'**
+  String get gResolveIssues;
+
+  /// No description provided for @ssTODO.
+  ///
+  /// In en, this message translates to:
+  /// **'TODO:'**
+  String get ssTODO;
+
+  /// No description provided for @ssToDone.
+  ///
+  /// In en, this message translates to:
+  /// **'toDONE:'**
+  String get ssToDone;
+
+  /// No description provided for @ssPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview missing'**
+  String get ssPreview;
+
+  /// No description provided for @ssPreviewTruth.
+  ///
+  /// In en, this message translates to:
+  /// **'Truth (keys & values)'**
+  String get ssPreviewTruth;
+
+  /// No description provided for @ssPreviewCompare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare (keys)'**
+  String get ssPreviewCompare;
+
+  /// No description provided for @ssCopyJSON.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy .json'**
+  String get ssCopyJSON;
+
+  /// No description provided for @gCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied!'**
+  String get gCopied;
+
+  /// No description provided for @ssNewKV.
+  ///
+  /// In en, this message translates to:
+  /// **'\t\"newKey(s)\": \"New value(s)\",'**
+  String get ssNewKV;
+
+  /// No description provided for @ssRemoveEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove entries'**
+  String get ssRemoveEntry;
+
+  /// No description provided for @ssKeySource.
+  ///
+  /// In en, this message translates to:
+  /// **'Key source'**
+  String get ssKeySource;
+
+  /// No description provided for @ssToRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Select keys to remove'**
+  String get ssToRemove;
+
+  /// No description provided for @gToggleCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle case sensitivity'**
+  String get gToggleCase;
+
+  /// No description provided for @gInvalidRegex.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid; {regex}'**
+  String gInvalidRegex(Object regex);
+
+  /// No description provided for @gNeedPAT.
+  ///
+  /// In en, this message translates to:
+  /// **'Git PAT required to submit changes.'**
+  String get gNeedPAT;
+
+  /// No description provided for @gAuthFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed'**
+  String get gAuthFailed;
+
+  /// No description provided for @gFailedFileStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to verify file status: {error}'**
+  String gFailedFileStatus(Object error);
+
+  /// No description provided for @ssNewLocale.
+  ///
+  /// In en, this message translates to:
+  /// **'New locale:'**
+  String get ssNewLocale;
+
+  /// No description provided for @ssChooseService.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose service'**
+  String get ssChooseService;
+
+  /// No description provided for @ssCopyPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy prompt'**
+  String get ssCopyPrompt;
+
+  /// No description provided for @ssPleaseComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete the form'**
+  String get ssPleaseComplete;
+
+  /// No description provided for @ssFailedZIP.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create zip: {error}'**
+  String ssFailedZIP(Object error);
+
+  /// No description provided for @gFailedSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save file: {error}'**
+  String gFailedSave(Object error);
+
+  /// No description provided for @gFailedFork.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create fork.'**
+  String get gFailedFork;
+
+  /// No description provided for @wsHighlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Highlight'**
+  String get wsHighlight;
+
+  /// No description provided for @wsShowEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Show empty'**
+  String get wsShowEmpty;
+
+  /// No description provided for @wsShowIdentical.
+  ///
+  /// In en, this message translates to:
+  /// **'Show identical'**
+  String get wsShowIdentical;
+
+  /// No description provided for @gFailedPR.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to open PR: {error}'**
+  String gFailedPR(Object error);
+
+  /// No description provided for @gPRExists.
+  ///
+  /// In en, this message translates to:
+  /// **'PR might already exist: {error}'**
+  String gPRExists(Object error);
+
+  /// No description provided for @gGitError.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub error: {error}'**
+  String gGitError(Object error);
+
+  /// No description provided for @gPROpened.
+  ///
+  /// In en, this message translates to:
+  /// **'PR opened!'**
+  String get gPROpened;
+
+  /// No description provided for @hsSkippedInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped invalid ARB file: \${path}'**
+  String hsSkippedInvalid(Object path);
 }
 
 class _LangDelegate extends LocalizationsDelegate<Lang> {
