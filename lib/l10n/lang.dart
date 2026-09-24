@@ -4,10 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
-import 'lang_de.dart' deferred as lang_de;
 import 'lang_en.dart' deferred as lang_en;
-import 'lang_es.dart' deferred as lang_es;
-import 'lang_fr.dart' deferred as lang_fr;
 
 // ignore_for_file: type=lint
 
@@ -94,11 +91,8 @@ abstract class Lang {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
-    Locale('de'),
     Locale('en'),
-    Locale('en', 'US'),
-    Locale('es'),
-    Locale('fr')
+    Locale('en', 'US')
   ];
 
   /// No description provided for @hsNothingFound.
@@ -574,7 +568,7 @@ class _LangDelegate extends LocalizationsDelegate<Lang> {
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['de', 'en', 'es', 'fr'].contains(locale.languageCode);
+      <String>['en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_LangDelegate old) => false;
@@ -597,14 +591,8 @@ Future<Lang> lookupLang(Locale locale) {
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'de':
-      return lang_de.loadLibrary().then((dynamic _) => lang_de.LangDe());
     case 'en':
       return lang_en.loadLibrary().then((dynamic _) => lang_en.LangEn());
-    case 'es':
-      return lang_es.loadLibrary().then((dynamic _) => lang_es.LangEs());
-    case 'fr':
-      return lang_fr.loadLibrary().then((dynamic _) => lang_fr.LangFr());
   }
 
   throw FlutterError(
