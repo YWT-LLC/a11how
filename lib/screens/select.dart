@@ -279,7 +279,7 @@ class _SelectScreenState extends State<SelectScreen> {
                 ? <HybridAction>[
                     // End removing locales
                     HybridAction(
-                      label: 'Removing',
+                      label: l10n(config).ssRemoving,
                       icon: Icons.remove_done,
                       onPressed: () => setState(() => removing = !removing),
                     ),
@@ -288,14 +288,14 @@ class _SelectScreenState extends State<SelectScreen> {
                     if (local) ...<HybridAction>[
                       // Save all
                       HybridAction(
-                        label: 'Save all',
+                        label: l10n(config).ssSaveAll,
                         icon: Icons.save,
                         onPressed: () async => await ezNoTouch(() async {
                           for (final ARBFile arb in files) {
                             await writeSortedJson(config, file: File(arb.path), arb: arb);
                           }
                         }).whenComplete(() => context.mounted
-                            ? ezSnackBar(config, context: context, message: 'All done!')
+                            ? ezSnackBar(config, context: context, message: l10n(config).ssAllDone)
                             : doNothing()),
                       ),
 
@@ -331,7 +331,7 @@ class _SelectScreenState extends State<SelectScreen> {
                     if (local) ...<HybridAction>[
                       // Start removing locales
                       HybridAction(
-                        label: 'Remove locale(s)',
+                        label: l10n(config).ssRemoveLocale,
                         icon: Icons.group_remove_outlined,
                         onPressed: () => setState(() => removing = !removing),
                       ),
@@ -339,7 +339,7 @@ class _SelectScreenState extends State<SelectScreen> {
                       // Undo select
                       if (truth != null)
                         HybridAction(
-                          label: 'Undo select',
+                          label: l10n(config).ssUndo,
                           icon: Icons.undo,
                           onPressed: () => setState(() => truth = null),
                         ),

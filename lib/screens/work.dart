@@ -140,7 +140,7 @@ class _WorkScreenState extends State<WorkScreen> {
         Uri.parse('https://api.github.com/user'),
         headers: headers,
       );
-      if (userRes.statusCode != 200) throw Exception('Authentication failed.');
+      if (userRes.statusCode != 200) throw Exception(l10n(config).gAuthFailed);
       final String forkOwner = jsonDecode(userRes.body)['login'];
 
       // Make fork
@@ -149,7 +149,7 @@ class _WorkScreenState extends State<WorkScreen> {
         headers: headers,
       );
       if (forkRes.statusCode != 202 && forkRes.statusCode != 200) {
-        throw Exception('Failed to create fork.');
+        throw Exception(l10n(config).gFailedFork);
       }
 
       // Wait a bit
@@ -337,7 +337,7 @@ class _WorkScreenState extends State<WorkScreen> {
                     menuChildren: <Widget>[
                       EzMenuButton(
                         config,
-                        label: 'Show empty',
+                        label: l10n(config).wsShowEmpty,
                         textAlign: TextAlign.start,
                         icon: Icon(
                           Icons.circle,
@@ -348,7 +348,7 @@ class _WorkScreenState extends State<WorkScreen> {
                       ),
                       EzMenuButton(
                         config,
-                        label: 'Show identical',
+                        label: l10n(config).wsShowIdentical,
                         textAlign: TextAlign.start,
                         icon: Icon(
                           Icons.circle,
