@@ -3,6 +3,7 @@
  * See LICENSE for distribution and usage details.
  */
 
+import 'package:a11how/utils/a11how_cache.dart';
 import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -28,9 +29,9 @@ extension FTargetCon on FilterTarget {
       };
 
   String name(EzCP config) => switch (this) {
-        FilterTarget.key => 'Key',
-        FilterTarget.truth => 'Truth',
-        FilterTarget.compare => 'Compare',
+        FilterTarget.key => l10n(config).gKey,
+        FilterTarget.truth => l10n(config).gTruth,
+        FilterTarget.compare => l10n(config).gCompare,
       };
 
   static FilterTarget? lookup(String? value) => switch (value) {
@@ -64,9 +65,9 @@ extension FTypeCon on FilterType {
       };
 
   String name(EzCP config) => switch (this) {
-        FilterType.startsWith => 'Starts with',
-        FilterType.contains => 'Contains',
-        FilterType.endsWith => 'Ends with',
+        FilterType.startsWith => l10n(config).gStarts,
+        FilterType.contains => l10n(config).gContains,
+        FilterType.endsWith => l10n(config).gEnds,
       };
 
   static FilterType? lookup(String? value) => switch (value) {
