@@ -18,7 +18,7 @@ Future<String?> getPAT(EzCP config, BuildContext context) async => await showDia
 
       return EzAlertDialog(
         config,
-        title: const Text('Enter PAT', textAlign: TextAlign.center),
+        title: Text(l10n(config).gEnterPAT, textAlign: TextAlign.center),
         contents: <Widget>[
           Text(
             'This is not saved anywhere. It disappears as soon as the function finishes.',

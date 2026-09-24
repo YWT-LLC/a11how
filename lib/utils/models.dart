@@ -55,7 +55,7 @@ class HybridAction {
 }
 
 HybridAction settingsAction(EzCP config, BuildContext context) => HybridAction(
-      label: 'Settings',
+      label: config.ezL10n.gSettings,
       icon: Icons.settings,
       onPressed: () => context.goNamed(settingsHubPath),
     );
