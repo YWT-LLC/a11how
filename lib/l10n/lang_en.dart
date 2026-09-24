@@ -99,6 +99,11 @@ class LangEn extends Lang {
   String get gResolveIssues => 'Resolve issues please';
 
   @override
+  String wFailedCommit(Object error) {
+    return 'Failed to commit changes: $error';
+  }
+
+  @override
   String get ssTODO => 'TODO:';
 
   @override
@@ -146,9 +151,7 @@ class LangEn extends Lang {
   String get gAuthFailed => 'Authentication failed';
 
   @override
-  String gFailedFileStatus(Object error) {
-    return 'Failed to verify file status: $error';
-  }
+  String get gFailedFileStatus => 'Failed to verify file status.';
 
   @override
   String get ssNewLocale => 'New locale:';
@@ -201,6 +204,11 @@ class LangEn extends Lang {
 
   @override
   String get gPROpened => 'PR opened!';
+
+  @override
+  String gARBExists(Object path) {
+    return '$path.arb already exists.';
+  }
 
   @override
   String hsSkippedInvalid(Object path) {
@@ -358,6 +366,11 @@ class LangEnUs extends LangEn {
   String get gResolveIssues => 'Resolve issues please';
 
   @override
+  String wFailedCommit(Object error) {
+    return 'Failed to commit changes: $error';
+  }
+
+  @override
   String get ssTODO => 'TODO:';
 
   @override
@@ -405,9 +418,7 @@ class LangEnUs extends LangEn {
   String get gAuthFailed => 'Authentication failed';
 
   @override
-  String gFailedFileStatus(Object error) {
-    return 'Failed to verify file status: $error';
-  }
+  String get gFailedFileStatus => 'Failed to verify file status.';
 
   @override
   String get ssNewLocale => 'New locale:';
@@ -460,6 +471,11 @@ class LangEnUs extends LangEn {
 
   @override
   String get gPROpened => 'PR opened!';
+
+  @override
+  String gARBExists(Object path) {
+    return '$path.arb already exists.';
+  }
 
   @override
   String hsSkippedInvalid(Object path) {

@@ -269,6 +269,12 @@ abstract class Lang {
   /// **'Resolve issues please'**
   String get gResolveIssues;
 
+  /// No description provided for @wFailedCommit.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to commit changes: {error}'**
+  String wFailedCommit(Object error);
+
   /// No description provided for @ssTODO.
   ///
   /// In en, this message translates to:
@@ -362,8 +368,8 @@ abstract class Lang {
   /// No description provided for @gFailedFileStatus.
   ///
   /// In en, this message translates to:
-  /// **'Failed to verify file status: {error}'**
-  String gFailedFileStatus(Object error);
+  /// **'Failed to verify file status.'**
+  String get gFailedFileStatus;
 
   /// No description provided for @ssNewLocale.
   ///
@@ -448,6 +454,12 @@ abstract class Lang {
   /// In en, this message translates to:
   /// **'PR opened!'**
   String get gPROpened;
+
+  /// No description provided for @gARBExists.
+  ///
+  /// In en, this message translates to:
+  /// **'{path}.arb already exists.'**
+  String gARBExists(Object path);
 
   /// No description provided for @hsSkippedInvalid.
   ///
