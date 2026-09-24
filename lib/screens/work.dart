@@ -27,37 +27,49 @@ class _WorkScreenState extends State<WorkScreen> {
   // Define the build data //
 
   final List<WorkRow> workData = <WorkRow>[];
+  List<WorkRow> shownData = <WorkRow>[];
   late final bool selfCompare = widget.workPair.truth == widget.workPair.compare;
 
-  final MenuController highlightMC = MenuController();
-  bool showEmpty = true;
-  late bool showIdentical = !selfCompare;
-
-  String filterString = '';
+  bool caseSensitive = false;
   FilterTarget filterTarget = FTargetCon.safeLookup(EzCM.get(workFilterTypeKey));
   final MenuController fTargetMC = MenuController();
   FilterType filterType = FTypeCon.safeLookup(EzCM.get(workFilterTypeKey));
   final MenuController fTypeMC = MenuController();
 
-  bool caseSensitive = false;
+  final MenuController highlightMC = MenuController();
+  bool showEmpty = true;
+  late bool showIdentical = !selfCompare;
 
   bool saving = false;
 
   // Define custom functions //
 
+  List<WorkRow> filterData(String filter) => workData
+      .where((WorkRow row) => filter.isEmpty
+          ? true
+          : checkFilter(
+              check: switch (filterTarget) {
+                FilterTarget.key => row.key,
+                FilterTarget.truth => row.truth,
+                FilterTarget.compare => row.compare,
+              },
+              filter: filter,
+            ))
+      .toList();
+
   String? validateField(EzCP config, String? check) =>
       (check == null || check.isEmpty) ? l10n(config).gNoEmpty : null;
 
-  bool checkFilter(String check) => switch (filterType) {
+  bool checkFilter({required String check, required String filter}) => switch (filterType) {
         FilterType.startsWith => caseSensitive
-            ? check.startsWith(filterString)
-            : check.toLowerCase().startsWith(filterString.toLowerCase()),
+            ? check.startsWith(filter)
+            : check.toLowerCase().startsWith(filter.toLowerCase()),
         FilterType.contains => caseSensitive
-            ? check.contains(filterString)
-            : check.toLowerCase().contains(filterString.toLowerCase()),
+            ? check.contains(filter)
+            : check.toLowerCase().contains(filter.toLowerCase()),
         FilterType.endsWith => caseSensitive
-            ? check.endsWith(filterString)
-            : check.toLowerCase().endsWith(filterString.toLowerCase()),
+            ? check.endsWith(filter)
+            : check.toLowerCase().endsWith(filter.toLowerCase()),
       };
 
   Future<void> save(EzCP config) async {
@@ -253,6 +265,8 @@ class _WorkScreenState extends State<WorkScreen> {
         compare: widget.workPair.compare.entries[key]?.toString() ?? '',
       ));
     }
+    shownData = filterData('');
+    setState(() {});
   }
 
   // Return the build //
@@ -341,6 +355,70 @@ class _WorkScreenState extends State<WorkScreen> {
                   children: <Widget>[
                     config.rowMargin,
 
+                    // Case sensitivity
+                    EzIconButton(
+                      config,
+                      fauxDisabled: !caseSensitive,
+                      tooltip: l10n(config).gToggleCase,
+                      icon: EzIcon(config, Icons.abc),
+                      onPressed: () => setState(() => caseSensitive = !caseSensitive),
+                    ),
+                    config.rowSpacer,
+
+                    // Filter target
+                    MenuAnchor(
+                      controller: fTargetMC,
+                      menuChildren: FilterTarget.values
+                          .map((FilterTarget ft) => EzMenuButton(
+                                config,
+                                label: ft.name(config),
+                                icon: ft.icon(config),
+                                textAlign: TextAlign.start,
+                                onPressed: () => setState(() => filterTarget = ft),
+                              ))
+                          .toList(),
+                      child: EzIconButton(
+                        config,
+                        tooltip: filterTarget.name(config),
+                        icon: filterTarget.icon(config),
+                        onPressed: () => toggleMenu(fTargetMC),
+                      ),
+                    ),
+                    config.rowSpacer,
+
+                    // Filter type
+                    MenuAnchor(
+                      controller: fTypeMC,
+                      menuChildren: FilterType.values
+                          .map((FilterType ft) => EzMenuButton(
+                                config,
+                                label: ft.name(config),
+                                textAlign: TextAlign.start,
+                                onPressed: () => setState(() => filterType = ft),
+                              ))
+                          .toList(),
+                      child: EzTextIconButton(
+                        config,
+                        label: filterType.name(config),
+                        textAlign: TextAlign.start,
+                        icon: EzIcon(config, Icons.filter_list),
+                        onPressed: () => toggleMenu(fTypeMC),
+                      ),
+                    ),
+                    config.rowSpacer,
+
+                    // Filter string
+                    EzTextField(
+                      constraints: ezTextFieldConstraints(context, prop: 0.333),
+                      hintText: '...${l10n(config).gFilter}',
+                      onChanged: (String entry) {
+                        shownData = filterData(entry);
+                        setState(() {});
+                      },
+                      validator: (_) => null,
+                    ),
+                    config.rowSpacer,
+
                     // Highlight
                     MenuAnchor(
                       controller: highlightMC,
@@ -395,152 +473,81 @@ class _WorkScreenState extends State<WorkScreen> {
                       ),
                     ),
                     config.rowMargin,
-
-                    // Filter string
-                    EzTextField(
-                      constraints: ezTextFieldConstraints(context, prop: 0.333),
-                      hintText: config.isLTR
-                          ? '${l10n(config).gFilter}...\t>>'
-                          : '<<\t...${l10n(config).gFilter}',
-                      onChanged: (String entry) => setState(() => filterString = entry),
-                      validator: (_) => null,
-                    ),
-                    config.rowMargin,
-
-                    // Filter target
-                    MenuAnchor(
-                      controller: fTargetMC,
-                      menuChildren: FilterTarget.values
-                          .map((FilterTarget ft) => EzMenuButton(
-                                config,
-                                label: ft.name(config),
-                                icon: ft.icon(config),
-                                textAlign: TextAlign.start,
-                                onPressed: () => setState(() => filterTarget = ft),
-                              ))
-                          .toList(),
-                      child: EzIconButton(
-                        config,
-                        tooltip: filterTarget.name(config),
-                        icon: filterTarget.icon(config),
-                        onPressed: () => toggleMenu(fTargetMC),
-                      ),
-                    ),
-                    config.rowMargin,
-
-                    // Filter type
-                    MenuAnchor(
-                      controller: fTypeMC,
-                      menuChildren: FilterType.values
-                          .map((FilterType ft) => EzMenuButton(
-                                config,
-                                label: ft.name(config),
-                                textAlign: TextAlign.start,
-                                onPressed: () => setState(() => filterType = ft),
-                              ))
-                          .toList(),
-                      child: EzTextIconButton(
-                        config,
-                        label: filterType.name(config),
-                        textAlign: TextAlign.start,
-                        icon: EzIcon(config, Icons.filter_list),
-                        onPressed: () => toggleMenu(fTypeMC),
-                      ),
-                    ),
-                    config.rowMargin,
-
-                    // Case sensitivity
-                    EzIconButton(
-                      config,
-                      fauxDisabled: !caseSensitive,
-                      tooltip: l10n(config).gToggleCase,
-                      icon: EzIcon(config, Icons.abc),
-                      onPressed: () => setState(() => caseSensitive = !caseSensitive),
-                    ),
-                    config.rowMargin,
                   ],
                 ),
                 Expanded(
-                  child: EzScrollView(
-                    config,
-                    mainAxisSize: MainAxisSize.max,
-                    children: workData
-                        .where((WorkRow row) => filterString.isEmpty
-                            ? true
-                            : checkFilter(switch (filterTarget) {
-                                FilterTarget.key => row.key,
-                                FilterTarget.truth => row.truth,
-                                FilterTarget.compare => row.compare,
-                              }))
-                        .map((WorkRow row) => EzRow(
-                              config,
-                              key: ValueKey<String>(row.key),
-                              reverseHands: false,
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                // Key
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: (showEmpty && row.key.isEmpty)
-                                        ? config.colors.secondary.withValues(alpha: focusOpacity)
-                                        : config.colors.surfaceContainer,
-                                  ),
-                                  child: EzTextField(
-                                    constraints: BoxConstraints.tightFor(width: editMax * 0.15),
-                                    readOnly: true,
-                                    hintText: row.key,
-                                    initialValue: row.key,
-                                    style: config.bodyStyle,
-                                    textAlign: TextAlign.start,
-                                    validator: (_) => null,
-                                  ),
-                                ),
+                  child: ListView.builder(
+                    itemCount: shownData.length,
+                    itemBuilder: (_, int index) {
+                      final WorkRow row = shownData[index];
+                      return EzRow(
+                        config,
+                        key: ValueKey<String>(row.key),
+                        reverseHands: false,
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          // Key
+                          Container(
+                            decoration: BoxDecoration(
+                              color: (showEmpty && row.key.isEmpty)
+                                  ? config.colors.secondary.withValues(alpha: focusOpacity)
+                                  : config.colors.surfaceContainer,
+                            ),
+                            child: EzTextField(
+                              constraints: BoxConstraints.tightFor(width: editMax * 0.15),
+                              readOnly: true,
+                              hintText: row.key,
+                              initialValue: row.key,
+                              style: config.bodyStyle,
+                              textAlign: TextAlign.start,
+                              validator: (_) => null,
+                            ),
+                          ),
 
-                                // Truth
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: (showEmpty && row.key.isEmpty)
-                                        ? config.colors.secondary.withValues(alpha: focusOpacity)
-                                        : (selfCompare
-                                            ? config.colors.surfaceContainer
-                                            : config.colors.surface),
-                                  ),
-                                  child: EzTextField(
-                                    constraints: BoxConstraints.tightFor(width: editMax * 0.425),
-                                    readOnly: selfCompare,
-                                    hintText: row.truth,
-                                    initialValue: row.truth,
-                                    style: config.bodyStyle,
-                                    textAlign: TextAlign.start,
-                                    onChanged: (String val) => row.truth = val,
-                                    validator: (String? check) => validateField(config, check),
-                                  ),
-                                ),
+                          // Truth
+                          Container(
+                            decoration: BoxDecoration(
+                              color: (showEmpty && row.key.isEmpty)
+                                  ? config.colors.secondary.withValues(alpha: focusOpacity)
+                                  : (selfCompare
+                                      ? config.colors.surfaceContainer
+                                      : config.colors.surface),
+                            ),
+                            child: EzTextField(
+                              constraints: BoxConstraints.tightFor(width: editMax * 0.425),
+                              readOnly: selfCompare,
+                              hintText: row.truth,
+                              initialValue: row.truth,
+                              style: config.bodyStyle,
+                              textAlign: TextAlign.start,
+                              onChanged: (String val) => row.truth = val,
+                              validator: (String? check) => validateField(config, check),
+                            ),
+                          ),
 
-                                // Work
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: (showIdentical && row.compare == row.truth)
-                                        ? config.colors.tertiary.withValues(alpha: focusOpacity)
-                                        : ((showEmpty && row.key.isEmpty)
-                                            ? config.colors.secondary
-                                                .withValues(alpha: focusOpacity)
-                                            : config.colors.surface),
-                                  ),
-                                  child: EzTextField(
-                                    constraints: BoxConstraints.tightFor(width: editMax * 0.425),
-                                    hintText: row.compare,
-                                    initialValue: row.compare,
-                                    style: config.bodyStyle,
-                                    textAlign: TextAlign.start,
-                                    onChanged: (String val) => row.compare = val,
-                                    validator: (String? check) => validateField(config, check),
-                                  ),
-                                ),
-                              ],
-                            ))
-                        .toList(),
+                          // Work
+                          Container(
+                            decoration: BoxDecoration(
+                              color: (showIdentical && row.compare == row.truth)
+                                  ? config.colors.tertiary.withValues(alpha: focusOpacity)
+                                  : ((showEmpty && row.key.isEmpty)
+                                      ? config.colors.secondary.withValues(alpha: focusOpacity)
+                                      : config.colors.surface),
+                            ),
+                            child: EzTextField(
+                              constraints: BoxConstraints.tightFor(width: editMax * 0.425),
+                              hintText: row.compare,
+                              initialValue: row.compare,
+                              style: config.bodyStyle,
+                              textAlign: TextAlign.start,
+                              onChanged: (String val) => row.compare = val,
+                              validator: (String? check) => validateField(config, check),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ]),
