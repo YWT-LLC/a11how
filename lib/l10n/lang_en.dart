@@ -9,41 +9,24 @@ class LangEn extends Lang {
   LangEn([String locale = 'en']) : super(locale);
 
   @override
-  String get hsNothingFound => 'Nothing found';
+  String gARBExists(Object path) {
+    return '$path.arb already exists.';
+  }
 
   @override
-  String get hsRemovingRecent => ' - removing from recent';
+  String get gAdd => 'Add';
 
   @override
-  String get gNoEmpty => 'Cannot be empty';
+  String get gAuthFailed => 'Authentication failed';
 
   @override
-  String get gInvalidURL => 'Invalid URL';
+  String get gCompare => 'Compare';
 
   @override
-  String get hsOnlyGit => 'Only GitHub URLs are supported at this time';
+  String get gContains => 'Contains';
 
   @override
-  String get hsFullPath => 'Please provide the full path to the .arb directory';
-
-  @override
-  String get hsDeveloping => 'Developing';
-
-  @override
-  String get hsContributing => 'Contributing';
-
-  @override
-  String get hsOpenDir => 'Open .arb directory';
-
-  @override
-  String get hsOpenGit => 'Open GitHub repo';
-
-  @override
-  String get hsGitTip =>
-      'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how';
-
-  @override
-  String get hsRecent => 'Recent projects';
+  String get gCopied => 'Copied!';
 
   @override
   String gDeleteFailure(Object error) {
@@ -51,123 +34,20 @@ class LangEn extends Lang {
   }
 
   @override
-  String get ssSelf => 'Self';
+  String get gEnds => 'Ends with';
 
   @override
-  String get ssSource => 'Source locale:';
-
-  @override
-  String get ssCompare => 'Compare locale:';
-
-  @override
-  String get ssWrap => 'Wrap';
-
-  @override
-  String get ssList => 'List';
-
-  @override
-  String get gFilter => 'Filter';
-
-  @override
-  String get ssRemoving => 'Removing';
-
-  @override
-  String get ssSaveAll => 'Save all';
-
-  @override
-  String get ssAllDone => 'All done!';
-
-  @override
-  String get ssRemoveLocale => 'Remove locale(s)';
-
-  @override
-  String get ssUndo => 'Undo select';
-
-  @override
-  String get ssAddEntries => 'Add entries';
-
-  @override
-  String get ssAddLocale => 'Add locale';
-
-  @override
-  String get ssInvalidJSON => 'Invalid JSON format';
-
-  @override
-  String get gAdd => 'Add';
-
-  @override
-  String get gResolveIssues => 'Resolve issues please';
-
-  @override
-  String wFailedCommit(Object error) {
-    return 'Failed to commit changes: $error';
-  }
-
-  @override
-  String get ssTODO => 'TODO:';
-
-  @override
-  String get ssToDone => 'toDONE:';
-
-  @override
-  String get ssPreview => 'Preview missing';
-
-  @override
-  String get ssPreviewTruth => 'Truth (keys & values)';
-
-  @override
-  String get ssPreviewCompare => 'Compare (keys)';
-
-  @override
-  String get ssCopyJSON => 'Copy .json';
-
-  @override
-  String get gCopied => 'Copied!';
-
-  @override
-  String get ssNewKV => '\t\"newKey(s)\": \"New value(s)\",';
-
-  @override
-  String get ssRemoveEntry => 'Remove entries';
-
-  @override
-  String get ssKeySource => 'Key source';
-
-  @override
-  String get ssToRemove => 'Select keys to remove';
-
-  @override
-  String get gToggleCase => 'Toggle case sensitivity';
-
-  @override
-  String gInvalidRegex(Object regex) {
-    return 'Invalid; $regex';
-  }
-
-  @override
-  String get gNeedPAT => 'Git PAT required to submit changes.';
-
-  @override
-  String get gAuthFailed => 'Authentication failed';
+  String get gEnterPAT => 'Enter PAT';
 
   @override
   String get gFailedFileStatus => 'Failed to verify file status.';
 
   @override
-  String get ssNewLocale => 'New locale:';
+  String get gFailedFork => 'Failed to create fork.';
 
   @override
-  String get ssChooseService => 'Choose service';
-
-  @override
-  String get ssCopyPrompt => 'Copy prompt';
-
-  @override
-  String get ssPleaseComplete => 'Please complete the form';
-
-  @override
-  String ssFailedZIP(Object error) {
-    return 'Failed to create zip: $error';
+  String gFailedPR(Object error) {
+    return 'Failed to open PR: $error';
   }
 
   @override
@@ -176,7 +56,210 @@ class LangEn extends Lang {
   }
 
   @override
-  String get gFailedFork => 'Failed to create fork.';
+  String get gFilter => 'Filter';
+
+  @override
+  String gGitError(Object error) {
+    return 'GitHub error: $error';
+  }
+
+  @override
+  String gInvalidRegex(Object regex) {
+    return 'Invalid; $regex';
+  }
+
+  @override
+  String get gInvalidURL => 'Invalid URL';
+
+  @override
+  String get gKey => 'Key';
+
+  @override
+  String get gNeedPAT => 'Git PAT required to submit changes.';
+
+  @override
+  String get gNoEmpty => 'Cannot be empty';
+
+  @override
+  String get gOpenDocs => 'Open documentation';
+
+  @override
+  String get gOpenRepo => 'Open repo';
+
+  @override
+  String get gPAT => 'Personal Access Token';
+
+  @override
+  String get gPATPolicy =>
+      'This is not saved anywhere. It disappears as soon as the function finishes.';
+
+  @override
+  String gPRExists(Object error) {
+    return 'PR might already exist: $error';
+  }
+
+  @override
+  String get gPROpened => 'PR opened!';
+
+  @override
+  String get gPolicyPolicy =>
+      'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...';
+
+  @override
+  String get gPolicyTitle => 'Contribution policy';
+
+  @override
+  String get gResolveIssues => 'Resolve issues please';
+
+  @override
+  String get gSourceCode => 'Source code';
+
+  @override
+  String get gStarts => 'Starts with';
+
+  @override
+  String get gSubmit => 'Submit';
+
+  @override
+  String get gToggleCase => 'Toggle case sensitivity';
+
+  @override
+  String get gTruth => 'Truth';
+
+  @override
+  String get gWhatsPAT => 'What\'s a PAT?';
+
+  @override
+  String gWriteFailed(Object error, Object path) {
+    return 'Failed to write to $path:\n$error';
+  }
+
+  @override
+  String get hsContributing => 'Contributing';
+
+  @override
+  String get hsDeveloping => 'Developing';
+
+  @override
+  String get hsFullPath => 'Please provide the full path to the .arb directory';
+
+  @override
+  String get hsGitTip =>
+      'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how';
+
+  @override
+  String get hsNothingFound => 'Nothing found';
+
+  @override
+  String get hsOnlyGit => 'Only GitHub URLs are supported at this time';
+
+  @override
+  String get hsOpenDir => 'Open .arb directory';
+
+  @override
+  String get hsOpenGit => 'Open GitHub repo';
+
+  @override
+  String get hsRecent => 'Recent projects';
+
+  @override
+  String get hsRemovingRecent => ' - removing from recent';
+
+  @override
+  String hsSkippedInvalid(Object path) {
+    return 'Skipped invalid ARB file: \$$path';
+  }
+
+  @override
+  String get ssAddEntries => 'Add entries';
+
+  @override
+  String get ssAddLocale => 'Add locale';
+
+  @override
+  String get ssAllDone => 'All done!';
+
+  @override
+  String get ssChooseService => 'Choose service';
+
+  @override
+  String get ssCompare => 'Compare locale:';
+
+  @override
+  String get ssCopyJSON => 'Copy .json';
+
+  @override
+  String get ssCopyPrompt => 'Copy prompt';
+
+  @override
+  String ssFailedZIP(Object error) {
+    return 'Failed to create zip: $error';
+  }
+
+  @override
+  String get ssInvalidJSON => 'Invalid JSON format';
+
+  @override
+  String get ssKeySource => 'Key source';
+
+  @override
+  String get ssList => 'List';
+
+  @override
+  String get ssNewKV => '\t\"newKey(s)\": \"New value(s)\",';
+
+  @override
+  String get ssNewLocale => 'New locale:';
+
+  @override
+  String get ssPleaseComplete => 'Please complete the form';
+
+  @override
+  String get ssPreview => 'Preview missing';
+
+  @override
+  String get ssPreviewCompare => 'Compare (keys)';
+
+  @override
+  String get ssPreviewTruth => 'Truth (keys & values)';
+
+  @override
+  String get ssRemoveEntry => 'Remove entries';
+
+  @override
+  String get ssRemoveLocale => 'Remove locale(s)';
+
+  @override
+  String get ssRemoving => 'Removing';
+
+  @override
+  String get ssSaveAll => 'Save all';
+
+  @override
+  String get ssSelf => 'Self';
+
+  @override
+  String get ssSource => 'Source locale:';
+
+  @override
+  String get ssTODO => 'TODO:';
+
+  @override
+  String get ssToDone => 'toDONE:';
+
+  @override
+  String get ssToRemove => 'Select keys to remove';
+
+  @override
+  String get ssUndo => 'Undo select';
+
+  @override
+  String get ssWrap => 'Wrap';
+
+  @override
+  String wFailedCommit(Object error) {
+    return 'Failed to commit changes: $error';
+  }
 
   @override
   String get wsHighlight => 'Highlight';
@@ -186,89 +269,6 @@ class LangEn extends Lang {
 
   @override
   String get wsShowIdentical => 'Show identical';
-
-  @override
-  String gFailedPR(Object error) {
-    return 'Failed to open PR: $error';
-  }
-
-  @override
-  String gPRExists(Object error) {
-    return 'PR might already exist: $error';
-  }
-
-  @override
-  String gGitError(Object error) {
-    return 'GitHub error: $error';
-  }
-
-  @override
-  String get gPROpened => 'PR opened!';
-
-  @override
-  String gARBExists(Object path) {
-    return '$path.arb already exists.';
-  }
-
-  @override
-  String hsSkippedInvalid(Object path) {
-    return 'Skipped invalid ARB file: \$$path';
-  }
-
-  @override
-  String get gKey => 'Key';
-
-  @override
-  String get gTruth => 'Truth';
-
-  @override
-  String get gCompare => 'Compare';
-
-  @override
-  String get gPAT => 'Personal Access Token';
-
-  @override
-  String get gEnterPAT => 'Enter PAT';
-
-  @override
-  String get gPATPolicy =>
-      'This is not saved anywhere. It disappears as soon as the function finishes.';
-
-  @override
-  String get gSourceCode => 'Source code';
-
-  @override
-  String get gOpenRepo => 'Open repo';
-
-  @override
-  String get gWhatsPAT => 'What\'s a PAT?';
-
-  @override
-  String get gPolicyTitle => 'Contribution policy';
-
-  @override
-  String get gPolicyPolicy =>
-      'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...';
-
-  @override
-  String gWriteFailed(Object error, Object path) {
-    return 'Failed to write to $path:\n$error';
-  }
-
-  @override
-  String get gSubmit => 'Submit';
-
-  @override
-  String get gStarts => 'Starts with';
-
-  @override
-  String get gContains => 'Contains';
-
-  @override
-  String get gEnds => 'Ends with';
-
-  @override
-  String get gOpenDocs => 'Open documentation';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -276,41 +276,24 @@ class LangEnUs extends LangEn {
   LangEnUs() : super('en_US');
 
   @override
-  String get hsNothingFound => 'Nothing found';
+  String gARBExists(Object path) {
+    return '$path.arb already exists.';
+  }
 
   @override
-  String get hsRemovingRecent => ' - removing from recent';
+  String get gAdd => 'Add';
 
   @override
-  String get gNoEmpty => 'Cannot be empty';
+  String get gAuthFailed => 'Authentication failed';
 
   @override
-  String get gInvalidURL => 'Invalid URL';
+  String get gCompare => 'Compare';
 
   @override
-  String get hsOnlyGit => 'Only GitHub URLs are supported at this time';
+  String get gContains => 'Contains';
 
   @override
-  String get hsFullPath => 'Please provide the full path to the .arb directory';
-
-  @override
-  String get hsDeveloping => 'Developing';
-
-  @override
-  String get hsContributing => 'Contributing';
-
-  @override
-  String get hsOpenDir => 'Open .arb directory';
-
-  @override
-  String get hsOpenGit => 'Open GitHub repo';
-
-  @override
-  String get hsGitTip =>
-      'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how';
-
-  @override
-  String get hsRecent => 'Recent projects';
+  String get gCopied => 'Copied!';
 
   @override
   String gDeleteFailure(Object error) {
@@ -318,123 +301,20 @@ class LangEnUs extends LangEn {
   }
 
   @override
-  String get ssSelf => 'Self';
+  String get gEnds => 'Ends with';
 
   @override
-  String get ssSource => 'Source locale:';
-
-  @override
-  String get ssCompare => 'Compare locale:';
-
-  @override
-  String get ssWrap => 'Wrap';
-
-  @override
-  String get ssList => 'List';
-
-  @override
-  String get gFilter => 'Filter';
-
-  @override
-  String get ssRemoving => 'Removing';
-
-  @override
-  String get ssSaveAll => 'Save all';
-
-  @override
-  String get ssAllDone => 'All done!';
-
-  @override
-  String get ssRemoveLocale => 'Remove locale(s)';
-
-  @override
-  String get ssUndo => 'Undo select';
-
-  @override
-  String get ssAddEntries => 'Add entries';
-
-  @override
-  String get ssAddLocale => 'Add locale';
-
-  @override
-  String get ssInvalidJSON => 'Invalid JSON format';
-
-  @override
-  String get gAdd => 'Add';
-
-  @override
-  String get gResolveIssues => 'Resolve issues please';
-
-  @override
-  String wFailedCommit(Object error) {
-    return 'Failed to commit changes: $error';
-  }
-
-  @override
-  String get ssTODO => 'TODO:';
-
-  @override
-  String get ssToDone => 'toDONE:';
-
-  @override
-  String get ssPreview => 'Preview missing';
-
-  @override
-  String get ssPreviewTruth => 'Truth (keys & values)';
-
-  @override
-  String get ssPreviewCompare => 'Compare (keys)';
-
-  @override
-  String get ssCopyJSON => 'Copy .json';
-
-  @override
-  String get gCopied => 'Copied!';
-
-  @override
-  String get ssNewKV => '\t\"newKey(s)\": \"New value(s)\",';
-
-  @override
-  String get ssRemoveEntry => 'Remove entries';
-
-  @override
-  String get ssKeySource => 'Key source';
-
-  @override
-  String get ssToRemove => 'Select keys to remove';
-
-  @override
-  String get gToggleCase => 'Toggle case sensitivity';
-
-  @override
-  String gInvalidRegex(Object regex) {
-    return 'Invalid; $regex';
-  }
-
-  @override
-  String get gNeedPAT => 'Git PAT required to submit changes.';
-
-  @override
-  String get gAuthFailed => 'Authentication failed';
+  String get gEnterPAT => 'Enter PAT';
 
   @override
   String get gFailedFileStatus => 'Failed to verify file status.';
 
   @override
-  String get ssNewLocale => 'New locale:';
+  String get gFailedFork => 'Failed to create fork.';
 
   @override
-  String get ssChooseService => 'Choose service';
-
-  @override
-  String get ssCopyPrompt => 'Copy prompt';
-
-  @override
-  String get ssPleaseComplete => 'Please complete the form';
-
-  @override
-  String ssFailedZIP(Object error) {
-    return 'Failed to create zip: $error';
+  String gFailedPR(Object error) {
+    return 'Failed to open PR: $error';
   }
 
   @override
@@ -443,7 +323,210 @@ class LangEnUs extends LangEn {
   }
 
   @override
-  String get gFailedFork => 'Failed to create fork.';
+  String get gFilter => 'Filter';
+
+  @override
+  String gGitError(Object error) {
+    return 'GitHub error: $error';
+  }
+
+  @override
+  String gInvalidRegex(Object regex) {
+    return 'Invalid; $regex';
+  }
+
+  @override
+  String get gInvalidURL => 'Invalid URL';
+
+  @override
+  String get gKey => 'Key';
+
+  @override
+  String get gNeedPAT => 'Git PAT required to submit changes.';
+
+  @override
+  String get gNoEmpty => 'Cannot be empty';
+
+  @override
+  String get gOpenDocs => 'Open documentation';
+
+  @override
+  String get gOpenRepo => 'Open repo';
+
+  @override
+  String get gPAT => 'Personal Access Token';
+
+  @override
+  String get gPATPolicy =>
+      'This is not saved anywhere. It disappears as soon as the function finishes.';
+
+  @override
+  String gPRExists(Object error) {
+    return 'PR might already exist: $error';
+  }
+
+  @override
+  String get gPROpened => 'PR opened!';
+
+  @override
+  String get gPolicyPolicy =>
+      'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...';
+
+  @override
+  String get gPolicyTitle => 'Contribution policy';
+
+  @override
+  String get gResolveIssues => 'Resolve issues please';
+
+  @override
+  String get gSourceCode => 'Source code';
+
+  @override
+  String get gStarts => 'Starts with';
+
+  @override
+  String get gSubmit => 'Submit';
+
+  @override
+  String get gToggleCase => 'Toggle case sensitivity';
+
+  @override
+  String get gTruth => 'Truth';
+
+  @override
+  String get gWhatsPAT => 'What\'s a PAT?';
+
+  @override
+  String gWriteFailed(Object error, Object path) {
+    return 'Failed to write to $path:\n$error';
+  }
+
+  @override
+  String get hsContributing => 'Contributing';
+
+  @override
+  String get hsDeveloping => 'Developing';
+
+  @override
+  String get hsFullPath => 'Please provide the full path to the .arb directory';
+
+  @override
+  String get hsGitTip =>
+      'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how';
+
+  @override
+  String get hsNothingFound => 'Nothing found';
+
+  @override
+  String get hsOnlyGit => 'Only GitHub URLs are supported at this time';
+
+  @override
+  String get hsOpenDir => 'Open .arb directory';
+
+  @override
+  String get hsOpenGit => 'Open GitHub repo';
+
+  @override
+  String get hsRecent => 'Recent projects';
+
+  @override
+  String get hsRemovingRecent => ' - removing from recent';
+
+  @override
+  String hsSkippedInvalid(Object path) {
+    return 'Skipped invalid ARB file: \$$path';
+  }
+
+  @override
+  String get ssAddEntries => 'Add entries';
+
+  @override
+  String get ssAddLocale => 'Add locale';
+
+  @override
+  String get ssAllDone => 'All done!';
+
+  @override
+  String get ssChooseService => 'Choose service';
+
+  @override
+  String get ssCompare => 'Compare locale:';
+
+  @override
+  String get ssCopyJSON => 'Copy .json';
+
+  @override
+  String get ssCopyPrompt => 'Copy prompt';
+
+  @override
+  String ssFailedZIP(Object error) {
+    return 'Failed to create zip: $error';
+  }
+
+  @override
+  String get ssInvalidJSON => 'Invalid JSON format';
+
+  @override
+  String get ssKeySource => 'Key source';
+
+  @override
+  String get ssList => 'List';
+
+  @override
+  String get ssNewKV => '\t\"newKey(s)\": \"New value(s)\",';
+
+  @override
+  String get ssNewLocale => 'New locale:';
+
+  @override
+  String get ssPleaseComplete => 'Please complete the form';
+
+  @override
+  String get ssPreview => 'Preview missing';
+
+  @override
+  String get ssPreviewCompare => 'Compare (keys)';
+
+  @override
+  String get ssPreviewTruth => 'Truth (keys & values)';
+
+  @override
+  String get ssRemoveEntry => 'Remove entries';
+
+  @override
+  String get ssRemoveLocale => 'Remove locale(s)';
+
+  @override
+  String get ssRemoving => 'Removing';
+
+  @override
+  String get ssSaveAll => 'Save all';
+
+  @override
+  String get ssSelf => 'Self';
+
+  @override
+  String get ssSource => 'Source locale:';
+
+  @override
+  String get ssTODO => 'TODO:';
+
+  @override
+  String get ssToDone => 'toDONE:';
+
+  @override
+  String get ssToRemove => 'Select keys to remove';
+
+  @override
+  String get ssUndo => 'Undo select';
+
+  @override
+  String get ssWrap => 'Wrap';
+
+  @override
+  String wFailedCommit(Object error) {
+    return 'Failed to commit changes: $error';
+  }
 
   @override
   String get wsHighlight => 'Highlight';
@@ -453,87 +536,4 @@ class LangEnUs extends LangEn {
 
   @override
   String get wsShowIdentical => 'Show identical';
-
-  @override
-  String gFailedPR(Object error) {
-    return 'Failed to open PR: $error';
-  }
-
-  @override
-  String gPRExists(Object error) {
-    return 'PR might already exist: $error';
-  }
-
-  @override
-  String gGitError(Object error) {
-    return 'GitHub error: $error';
-  }
-
-  @override
-  String get gPROpened => 'PR opened!';
-
-  @override
-  String gARBExists(Object path) {
-    return '$path.arb already exists.';
-  }
-
-  @override
-  String hsSkippedInvalid(Object path) {
-    return 'Skipped invalid ARB file: \$$path';
-  }
-
-  @override
-  String get gKey => 'Key';
-
-  @override
-  String get gTruth => 'Truth';
-
-  @override
-  String get gCompare => 'Compare';
-
-  @override
-  String get gPAT => 'Personal Access Token';
-
-  @override
-  String get gEnterPAT => 'Enter PAT';
-
-  @override
-  String get gPATPolicy =>
-      'This is not saved anywhere. It disappears as soon as the function finishes.';
-
-  @override
-  String get gSourceCode => 'Source code';
-
-  @override
-  String get gOpenRepo => 'Open repo';
-
-  @override
-  String get gWhatsPAT => 'What\'s a PAT?';
-
-  @override
-  String get gPolicyTitle => 'Contribution policy';
-
-  @override
-  String get gPolicyPolicy =>
-      'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...';
-
-  @override
-  String gWriteFailed(Object error, Object path) {
-    return 'Failed to write to $path:\n$error';
-  }
-
-  @override
-  String get gSubmit => 'Submit';
-
-  @override
-  String get gStarts => 'Starts with';
-
-  @override
-  String get gContains => 'Contains';
-
-  @override
-  String get gEnds => 'Ends with';
-
-  @override
-  String get gOpenDocs => 'Open documentation';
 }
