@@ -487,7 +487,7 @@ class _AddEntryAction extends HybridAction {
                                 icon: EzIcon(config, Icons.save),
                                 onPressed: completed.isEmpty
                                     ? null
-                                    : () => ezNoTouch(config, () async {
+                                    : () async => await ezNoTouch(config, () async {
                                           for (final _AddCache cache in completed) {
                                             cache.file.entries.addAll(cache.entries);
                                             await writeSortedJson(
@@ -900,7 +900,7 @@ class _RemoveEntryAction extends HybridAction {
                         icon: EzIcon(config, Icons.save),
                         onPressed: choppingBlock.isEmpty
                             ? null
-                            : () => ezNoTouch(config, () async {
+                            : () async => await ezNoTouch(config, () async {
                                   for (final ARBFile arb in files) {
                                     arb.entries.removeWhere(
                                         (String key, _) => choppingBlock.contains(key));
