@@ -6,9 +6,9 @@
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
+import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:open_ui/open_ui.dart';
 
 class SettingsHubScreen extends StatelessWidget {
   final int? targetPass;
@@ -124,7 +124,7 @@ class SettingsHubScreen extends StatelessWidget {
           ),
         ),
         actions: <HybridAction>[
-          HybridAction(label: 'a11how', icon: Icons.settings, onPressed: null),
+          HybridAction(label: appName, icon: Icons.settings, onPressed: null),
         ],
         settingsFABs: <Widget>[
           // Rebuild (conditional)
