@@ -3,6 +3,7 @@
  * See LICENSE for distribution and usage details.
  */
 
+import '../screens/export.dart';
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
@@ -70,7 +71,7 @@ class _SelectScreenState extends State<SelectScreen> {
     } else {
       (truth == null)
           ? setState(() => truth = arb)
-          : context.pushNamed(workPath, extra: WorkPair(truth: truth!, compare: arb));
+          : context.pushNamed(workScreenPath, extra: WorkPair(truth: truth!, compare: arb));
     }
   }
 

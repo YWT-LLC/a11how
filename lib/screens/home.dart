@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (mounted) {
           context.goNamed(
-            selectPath,
+            selectScreenPath,
             extra: ARBDir(path: selectedDirectory, local: developing, files: loadedFiles),
           );
         }
@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (mounted) {
           context.goNamed(
-            selectPath,
+            selectScreenPath,
             extra: ARBDir(path: url, local: developing, files: loadedFiles),
           );
         }
