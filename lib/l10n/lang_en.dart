@@ -258,6 +258,9 @@ class LangEn extends Lang {
 
   @override
   String get gEnds => 'Ends with';
+
+  @override
+  String get gOpenDocs => 'Open documentation';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -514,4 +517,7 @@ class LangEnUs extends LangEn {
 
   @override
   String get gEnds => 'Ends with';
+
+  @override
+  String get gOpenDocs => 'Open documentation';
 }

@@ -556,6 +556,12 @@ abstract class Lang {
   /// In en, this message translates to:
   /// **'Ends with'**
   String get gEnds;
+
+  /// No description provided for @gOpenDocs.
+  ///
+  /// In en, this message translates to:
+  /// **'Open documentation'**
+  String get gOpenDocs;
 }
 
 class _LangDelegate extends LocalizationsDelegate<Lang> {

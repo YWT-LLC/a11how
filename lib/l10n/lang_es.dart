@@ -258,4 +258,7 @@ class LangEs extends Lang {
 
   @override
   String get gEnds => 'Ends with';
+
+  @override
+  String get gOpenDocs => 'Open documentation';
 }

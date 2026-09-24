@@ -75,5 +75,6 @@
   "gSubmit": "Submit",
   "gStarts": "Starts with",
   "gContains": "Contains",
-  "gEnds": "Ends with"
+  "gEnds": "Ends with",
+  "gOpenDocs": "Open documentation"
 }
