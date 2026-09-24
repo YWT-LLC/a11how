@@ -332,117 +332,134 @@ class _WorkScreenState extends State<WorkScreen> {
               safeArea: true,
               margin: EdgeInsets.zero,
               child: EzCol(children: <Widget>[
-                EzRow(config, children: <Widget>[
-                  config.rowMargin,
-                  MenuAnchor(
-                    controller: highlightMC,
-                    menuChildren: <Widget>[
-                      EzMenuButton(
-                        config,
-                        label: l10n(config).wsShowEmpty,
-                        textAlign: TextAlign.start,
-                        icon: Icon(
-                          Icons.circle,
-                          size: config.iconSize / 2,
-                          color: config.colors.secondary,
-                        ),
-                        onPressed: () => setState(() => showEmpty = !showEmpty),
-                      ),
-                      EzMenuButton(
-                        config,
-                        label: l10n(config).wsShowIdentical,
-                        textAlign: TextAlign.start,
-                        icon: Icon(
-                          Icons.circle,
-                          size: config.iconSize / 2,
-                          color: config.colors.tertiary,
-                        ),
-                        onPressed: () => setState(() => showIdentical = !showIdentical),
-                      ),
-                    ],
-                    child: EzTextIconButton(
-                      config,
-                      label: l10n(config).wsHighlight,
-                      icon: EzRow(config, children: <Widget>[
-                        if (!showEmpty && !showIdentical)
-                          Icon(
-                            Icons.circle_outlined,
-                            size: config.iconSize / 2,
-                            color: config.colors.outline,
-                          ),
-                        if (showEmpty)
-                          Icon(
+                EzScrollView(
+                  config,
+                  showScrollHint: true,
+                  thumbVisibility: false,
+                  scrollDirection: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    config.rowMargin,
+
+                    // Highlight
+                    MenuAnchor(
+                      controller: highlightMC,
+                      menuChildren: <Widget>[
+                        EzMenuButton(
+                          config,
+                          label: l10n(config).wsShowEmpty,
+                          textAlign: TextAlign.start,
+                          icon: Icon(
                             Icons.circle,
                             size: config.iconSize / 2,
                             color: config.colors.secondary,
                           ),
-                        if (showIdentical)
-                          Icon(
+                          onPressed: () => setState(() => showEmpty = !showEmpty),
+                        ),
+                        EzMenuButton(
+                          config,
+                          label: l10n(config).wsShowIdentical,
+                          textAlign: TextAlign.start,
+                          icon: Icon(
                             Icons.circle,
                             size: config.iconSize / 2,
                             color: config.colors.tertiary,
                           ),
-                      ]),
-                      onPressed: () => toggleMenu(highlightMC),
+                          onPressed: () => setState(() => showIdentical = !showIdentical),
+                        ),
+                      ],
+                      child: EzTextIconButton(
+                        config,
+                        label: l10n(config).wsHighlight,
+                        icon: EzRow(config, children: <Widget>[
+                          if (!showEmpty && !showIdentical)
+                            Icon(
+                              Icons.circle_outlined,
+                              size: config.iconSize / 2,
+                              color: config.colors.outline,
+                            ),
+                          if (showEmpty)
+                            Icon(
+                              Icons.circle,
+                              size: config.iconSize / 2,
+                              color: config.colors.secondary,
+                            ),
+                          if (showIdentical)
+                            Icon(
+                              Icons.circle,
+                              size: config.iconSize / 2,
+                              color: config.colors.tertiary,
+                            ),
+                        ]),
+                        onPressed: () => toggleMenu(highlightMC),
+                      ),
                     ),
-                  ),
-                  config.rowMargin,
-                  Expanded(
-                    child: EzTextField(
-                      constraints: const BoxConstraints(),
-                      hintText: '${l10n(config).gFilter}...\t>>',
+                    config.rowMargin,
+
+                    // Filter string
+                    EzTextField(
+                      constraints: ezTextFieldConstraints(context, prop: 0.333),
+                      hintText: config.isLTR
+                          ? '${l10n(config).gFilter}...\t>>'
+                          : '<<\t...${l10n(config).gFilter}',
                       onChanged: (String entry) => setState(() => filterString = entry),
                       validator: (_) => null,
                     ),
-                  ),
-                  config.rowMargin,
-                  MenuAnchor(
-                    controller: fTargetMC,
-                    menuChildren: FilterTarget.values
-                        .map((FilterTarget ft) => EzMenuButton(
-                              config,
-                              label: ft.name(config),
-                              icon: ft.icon(config),
-                              textAlign: TextAlign.start,
-                              onPressed: () => setState(() => filterTarget = ft),
-                            ))
-                        .toList(),
-                    child: EzIconButton(
-                      config,
-                      tooltip: filterTarget.name(config),
-                      icon: filterTarget.icon(config),
-                      onPressed: () => toggleMenu(fTargetMC),
+                    config.rowMargin,
+
+                    // Filter target
+                    MenuAnchor(
+                      controller: fTargetMC,
+                      menuChildren: FilterTarget.values
+                          .map((FilterTarget ft) => EzMenuButton(
+                                config,
+                                label: ft.name(config),
+                                icon: ft.icon(config),
+                                textAlign: TextAlign.start,
+                                onPressed: () => setState(() => filterTarget = ft),
+                              ))
+                          .toList(),
+                      child: EzIconButton(
+                        config,
+                        tooltip: filterTarget.name(config),
+                        icon: filterTarget.icon(config),
+                        onPressed: () => toggleMenu(fTargetMC),
+                      ),
                     ),
-                  ),
-                  config.rowMargin,
-                  MenuAnchor(
-                    controller: fTypeMC,
-                    menuChildren: FilterType.values
-                        .map((FilterType ft) => EzMenuButton(
-                              config,
-                              label: ft.name(config),
-                              textAlign: TextAlign.start,
-                              onPressed: () => setState(() => filterType = ft),
-                            ))
-                        .toList(),
-                    child: EzTextIconButton(
-                      config,
-                      label: filterType.name(config),
-                      textAlign: TextAlign.start,
-                      icon: EzIcon(config, Icons.filter_list),
-                      onPressed: () => toggleMenu(fTypeMC),
+                    config.rowMargin,
+
+                    // Filter type
+                    MenuAnchor(
+                      controller: fTypeMC,
+                      menuChildren: FilterType.values
+                          .map((FilterType ft) => EzMenuButton(
+                                config,
+                                label: ft.name(config),
+                                textAlign: TextAlign.start,
+                                onPressed: () => setState(() => filterType = ft),
+                              ))
+                          .toList(),
+                      child: EzTextIconButton(
+                        config,
+                        label: filterType.name(config),
+                        textAlign: TextAlign.start,
+                        icon: EzIcon(config, Icons.filter_list),
+                        onPressed: () => toggleMenu(fTypeMC),
+                      ),
                     ),
-                  ),
-                  config.rowMargin,
-                  EzIconButton(
-                    config,
-                    fauxDisabled: !caseSensitive,
-                    tooltip: l10n(config).gToggleCase,
-                    icon: EzIcon(config, Icons.abc),
-                    onPressed: () => setState(() => caseSensitive = !caseSensitive),
-                  ),
-                  config.rowMargin,
-                ]),
+                    config.rowMargin,
+
+                    // Case sensitivity
+                    EzIconButton(
+                      config,
+                      fauxDisabled: !caseSensitive,
+                      tooltip: l10n(config).gToggleCase,
+                      icon: EzIcon(config, Icons.abc),
+                      onPressed: () => setState(() => caseSensitive = !caseSensitive),
+                    ),
+                    config.rowMargin,
+                  ],
+                ),
                 Expanded(
                   child: EzScrollView(
                     config,
