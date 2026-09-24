@@ -31,7 +31,7 @@ class A11howScaffold extends StatelessWidget {
             config.iconSize,
             ezTextSize(
               config,
-              text: 'Settings',
+              text: config.ezL10n.gSettings,
               style: config.bodyStyle,
               textScaler: MediaQuery.textScalerOf(context),
             ).height) +
@@ -119,9 +119,8 @@ class A11howScaffold extends StatelessWidget {
 EzUpdaterFAB updater(EzCP config) => EzUpdaterFAB(
       config,
       appVersion: '1.0.0',
-      versionSource:
-          'https://raw.githubusercontent.com/USER_PH/REPO_PH/refs/heads/main/APP_VERSION',
+      versionSource: 'https://raw.githubusercontent.com/YWT-LLC/a11how/refs/heads/main/APP_VERSION',
       gPlay: 'https://play.google.com/store/apps/details?id=llc.ywt.a11how',
       appStore: 'https://apps.apple.com/us/app/a11how/APP_ID_PH',
-      github: 'https://github.com/USER_PH/REPO_PH/releases',
+      github: 'https://github.com/YWT-LLC/a11how/releases',
     );
