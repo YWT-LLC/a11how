@@ -14,6 +14,8 @@ import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// TODO: diff truth shouldn't be surface color in contributing
+
 class WorkScreen extends StatefulWidget {
   final WorkPair workPair;
 
