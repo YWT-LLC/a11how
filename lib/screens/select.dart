@@ -740,6 +740,7 @@ class _AddEntryAction extends HybridAction {
                                                 .map((MapEntry<String, dynamic> entry) =>
                                                     EzScrollView(
                                                       config,
+                                                      thumbVisibility: false,
                                                       scrollDirection: Axis.horizontal,
                                                       mainAxisAlignment: MainAxisAlignment.center,
                                                       children: <Widget>[
