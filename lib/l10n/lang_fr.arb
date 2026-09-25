@@ -39,7 +39,7 @@
   "hsContributing": "Contribution",
   "hsDeveloping": "Développement",
   "hsFullPath": "Veuillez fournir le chemin complet vers le répertoire .arb",
-  "hsGitTip": "Vous aurez besoin d'un compte GitHub pour contribuer.\nSi/quand vous aurez un compte GitHub, vous devrez également créer un jeton d'accès personnel (PAT) qu'a11how pourra utiliser.\n\nNous n'enregistrons RIEN.\n\nCode source :\nhttps://github.com/YWT-LLC/a11how",
+  "hsGitTip": "Vous aurez besoin d'un compte GitHub pour contribuer.\nSi/quand vous aurez un compte GitHub, vous devrez également créer un jeton d'accès personnel (PAT) qu'a11how pourra utiliser.\n\nNous n'enregistrons RIEN.\n\nCode source :\n{link}",
   "hsNothingFound": "Aucun résultat trouvé",
   "hsOnlyGit": "Seules les URL GitHub sont prises en charge pour le moment",
   "hsOpenDir": "Ouvrir le répertoire .arb",

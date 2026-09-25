@@ -4,6 +4,7 @@
  */
 
 import './export.dart';
+import 'package:ywt_private/ywt_private.dart' as ywt;
 
 import 'dart:io';
 import 'dart:async';
@@ -30,7 +31,7 @@ Future<String?> getPAT(EzCP config, BuildContext context) async => await showDia
             text: l10n(config).gSourceCode,
             style: config.bodyStyle,
             hint: l10n(config).gOpenRepo,
-            url: Uri.parse('https://github.com/YWT-LLC/a11how/blob/main/lib/utils/helpers.dart'),
+            url: Uri.parse('${ywt.a11howGitHub}/blob/main/lib/utils/helpers.dart'),
           ),
           config.spacer,
           EzTextField(

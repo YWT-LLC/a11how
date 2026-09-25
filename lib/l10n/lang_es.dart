@@ -145,8 +145,9 @@ class LangEs extends Lang {
       'Por favor, proporciona la ruta completa al directorio .arb';
 
   @override
-  String get hsGitTip =>
-      'Necesitarás una cuenta de GitHub para contribuir.\nSi/cuando tengas una cuenta de GitHub, también necesitarás crear un Token de Acceso Personal (PAT) que a11how pueda usar.\n\nNo guardamos NADA.\n\nCódigo fuente:\nhttps://github.com/YWT-LLC/a11how';
+  String hsGitTip(Object link) {
+    return 'Necesitarás una cuenta de GitHub para contribuir.\nSi/cuando tengas una cuenta de GitHub, también necesitarás crear un Token de Acceso Personal (PAT) que a11how pueda usar.\n\nNo guardamos NADA.\n\nCódigo fuente:\n$link';
+  }
 
   @override
   String get hsNothingFound => 'No se encontró nada';

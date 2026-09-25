@@ -147,8 +147,9 @@ class LangFr extends Lang {
       'Veuillez fournir le chemin complet vers le répertoire .arb';
 
   @override
-  String get hsGitTip =>
-      'Vous aurez besoin d\'un compte GitHub pour contribuer.\nSi/quand vous aurez un compte GitHub, vous devrez également créer un jeton d\'accès personnel (PAT) qu\'a11how pourra utiliser.\n\nNous n\'enregistrons RIEN.\n\nCode source :\nhttps://github.com/YWT-LLC/a11how';
+  String hsGitTip(Object link) {
+    return 'Vous aurez besoin d\'un compte GitHub pour contribuer.\nSi/quand vous aurez un compte GitHub, vous devrez également créer un jeton d\'accès personnel (PAT) qu\'a11how pourra utiliser.\n\nNous n\'enregistrons RIEN.\n\nCode source :\n$link';
+  }
 
   @override
   String get hsNothingFound => 'Aucun résultat trouvé';

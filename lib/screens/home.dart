@@ -6,6 +6,7 @@
 import '../screens/export.dart';
 import '../utils/export.dart';
 import '../widgets/export.dart';
+import 'package:ywt_private/ywt_private.dart' as ywt;
 
 import 'dart:io';
 import 'dart:async';
@@ -273,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
           EzTextField(
             controller: urlController,
             textAlign: TextAlign.end,
-            hintText: 'https://github.com/YWT-LLC/a11how/tree/main/lib/l10n',
+            hintText: '${ywt.a11howGitHub}/tree/main/lib/l10n',
             constraints: ezTextFieldConstraints(context, prop: 0.4),
             validator: (String? check) => validateUrl(config, check),
             onFieldSubmitted: (String url) async => await processUrl(config, url),
@@ -289,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             EzToolTipper(
               config,
-              message: l10n(config).hsGitTip,
+              message: l10n(config).hsGitTip(ywt.a11howGitHub),
             )
           ]),
         ]);

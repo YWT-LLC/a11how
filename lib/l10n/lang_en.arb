@@ -39,7 +39,7 @@
   "hsContributing": "Contributing",
   "hsDeveloping": "Developing",
   "hsFullPath": "Please provide the full path to the .arb directory",
-  "hsGitTip": "You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how",
+  "hsGitTip": "You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\n{link}",
   "hsNothingFound": "Nothing found",
   "hsOnlyGit": "Only GitHub URLs are supported at this time",
   "hsOpenDir": "Open .arb directory",

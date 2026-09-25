@@ -39,7 +39,7 @@
   "hsContributing": "Mitwirken",
   "hsDeveloping": "Entwickeln",
   "hsFullPath": "Bitte geben Sie den vollständigen Pfad zum .arb-Verzeichnis an",
-  "hsGitTip": "Sie benötigen ein GitHub-Konto, um mitzuwirken.\nWenn Sie ein GitHub-Konto haben, müssen Sie auch ein Personal Access Token (PAT) erstellen, das a11how verwenden kann.\n\nWir speichern NICHTS.\n\nQuellcode:\nhttps://github.com/YWT-LLC/a11how",
+  "hsGitTip": "Sie benötigen ein GitHub-Konto, um mitzuwirken.\nWenn Sie ein GitHub-Konto haben, müssen Sie auch ein Personal Access Token (PAT) erstellen, das a11how verwenden kann.\n\nWir speichern NICHTS.\n\nQuellcode:\n{link}",
   "hsNothingFound": "Nichts gefunden",
   "hsOnlyGit": "Derzeit werden nur GitHub-URLs unterstützt",
   "hsOpenDir": ".arb-Verzeichnis öffnen",

@@ -144,8 +144,9 @@ class LangEn extends Lang {
   String get hsFullPath => 'Please provide the full path to the .arb directory';
 
   @override
-  String get hsGitTip =>
-      'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how';
+  String hsGitTip(Object link) {
+    return 'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\n$link';
+  }
 
   @override
   String get hsNothingFound => 'Nothing found';
@@ -411,8 +412,9 @@ class LangEnUs extends LangEn {
   String get hsFullPath => 'Please provide the full path to the .arb directory';
 
   @override
-  String get hsGitTip =>
-      'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how';
+  String hsGitTip(Object link) {
+    return 'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\n$link';
+  }
 
   @override
   String get hsNothingFound => 'Nothing found';

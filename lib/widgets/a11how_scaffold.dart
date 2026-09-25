@@ -4,6 +4,7 @@
  */
 
 import '../utils/export.dart';
+import 'package:ywt_private/ywt_private.dart' as ywt;
 
 import 'dart:math';
 import 'package:open_ui/open_ui.dart';
@@ -122,5 +123,5 @@ EzUpdaterFAB updater(EzCP config) => EzUpdaterFAB(
       versionSource: 'https://raw.githubusercontent.com/YWT-LLC/a11how/refs/heads/main/APP_VERSION',
       gPlay: 'https://play.google.com/store/apps/details?id=llc.ywt.a11how',
       appStore: 'https://apps.apple.com/us/app/a11how/APP_ID_PH',
-      github: 'https://github.com/YWT-LLC/a11how/releases',
+      github: ywt.a11howReleases,
     );

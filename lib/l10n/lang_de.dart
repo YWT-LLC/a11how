@@ -145,8 +145,9 @@ class LangDe extends Lang {
       'Bitte geben Sie den vollständigen Pfad zum .arb-Verzeichnis an';
 
   @override
-  String get hsGitTip =>
-      'Sie benötigen ein GitHub-Konto, um mitzuwirken.\nWenn Sie ein GitHub-Konto haben, müssen Sie auch ein Personal Access Token (PAT) erstellen, das a11how verwenden kann.\n\nWir speichern NICHTS.\n\nQuellcode:\nhttps://github.com/YWT-LLC/a11how';
+  String hsGitTip(Object link) {
+    return 'Sie benötigen ein GitHub-Konto, um mitzuwirken.\nWenn Sie ein GitHub-Konto haben, müssen Sie auch ein Personal Access Token (PAT) erstellen, das a11how verwenden kann.\n\nWir speichern NICHTS.\n\nQuellcode:\n$link';
+  }
 
   @override
   String get hsNothingFound => 'Nichts gefunden';

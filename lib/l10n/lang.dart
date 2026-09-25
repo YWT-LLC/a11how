@@ -338,8 +338,8 @@ abstract class Lang {
   /// No description provided for @hsGitTip.
   ///
   /// In en, this message translates to:
-  /// **'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\nhttps://github.com/YWT-LLC/a11how'**
-  String get hsGitTip;
+  /// **'You will need a GitHub account to contribute.\nIf/when you have a GitHub account, you will also need to make a Personal Access Token (PAT) a11how can use.\n\nWe save NOTHING.\n\nSource code:\n{link}'**
+  String hsGitTip(Object link);
 
   /// No description provided for @hsNothingFound.
   ///
