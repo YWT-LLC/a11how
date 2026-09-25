@@ -29,6 +29,8 @@ dependencies:
   url_launcher: ^6.3.2
 
   # YWT
+  ywt_private:
+    path: ../ywt_private
   open_ui:
     path: ../open_ui
 
