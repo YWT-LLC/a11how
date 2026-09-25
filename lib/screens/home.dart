@@ -20,6 +20,8 @@ import 'package:go_router/go_router.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:file_picker/file_picker.dart';
 
+// TODO: contributing recent: just show project name. tooltip is full? don't show full?
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -377,7 +379,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   EzIconLink(
                     config,
                     icon: EzIcon(config, Icons.launch),
-                    label: path,
+                    label: developing ? path : Uri.parse(path).pathSegments[1],
+                    tooltip: developing ? null : path,
                     textAlign: TextAlign.start,
                     textColor: config.colors.onSurface,
                     hint: config.ezL10n.gOpen,
