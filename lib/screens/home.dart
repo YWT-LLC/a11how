@@ -419,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
             animate: true,
             mod: 0.667,
             restricted: EzScrollView(config, children: <Widget>[
-              toggle(config),
+              if (!kIsWeb) toggle(config),
               config.spacer,
               openButton(config),
               EzDivider(
@@ -430,8 +430,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ...displayRecent(config),
             ]),
             expanded: EzScrollView(config, children: <Widget>[
-              toggle(config),
-              config.separator,
+              if (!kIsWeb) ...<Widget>[
+                toggle(config),
+                config.separator,
+              ],
               EzScrollView(
                 config,
                 reverseHands: true,
