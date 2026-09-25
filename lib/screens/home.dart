@@ -431,10 +431,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ...displayRecent(config),
             ]),
             expanded: EzScrollView(config, children: <Widget>[
-              if (!kIsWeb) ...<Widget>[
-                toggle(config),
-                config.separator,
-              ],
+              if (!kIsWeb) toggle(config),
+              config.separator,
               EzScrollView(
                 config,
                 reverseHands: true,
