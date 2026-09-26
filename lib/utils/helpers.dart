@@ -36,6 +36,7 @@ Future<String?> getPAT(EzCP config, BuildContext context) async => await showDia
           config.spacer,
           EzTextField(
             constraints: ezTextFieldConstraints(dCon),
+            obscureText: true,
             hintText: l10n(config).gPAT,
             style: config.bodyStyle,
             controller: patController,
