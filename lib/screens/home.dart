@@ -21,7 +21,14 @@ import 'package:file_saver/file_saver.dart';
 import 'package:file_picker/file_picker.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String? projectLink;
+  final String? localeLink;
+
+  const HomeScreen({
+    super.key,
+    this.projectLink,
+    this.localeLink,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -205,7 +212,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (loadedFiles.isNotEmpty) {
         final List<String> recentProjects = developing ? recentDirs : recentUrls;
-
         recentProjects.remove(url);
         recentProjects.insert(0, url);
 
@@ -214,7 +220,12 @@ class _HomeScreenState extends State<HomeScreen> {
         if (mounted) {
           context.goNamed(
             selectScreenPath,
-            extra: ARBDir(path: url, local: developing, files: loadedFiles),
+            extra: ARBDir(
+              path: url,
+              preselected: widget.localeLink,
+              local: developing,
+              files: loadedFiles,
+            ),
           );
         }
       } else {
@@ -243,12 +254,17 @@ class _HomeScreenState extends State<HomeScreen> {
     recentDirs = await EzCM.getStringList(recentDirsKey) ?? <String>[];
     recentUrls = await EzCM.getStringList(recentUrlsKey) ?? <String>[];
     setState(() {});
+
+    if (widget.projectLink != null && mounted) {
+      await processUrl(configWatcher(context), widget.projectLink);
+    }
   }
 
   @override
   void initState() {
     super.initState();
     ezWindowNamer(appName);
+
     gatherRecent();
   }
 
