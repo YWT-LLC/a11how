@@ -856,10 +856,10 @@ class _RemoveEntryAction extends HybridAction {
             final Set<String> choppingBlock = <String>{};
 
             String filterString = '';
-            FilterType filterType =
-                FTypeCon.lookup(EzCM.get(removeKeyFilterTypeKey)) ?? FilterType.contains;
             final MenuController filterMC = MenuController();
-            bool caseSensitive = false;
+
+            bool caseSensitive = EzCM.get(removeCaseSensitiveKey) ?? false;
+            FilterType filterType = FTypeCon.safeLookup(EzCM.get(removeFilterTypeKey));
 
             // Define custom functions //
 

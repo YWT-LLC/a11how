@@ -32,7 +32,7 @@ class _WorkScreenState extends State<WorkScreen> {
   late final bool local = widget.workPair.truth.local;
   late final bool selfCompare = widget.workPair.truth == widget.workPair.compare;
 
-  bool caseSensitive = false;
+  bool caseSensitive = EzCM.get(workCaseSensitiveKey) ?? false;
   FilterTarget filterTarget = FTargetCon.safeLookup(EzCM.get(workFilterTypeKey));
   final MenuController fTargetMC = MenuController();
   FilterType filterType = FTypeCon.safeLookup(EzCM.get(workFilterTypeKey));
