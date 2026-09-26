@@ -136,10 +136,16 @@ class _SelectScreenState extends State<SelectScreen> {
   @override
   void initState() {
     super.initState();
+
     if (!local) {
       truth = files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US');
       // No or else, we know it exists
       setState(() {});
+
+      final ARBFile? preSelected = (widget.workDir.preselected == null)
+          ? null
+          : files.where((ARBFile arb) => arb.localeCode == widget.workDir.preselected).firstOrNull;
+      if (preSelected != null) chooseOption(configWatcher(context), preSelected);
     }
   }
 
