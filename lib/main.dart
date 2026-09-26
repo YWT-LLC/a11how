@@ -37,7 +37,7 @@ void main() async {
     neverReset: neverResetKeys,
   );
 
-  await setMindWindow();
+  await setMinWindow();
 
   // Run the app //
 
@@ -72,7 +72,7 @@ class A11how extends StatelessWidget {
         routerConfig: GoRouter(
           navigatorKey: ezRootNav,
           initialLocation: homePath,
-          errorBuilder: (_, GoRouterState state) => const ErrorScreen(),
+          errorBuilder: (_, __) => const ErrorScreen(),
           routes: <RouteBase>[
             // Home
             GoRoute(
