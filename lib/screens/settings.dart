@@ -124,7 +124,7 @@ class SettingsHubScreen extends StatelessWidget {
           ),
         ),
         actions: <HybridAction>[
-          HybridAction(label: appName, icon: Icons.settings, onPressed: null),
+          const HybridAction(label: appName, icon: Icons.settings, onPressed: null),
         ],
         settingsFABs: <Widget>[
           // Rebuild (conditional)
