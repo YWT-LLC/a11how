@@ -353,7 +353,6 @@ class _WorkScreenState extends State<WorkScreen> {
                   showScrollHint: true,
                   thumbVisibility: false,
                   scrollDirection: Axis.horizontal,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     config.rowMargin,
 
