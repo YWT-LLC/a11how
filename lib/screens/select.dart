@@ -20,8 +20,6 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 
-// TODO: skip dupes
-
 class SelectScreen extends StatefulWidget {
   final ARBDir workDir;
 
