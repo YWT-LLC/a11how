@@ -19,6 +19,7 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:after_layout/after_layout.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? projectLink;
@@ -34,7 +35,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScreen> {
   // Define the build data //
 
   bool developing = false;
@@ -254,19 +255,19 @@ class _HomeScreenState extends State<HomeScreen> {
     recentDirs = await EzCM.getStringList(recentDirsKey) ?? <String>[];
     recentUrls = await EzCM.getStringList(recentUrlsKey) ?? <String>[];
     setState(() {});
-
-    if (widget.projectLink != null && mounted) {
-      await processUrl(configWatcher(context), widget.projectLink);
-    }
   }
 
   @override
   void initState() {
     super.initState();
     ezWindowNamer(appName);
-
     gatherRecent();
   }
+
+  @override
+  Future<void> afterFirstLayout(BuildContext context) async => widget.projectLink == null
+      ? doNothing()
+      : await processUrl(configWatcher(context), widget.projectLink);
 
   // Define the build //
 

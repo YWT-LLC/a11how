@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:after_layout/after_layout.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -29,7 +30,7 @@ class SelectScreen extends StatefulWidget {
   State<SelectScreen> createState() => _SelectScreenState();
 }
 
-class _SelectScreenState extends State<SelectScreen> {
+class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<SelectScreen> {
   // Define the build data //
 
   late final String workPath = widget.workDir.path;
@@ -141,12 +142,16 @@ class _SelectScreenState extends State<SelectScreen> {
       truth = files.firstWhere((ARBFile arb) => arb.localeCode == 'en_US');
       // No or else, we know it exists
       setState(() {});
-
-      final ARBFile? preSelected = (widget.workDir.preselected == null)
-          ? null
-          : files.where((ARBFile arb) => arb.localeCode == widget.workDir.preselected).firstOrNull;
-      if (preSelected != null) chooseOption(configWatcher(context), preSelected);
     }
+  }
+
+  @override
+  Future<void> afterFirstLayout(BuildContext context) async {
+    final ARBFile? preSelected = (widget.workDir.preselected == null)
+        ? null
+        : files.where((ARBFile arb) => arb.localeCode == widget.workDir.preselected).firstOrNull;
+
+    if (preSelected != null) await chooseOption(configWatcher(context), preSelected);
   }
 
   // Return the build //
