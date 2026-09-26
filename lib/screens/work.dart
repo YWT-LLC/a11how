@@ -14,8 +14,6 @@ import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// TODO: diff truth shouldn't be surface color in contributing
-
 class WorkScreen extends StatefulWidget {
   final WorkPair workPair;
 
@@ -30,6 +28,8 @@ class _WorkScreenState extends State<WorkScreen> {
 
   final List<WorkRow> workData = <WorkRow>[];
   List<WorkRow> shownData = <WorkRow>[];
+
+  late final bool local = widget.workPair.truth.local;
   late final bool selfCompare = widget.workPair.truth == widget.workPair.compare;
 
   bool caseSensitive = false;
@@ -90,7 +90,7 @@ class _WorkScreenState extends State<WorkScreen> {
     }
 
     // Save Truth
-    if (!selfCompare && widget.workPair.truth.local) {
+    if (!selfCompare && local) {
       try {
         final File file = File(widget.workPair.truth.path);
         widget.workPair.truth.entries
@@ -106,7 +106,7 @@ class _WorkScreenState extends State<WorkScreen> {
     }
 
     // Save Compare
-    if (widget.workPair.truth.local) {
+    if (local) {
       try {
         final File file = File(widget.workPair.compare.path);
         widget.workPair.compare.entries
@@ -512,7 +512,7 @@ class _WorkScreenState extends State<WorkScreen> {
                             decoration: BoxDecoration(
                               color: (showEmpty && row.key.isEmpty)
                                   ? config.colors.secondary.withValues(alpha: focusOpacity)
-                                  : (selfCompare
+                                  : ((selfCompare || !local)
                                       ? config.colors.surfaceContainer
                                       : config.colors.surface),
                             ),
