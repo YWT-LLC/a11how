@@ -19,7 +19,11 @@ const String developingKey = 'developing';
 const String recentDirsKey = 'recentDirs';
 const String recentUrlsKey = 'recentUrls';
 
-const String removeKeyFilterTypeKey = 'removeKeyFilterType';
+const String removeCaseSensitiveKey = 'removeCaseSensitive';
+const String removeFilterTypeKey = 'removeFilterType';
+
+const String workCaseSensitiveKey = 'workCaseSensitive';
+const String workFilterTargetKey = 'workFilterTarget';
 const String workFilterTypeKey = 'workFilterType';
 
 final Map<String, Object> a11HowMobile = <String, Object>{
@@ -27,8 +31,11 @@ final Map<String, Object> a11HowMobile = <String, Object>{
   developingKey: false,
   recentDirsKey: <String>[],
   recentUrlsKey: <String>[],
-  removeKeyFilterTypeKey: FilterType.contains.value,
-  workFilterTypeKey: FilterType.startsWith.value,
+  removeCaseSensitiveKey: false,
+  removeFilterTypeKey: FilterType.contains.value,
+  workCaseSensitiveKey: false,
+  workFilterTargetKey: FilterTarget.compare.value,
+  workFilterTypeKey: FilterType.contains.value,
 };
 
 final Map<String, Object> a11HowDesktop = <String, Object>{
@@ -36,12 +43,21 @@ final Map<String, Object> a11HowDesktop = <String, Object>{
   developingKey: false,
   recentDirsKey: <String>[],
   recentUrlsKey: <String>[],
-  removeKeyFilterTypeKey: FilterType.contains.value,
-  workFilterTypeKey: FilterType.startsWith.value,
+  removeCaseSensitiveKey: false,
+  removeFilterTypeKey: FilterType.contains.value,
+  workCaseSensitiveKey: false,
+  workFilterTargetKey: FilterTarget.compare.value,
+  workFilterTypeKey: FilterType.contains.value,
 };
 
+/// aka all a11how keys
 const Set<String> neverResetKeys = <String>{
   developingKey,
   recentDirsKey,
   recentUrlsKey,
+  removeCaseSensitiveKey,
+  removeFilterTypeKey,
+  workCaseSensitiveKey,
+  workFilterTargetKey,
+  workFilterTypeKey,
 };
