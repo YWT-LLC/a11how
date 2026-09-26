@@ -11,11 +11,13 @@ import 'package:go_router/go_router.dart';
 
 class ARBDir {
   final String path;
+  final String? preselected;
   final bool local;
   final List<ARBFile> files;
 
-  ARBDir({
+  const ARBDir({
     required this.path,
+    this.preselected,
     required this.local,
     required this.files,
   });
@@ -27,7 +29,7 @@ class ARBFile {
   final String localeCode;
   final Map<String, dynamic> entries;
 
-  ARBFile({
+  const ARBFile({
     required this.path,
     required this.local,
     required this.localeCode,
@@ -42,7 +44,7 @@ class HybridAction {
   final MenuController? menuController;
   final List<Widget>? menuChildren;
 
-  HybridAction({
+  const HybridAction({
     required this.label,
     required this.icon,
     required this.onPressed,
@@ -64,7 +66,7 @@ class WorkPair {
   final ARBFile truth;
   final ARBFile compare;
 
-  WorkPair({
+  const WorkPair({
     required this.truth,
     required this.compare,
   });
