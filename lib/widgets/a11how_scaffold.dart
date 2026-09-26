@@ -4,85 +4,124 @@
  */
 
 import '../utils/export.dart';
-import './export.dart';
+import 'package:ywt_private/ywt_private.dart' as ywt;
 
-import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:open_ui/open_ui.dart';
+import 'package:flutter/material.dart';
 
 class A11howScaffold extends StatelessWidget {
-  /// EzConfig Provider
   final EzCP config;
-
-  /// [AppBar.title] passthrough (via [Text] widget)
-  final String title;
-
-  /// Whether to include [SettingsButton] in the [MenuAnchor]
-  final bool showSettings;
-
-  /// [Scaffold.body] passthrough
   final Widget body;
-
-  /// [FloatingActionButton]s to add on top of the [EzUpdaterFAB]
-  /// BYO spacing widgets
-  final List<Widget>? fabs;
-
-  /// For [EzCP.backFABs]
+  final List<HybridAction> actions;
+  final List<Widget>? settingsFABs;
   final bool isHome;
 
-  /// Standardized [Scaffold] for all of the Open UI example app's screens
-  const A11howScaffold(this.config, {
+  const A11howScaffold(
+    this.config, {
     super.key,
-    this.title = appName,
-    this.showSettings = true,
     required this.body,
-    this.fabs,
+    required this.actions,
+    this.settingsFABs,
     this.isHome = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Gather the contextual theme data //
+    final double toolbarHeight = max(
+            config.iconSize,
+            ezTextSize(
+              config,
+              text: config.ezL10n.gSettings,
+              style: config.bodyStyle,
+              textScaler: MediaQuery.textScalerOf(context),
+            ).height) +
+        config.padding;
 
-    final double toolbarHeight =
-        ezToolbarHeight(config, context: context, title: appName);
+    Iterable<Widget> fabActions() => actions.map((HybridAction action) {
+          final Widget core = Padding(
+            padding: EdgeInsets.only(top: config.spacing),
+            child: FloatingActionButton(
+              heroTag: '${action.label}_FAB',
+              onPressed: action.onPressed,
+              tooltip: action.label,
+              child: EzIcon(config, action.icon),
+            ),
+          );
 
-    // Define custom widgets //
+          return action.menuController == null
+              ? core
+              : MenuAnchor(
+                  controller: action.menuController!,
+                  menuChildren: action.menuChildren!,
+                  child: core,
+                );
+        });
 
-    late final Widget options = MenuAnchor(
-      builder: (_, MenuController controller, ___) => EzIconButton(config, 
-        onPressed: () => toggleMenu(controller),
-        tooltip: config.ezL10n.gOptions,
-        iconSize: config.titleStyle!.fontSize,
-        icon: Icon(Icons.more_vert, semanticLabel: config.ezL10n.gOptions),
-      ),
-      menuChildren: <Widget>[
-        (showSettings) ? SettingsButton(config, parentContext: context) : OUICredits(config),
-      ],
-    );
+    List<Widget> toolbarActions() => actions.map((HybridAction action) {
+          final Widget core = Padding(
+              padding: EdgeInsets.symmetric(horizontal: config.spacing / 2),
+              child: EzTextIconButton(
+                config,
+                label: action.label,
+                icon: EzIcon(config, action.icon),
+                onPressed: action.onPressed,
+              ));
 
-    // Return the build //
+          return action.menuController == null
+              ? core
+              : MenuAnchor(
+                  controller: action.menuController!,
+                  menuChildren: action.menuChildren!,
+                  child: core,
+                );
+        }).toList();
 
     return EzAdaptiveParent(
       small: EzScaffold(
+        config,
+        body: body,
+        fabs: <Widget>[
+          updater(config),
+          ...fabActions(),
+          if (settingsFABs != null) ...settingsFABs!,
+          ...config.backFABs(isHome),
+        ],
+      ),
+      medium: EzScaffold(
         config,
         appBar: PreferredSize(
           preferredSize: Size(double.infinity, toolbarHeight),
           child: EzAppBar(
             config,
             height: toolbarHeight,
-            leading: config.isLefty ? options : EzBackAction(config),
-            leadingWidth: toolbarHeight,
-            title: Text(title, textAlign: TextAlign.center),
-            actions: <Widget>[config.isLefty ? EzBackAction(config) : options],
+            title: EzScrollView(
+              config,
+              reverseHands: true,
+              showScrollHint: true,
+              thumbVisibility: false,
+              scrollDirection: Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: toolbarActions(),
+            ),
           ),
         ),
         body: body,
         fabs: <Widget>[
           updater(config),
-          if (fabs != null) ...fabs!,
+          if (settingsFABs != null) ...settingsFABs!,
           ...config.backFABs(isHome),
         ],
       ),
     );
   }
 }
+
+EzUpdaterFAB updater(EzCP config) => EzUpdaterFAB(
+      config,
+      appVersion: '1.0.1',
+      versionSource: 'https://raw.githubusercontent.com/YWT-LLC/a11how/refs/heads/main/APP_VERSION',
+      gPlay: 'https://play.google.com/store/apps/details?id=llc.ywt.a11how',
+      appStore: 'https://apps.apple.com/us/app/a11how/APP_ID_PH',
+      github: ywt.a11howReleases,
+    );

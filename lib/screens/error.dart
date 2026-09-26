@@ -3,21 +3,24 @@
  * See LICENSE for distribution and usage details.
  */
 
+import '../utils/export.dart';
 import '../widgets/export.dart';
 
+import 'package:open_ui/open_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:open_ui/open_ui.dart';
 
 class ErrorScreen extends StatelessWidget {
   const ErrorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EzCP>(builder: (_, EzCP config, __) => A11howScaffold(
+    return Consumer<EzCP>(
+      builder: (_, EzCP config, __) => A11howScaffold(
         config,
         body: EzScreen(
           config,
+          safeArea: true,
           child: Center(
             child: EzScrollView(config, children: <Widget>[
               EzText(
@@ -40,10 +43,11 @@ class ErrorScreen extends StatelessWidget {
                 style: config.labelStyle,
                 textAlign: TextAlign.center,
               ),
-              EzFooter(config, spacing: 0),
+              EzFooter(config, spacing: 0, a11howPath: null),
             ]),
           ),
         ),
+        actions: <HybridAction>[],
       ),
     );
   }

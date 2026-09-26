@@ -1,0 +1,570 @@
+/* a11how
+ * Copyright (c) 2026 YWT. All rights reserved.
+ * See LICENSE for distribution and usage details.
+ */
+
+import '../utils/export.dart';
+import '../widgets/export.dart';
+
+import 'dart:io';
+import 'dart:math';
+import 'dart:convert';
+import 'package:http/http.dart';
+import 'package:open_ui/open_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class WorkScreen extends StatefulWidget {
+  final WorkPair workPair;
+
+  const WorkScreen(this.workPair, {super.key});
+
+  @override
+  State<WorkScreen> createState() => _WorkScreenState();
+}
+
+class _WorkScreenState extends State<WorkScreen> {
+  // Define the build data //
+
+  final List<WorkRow> workData = <WorkRow>[];
+  List<WorkRow> shownData = <WorkRow>[];
+
+  late final bool local = widget.workPair.truth.local;
+  late final bool selfCompare = widget.workPair.truth == widget.workPair.compare;
+
+  bool caseSensitive = EzCM.get(workCaseSensitiveKey) ?? false;
+  FilterTarget filterTarget = FTargetCon.safeLookup(EzCM.get(workFilterTypeKey));
+  final MenuController fTargetMC = MenuController();
+  FilterType filterType = FTypeCon.safeLookup(EzCM.get(workFilterTypeKey));
+  final MenuController fTypeMC = MenuController();
+
+  final MenuController highlightMC = MenuController();
+  bool showEmpty = true;
+  late bool showIdentical = !selfCompare;
+
+  bool saving = false;
+
+  // Define custom functions //
+
+  List<WorkRow> filterData(String filter) => workData
+      .where((WorkRow row) => filter.isEmpty
+          ? true
+          : checkFilter(
+              check: switch (filterTarget) {
+                FilterTarget.key => row.key,
+                FilterTarget.truth => row.truth,
+                FilterTarget.compare => row.compare,
+              },
+              filter: filter,
+            ))
+      .toList();
+
+  String? validateField(EzCP config, String? check) =>
+      (check == null || check.isEmpty) ? l10n(config).gNoEmpty : null;
+
+  bool checkFilter({required String check, required String filter}) => switch (filterType) {
+        FilterType.startsWith => caseSensitive
+            ? check.startsWith(filter)
+            : check.toLowerCase().startsWith(filter.toLowerCase()),
+        FilterType.contains => caseSensitive
+            ? check.contains(filter)
+            : check.toLowerCase().contains(filter.toLowerCase()),
+        FilterType.endsWith => caseSensitive
+            ? check.endsWith(filter)
+            : check.toLowerCase().endsWith(filter.toLowerCase()),
+      };
+
+  Future<void> save(EzCP config) async {
+    if (saving) return;
+    setState(() => saving = true);
+
+    // Prep
+    final Map<String, dynamic> updatedTruth = <String, dynamic>{};
+    final Map<String, dynamic> updatedCompare = <String, dynamic>{};
+
+    for (final WorkRow row in workData) {
+      if (row.key.trim().isEmpty) continue;
+
+      updatedTruth[row.key] = row.truth;
+      updatedCompare[row.key] = row.compare;
+    }
+
+    // Save Truth
+    if (!selfCompare && local) {
+      try {
+        final File file = File(widget.workPair.truth.path);
+        widget.workPair.truth.entries
+          ..clear()
+          ..addAll(updatedTruth);
+
+        await writeSortedJson(config, file: file, arb: widget.workPair.truth);
+      } catch (e) {
+        if (mounted) {
+          ezSnackBar(config, context: context, message: l10n(config).gFailedSave(e.toString()));
+        }
+      }
+    }
+
+    // Save Compare
+    if (local) {
+      try {
+        final File file = File(widget.workPair.compare.path);
+        widget.workPair.compare.entries
+          ..clear()
+          ..addAll(updatedCompare);
+
+        await writeSortedJson(config, file: file, arb: widget.workPair.compare);
+        if (mounted) ezSnackBar(config, context: context, message: config.ezL10n.gSuccess);
+      } catch (e) {
+        if (mounted) {
+          ezSnackBar(config, context: context, message: l10n(config).gFailedSave(e.toString()));
+        }
+      }
+    } else {
+      await _openPR(config, updatedCompare);
+    }
+
+    if (mounted) setState(() => saving = false);
+  }
+
+  Future<void> _openPR(EzCP config, Map<String, dynamic> updatedCompare) async {
+    final String? token = await getPAT(config, context);
+    if (token == null || token.isEmpty) {
+      if (mounted) {
+        ezSnackBar(config, context: context, message: l10n(config).gNeedPAT);
+      }
+      return;
+    }
+
+    // Parse Url
+    final Uri url = Uri.parse(widget.workPair.compare.path);
+    final List<String> segments = url.pathSegments;
+
+    final String owner = segments[0];
+    final String repo = segments[1];
+    final String branch = segments[3];
+    final String filePath = segments.sublist(4).join('/');
+
+    // Build the request
+    final Map<String, String> headers = <String, String>{
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/vnd.github.v3+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    };
+
+    try {
+      // Get user info
+      final Response userRes = await get(
+        Uri.parse('https://api.github.com/user'),
+        headers: headers,
+      );
+      if (userRes.statusCode != 200) throw Exception(l10n(config).gAuthFailed);
+      final String forkOwner = jsonDecode(userRes.body)['login'];
+
+      // Make fork
+      final Response forkRes = await post(
+        Uri.parse('https://api.github.com/repos/$owner/$repo/forks'),
+        headers: headers,
+      );
+      if (forkRes.statusCode != 202 && forkRes.statusCode != 200) {
+        throw Exception(l10n(config).gFailedFork);
+      }
+
+      // Wait a bit
+      await wait(3);
+
+      // SHA-tay
+      final Response fileRes = await get(
+        Uri.parse('https://api.github.com/repos/$forkOwner/$repo/contents/$filePath?ref=$branch'),
+        headers: headers,
+      );
+
+      String? sha;
+      if (fileRes.statusCode == 200) {
+        sha = jsonDecode(fileRes.body)['sha'];
+      } else if (fileRes.statusCode != 404) {
+        throw Exception(l10n(config).gFailedFileStatus);
+      }
+
+      // Commit changes
+      final List<String> sortedKeys = updatedCompare.keys.toList()
+        ..remove('@@locale')
+        ..sort();
+
+      final Map<String, dynamic> sortedMap = <String, dynamic>{
+        '@@locale': widget.workPair.compare.localeCode
+      };
+      for (final String key in sortedKeys) {
+        sortedMap[key] = updatedCompare[key] ?? '';
+      }
+
+      final String newContent = base64Encode(utf8.encode(a11howEncoder.convert(sortedMap)));
+      final Response updateRes = await put(
+        Uri.parse('https://api.github.com/repos/$forkOwner/$repo/contents/$filePath'),
+        headers: headers,
+        body: jsonEncode(<String, dynamic>{
+          'message': 'Update localization for $filePath',
+          'content': newContent,
+          'branch': branch,
+          if (sha != null) 'sha': sha,
+        }),
+      );
+
+      if (updateRes.statusCode != 200 && updateRes.statusCode != 201) {
+        throw Exception(l10n(config).wFailedCommit(updateRes.body));
+      }
+
+      // Open PR
+      final Response prRes = await post(
+        Uri.parse('https://api.github.com/repos/$owner/$repo/pulls'),
+        headers: headers,
+        body: jsonEncode(<String, dynamic>{
+          'title': 'Localization update: $filePath',
+          'head': '$forkOwner:$branch',
+          'base': branch,
+          'body': 'Submitted via a11how.',
+        }),
+      );
+
+      if (prRes.statusCode == 201) {
+        if (mounted) {
+          ezSnackBar(config, context: context, message: l10n(config).gPROpened);
+        }
+      } else {
+        // HTTP 422 usually means a PR for this branch already exists.
+        final String errorMsg = jsonDecode(prRes.body)['errors']?[0]?['message'] ?? prRes.body;
+        throw Exception(prRes.statusCode == 422
+            ? l10n(config).gPRExists(errorMsg)
+            : l10n(config).gFailedPR(errorMsg));
+      }
+    } catch (e) {
+      if (mounted) {
+        ezSnackBar(config, context: context, message: l10n(config).gGitError(e.toString()));
+      }
+    }
+  }
+
+  // Define custom Widgets //
+
+  Widget dragHandle(EzCP config, int index) => ReorderableDragStartListener(
+        index: index,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.grab,
+          child: EzIcon(config, Icons.drag_handle, color: config.colors.outline),
+        ),
+      );
+
+  // Init //
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (final String key in widget.workPair.truth.entries.keys) {
+      workData.add(WorkRow(
+        key: key,
+        truth: widget.workPair.truth.entries[key]?.toString() ?? '',
+        compare: widget.workPair.compare.entries[key]?.toString() ?? '',
+      ));
+    }
+    shownData = filterData('');
+    setState(() {});
+  }
+
+  // Return the build //
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<EzCP>(
+      builder: (_, EzCP config, __) {
+        final double editMax = widthOf(context) - (config.marginVal * 2);
+
+        return A11howScaffold(
+          config,
+          body: InputDecorationTheme(
+            filled: false,
+            contentPadding: EdgeInsets.all(config.marginVal),
+            fillColor: config.colors.surface.withValues(
+              alpha: max(config.colors.surface.a, focusOpacity),
+            ),
+            prefixIconColor: config.colors.primary,
+            iconColor: config.colors.primary,
+            suffixIconColor: config.colors.primary,
+            hintStyle: config.bodyStyle?.copyWith(color: config.colors.outline),
+            labelStyle: config.labelStyle,
+            helperStyle: config.labelStyle,
+            errorStyle: config.labelStyle?.copyWith(color: config.colors.error),
+            errorMaxLines: 1,
+            border: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: config.colors.onSurface.withValues(alpha: focusOpacity),
+                width: config.borderWidth / 2,
+              ),
+              borderRadius: BorderRadius.zero,
+              gapPadding: 0,
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.transparent,
+                width: config.borderWidth / 2,
+              ),
+              borderRadius: BorderRadius.zero,
+              gapPadding: 0,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: config.colors.onSurface.withValues(alpha: focusOpacity),
+                width: config.borderWidth / 2,
+              ),
+              borderRadius: BorderRadius.zero,
+              gapPadding: 0,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: config.colors.error.withValues(alpha: focusOpacity),
+                width: config.borderWidth / 2,
+              ),
+              borderRadius: BorderRadius.zero,
+              gapPadding: 0,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: config.colors.primary.withValues(alpha: focusOpacity * 2),
+                width: config.borderWidth / 2,
+              ),
+              borderRadius: BorderRadius.zero,
+              gapPadding: 0,
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: config.colors.error.withValues(alpha: focusOpacity * 3),
+                width: config.borderWidth / 2,
+              ),
+              borderRadius: BorderRadius.zero,
+              gapPadding: 0,
+            ),
+            child: EzScreen(
+              config,
+              safeArea: true,
+              margin: EdgeInsets.zero,
+              child: EzCol(children: <Widget>[
+                EzScrollView(
+                  config,
+                  showScrollHint: true,
+                  thumbVisibility: false,
+                  scrollDirection: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    config.rowMargin,
+
+                    // Case sensitivity
+                    EzIconButton(
+                      config,
+                      fauxDisabled: !caseSensitive,
+                      tooltip: l10n(config).gToggleCase,
+                      icon: EzIcon(config, Icons.abc),
+                      onPressed: () => setState(() => caseSensitive = !caseSensitive),
+                    ),
+                    config.rowSpacer,
+
+                    // Filter target
+                    MenuAnchor(
+                      controller: fTargetMC,
+                      menuChildren: FilterTarget.values
+                          .map((FilterTarget ft) => EzMenuButton(
+                                config,
+                                label: ft.name(config),
+                                icon: ft.icon(config),
+                                textAlign: TextAlign.start,
+                                onPressed: () => setState(() => filterTarget = ft),
+                              ))
+                          .toList(),
+                      child: EzIconButton(
+                        config,
+                        tooltip: filterTarget.name(config),
+                        icon: filterTarget.icon(config),
+                        onPressed: () => toggleMenu(fTargetMC),
+                      ),
+                    ),
+                    config.rowSpacer,
+
+                    // Filter type
+                    MenuAnchor(
+                      controller: fTypeMC,
+                      menuChildren: FilterType.values
+                          .map((FilterType ft) => EzMenuButton(
+                                config,
+                                label: ft.name(config),
+                                textAlign: TextAlign.start,
+                                onPressed: () => setState(() => filterType = ft),
+                              ))
+                          .toList(),
+                      child: EzTextIconButton(
+                        config,
+                        label: filterType.name(config),
+                        textAlign: TextAlign.start,
+                        icon: EzIcon(config, Icons.filter_list),
+                        onPressed: () => toggleMenu(fTypeMC),
+                      ),
+                    ),
+                    config.rowSpacer,
+
+                    // Filter string
+                    EzTextField(
+                      constraints: ezTextFieldConstraints(context, prop: 0.333),
+                      hintText: '...${l10n(config).gFilter}',
+                      onChanged: (String entry) {
+                        shownData = filterData(entry);
+                        setState(() {});
+                      },
+                      validator: (_) => null,
+                    ),
+                    config.rowSpacer,
+
+                    // Highlight
+                    MenuAnchor(
+                      controller: highlightMC,
+                      menuChildren: <Widget>[
+                        EzMenuButton(
+                          config,
+                          label: l10n(config).wsShowEmpty,
+                          textAlign: TextAlign.start,
+                          icon: Icon(
+                            Icons.circle,
+                            size: config.iconSize / 2,
+                            color: config.colors.secondary,
+                          ),
+                          onPressed: () => setState(() => showEmpty = !showEmpty),
+                        ),
+                        EzMenuButton(
+                          config,
+                          label: l10n(config).wsShowIdentical,
+                          textAlign: TextAlign.start,
+                          icon: Icon(
+                            Icons.circle,
+                            size: config.iconSize / 2,
+                            color: config.colors.tertiary,
+                          ),
+                          onPressed: () => setState(() => showIdentical = !showIdentical),
+                        ),
+                      ],
+                      child: EzTextIconButton(
+                        config,
+                        label: l10n(config).wsHighlight,
+                        icon: EzRow(config, children: <Widget>[
+                          if (!showEmpty && !showIdentical)
+                            Icon(
+                              Icons.circle_outlined,
+                              size: config.iconSize / 2,
+                              color: config.colors.outline,
+                            ),
+                          if (showEmpty)
+                            Icon(
+                              Icons.circle,
+                              size: config.iconSize / 2,
+                              color: config.colors.secondary,
+                            ),
+                          if (showIdentical)
+                            Icon(
+                              Icons.circle,
+                              size: config.iconSize / 2,
+                              color: config.colors.tertiary,
+                            ),
+                        ]),
+                        onPressed: () => toggleMenu(highlightMC),
+                      ),
+                    ),
+                    config.rowMargin,
+                  ],
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: shownData.length,
+                    itemBuilder: (_, int index) {
+                      final WorkRow row = shownData[index];
+                      return EzRow(
+                        config,
+                        key: ValueKey<String>(row.key),
+                        reverseHands: false,
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          // Key
+                          Container(
+                            decoration: BoxDecoration(
+                              color: (showEmpty && row.key.isEmpty)
+                                  ? config.colors.secondary.withValues(alpha: focusOpacity)
+                                  : config.colors.surfaceContainer,
+                            ),
+                            child: EzTextField(
+                              constraints: BoxConstraints.tightFor(width: editMax * 0.15),
+                              readOnly: true,
+                              hintText: row.key,
+                              initialValue: row.key,
+                              style: config.bodyStyle,
+                              textAlign: TextAlign.start,
+                              validator: (_) => null,
+                            ),
+                          ),
+
+                          // Truth
+                          Container(
+                            decoration: BoxDecoration(
+                              color: (showEmpty && row.key.isEmpty)
+                                  ? config.colors.secondary.withValues(alpha: focusOpacity)
+                                  : ((selfCompare || !local)
+                                      ? config.colors.surfaceContainer
+                                      : config.colors.surface),
+                            ),
+                            child: EzTextField(
+                              constraints: BoxConstraints.tightFor(width: editMax * 0.425),
+                              readOnly: selfCompare,
+                              hintText: row.truth,
+                              initialValue: row.truth,
+                              style: config.bodyStyle,
+                              textAlign: TextAlign.start,
+                              onChanged: (String val) => row.truth = val,
+                              validator: (String? check) => validateField(config, check),
+                            ),
+                          ),
+
+                          // Work
+                          Container(
+                            decoration: BoxDecoration(
+                              color: (showIdentical && row.compare == row.truth)
+                                  ? config.colors.tertiary.withValues(alpha: focusOpacity)
+                                  : ((showEmpty && row.key.isEmpty)
+                                      ? config.colors.secondary.withValues(alpha: focusOpacity)
+                                      : config.colors.surface),
+                            ),
+                            child: EzTextField(
+                              constraints: BoxConstraints.tightFor(width: editMax * 0.425),
+                              hintText: row.compare,
+                              initialValue: row.compare,
+                              style: config.bodyStyle,
+                              textAlign: TextAlign.start,
+                              onChanged: (String val) => row.compare = val,
+                              validator: (String? check) => validateField(config, check),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ]),
+            ),
+          ),
+          actions: <HybridAction>[
+            HybridAction(
+              icon: saving ? Icons.timer : Icons.save,
+              label: config.ezL10n.gSave,
+              onPressed: () async =>
+                  saving ? doNothing() : await ezNoTouch(config, () async => await save(config)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
