@@ -41,11 +41,11 @@ extension FTargetCon on FilterTarget {
         _ => null,
       };
 
-  /// Defaults to [FilterTarget.key]
+  /// Defaults to [FilterTarget.compare]
   static FilterTarget safeLookup(String? value) => switch (value) {
+        esKey => FilterTarget.key,
         esTruth => FilterTarget.truth,
-        esCompare => FilterTarget.compare,
-        _ => FilterTarget.key,
+        _ => FilterTarget.compare,
       };
 }
 
@@ -77,11 +77,11 @@ extension FTypeCon on FilterType {
         _ => null,
       };
 
-  /// Defaults to [FilterType.startsWith]
+  /// Defaults to [FilterType.contains]
   static FilterType safeLookup(String? value) => switch (value) {
-        esContains => FilterType.contains,
+        esStarts => FilterType.startsWith,
         esEnds => FilterType.endsWith,
-        _ => FilterType.startsWith,
+        _ => FilterType.contains,
       };
 }
 
