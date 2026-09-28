@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-09-28
+### Added
+- a11how integration-ception (EzFooter)
+- Web release
+  - And pre-loading logic
+
+### Fixed
+- Obscured PAT input
+
 ## [1.0.1] - 2026-09-24
 ### Added
 - a11how V1

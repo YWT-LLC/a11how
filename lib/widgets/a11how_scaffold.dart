@@ -119,7 +119,7 @@ class A11howScaffold extends StatelessWidget {
 
 EzUpdaterFAB updater(EzCP config) => EzUpdaterFAB(
       config,
-      appVersion: '1.0.1',
+      appVersion: '1.1.0',
       versionSource: 'https://raw.githubusercontent.com/YWT-LLC/a11how/refs/heads/main/APP_VERSION',
       gPlay: ywt.a11howGPlay,
       appStore: ywt.a11howAppStore,
