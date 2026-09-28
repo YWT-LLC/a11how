@@ -7,9 +7,17 @@
 
 export 'error.dart';
 export 'home.dart';
+export 'select.dart';
 export 'settings.dart';
+export 'work.dart';
 
 // Route names //
 
-/// settings-home
+/// select-screen
+const String selectScreenPath = 'select-screen';
+
+/// settings-hub
 const String settingsHubPath = 'settings-hub';
+
+/// work-screen
+const String workScreenPath = 'work-screen';
