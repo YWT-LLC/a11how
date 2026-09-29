@@ -27,7 +27,7 @@ void main() async {
     l10nFallback: await OUILang.delegate.load(americanEnglish),
     preferences: await SharedPreferencesWithCache.create(
       cacheOptions: SharedPreferencesWithCacheOptions(
-        allowList: allEZConfigKeys.keys.toSet(),
+        allowList: allEZConfigKeys.keys.toSet(), // TODO
       ),
     ),
     defaults: isMobile() ? a11HowMobile : a11HowDesktop,
