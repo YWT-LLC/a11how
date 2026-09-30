@@ -27,6 +27,8 @@ class A11howScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Define the build data //
+
     final double toolbarHeight = max(
             config.iconSize,
             ezTextSize(
@@ -36,6 +38,8 @@ class A11howScaffold extends StatelessWidget {
               textScaler: MediaQuery.textScalerOf(context),
             ).height) +
         config.padding;
+
+    // Define custom functions //
 
     Iterable<Widget> fabActions() => actions.map((HybridAction action) {
           final Widget core = Padding(
@@ -75,6 +79,8 @@ class A11howScaffold extends StatelessWidget {
                   child: core,
                 );
         }).toList();
+
+    // Return the build //
 
     return EzAdaptiveParent(
       small: EzScaffold(
