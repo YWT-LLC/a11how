@@ -41,7 +41,8 @@ class A11howScaffold extends StatelessWidget {
 
     // Define custom functions //
 
-    Iterable<Widget> fabActions() => actions.map((HybridAction action) {
+    Iterable<Widget> fabActions() =>
+        actions.where((HybridAction action) => action.onPressed != null).map((HybridAction action) {
           final Widget core = Padding(
             padding: EdgeInsets.only(top: config.spacing),
             child: FloatingActionButton(
@@ -90,7 +91,7 @@ class A11howScaffold extends StatelessWidget {
           updater(config),
           ...fabActions(),
           if (settingsFABs != null) ...settingsFABs!,
-          ...config.backFABs(isHome),
+          ...config.backFABs(isHome: isHome, override: !isMobile()),
         ],
       ),
       medium: EzScaffold(
@@ -115,7 +116,7 @@ class A11howScaffold extends StatelessWidget {
         fabs: <Widget>[
           updater(config),
           if (settingsFABs != null) ...settingsFABs!,
-          ...config.backFABs(isHome),
+          ...config.backFABs(isHome: isHome),
         ],
       ),
     );
