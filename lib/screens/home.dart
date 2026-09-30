@@ -477,7 +477,13 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
           ),
         ),
         isHome: true,
-        actions: <HybridAction>[settingsAction(config, context)],
+        actions: <HybridAction>[
+          HybridAction(
+            label: config.ezL10n.gSettings,
+            icon: Icons.settings,
+            onPressed: () => context.goNamed(settingsHubPath),
+          ),
+        ],
       ),
     );
   }
