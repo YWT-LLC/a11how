@@ -91,7 +91,7 @@ class A11howScaffold extends StatelessWidget {
           updater(config),
           ...fabActions(),
           if (settingsFABs != null) ...settingsFABs!,
-          ...config.backFABs(isHome: isHome, override: !isMobile()),
+          ...config.backFABs(isHome: isHome, override: (!isHome && !isMobile())),
         ],
       ),
       medium: EzScaffold(
