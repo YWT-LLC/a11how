@@ -50,7 +50,19 @@ final Map<String, Object> a11HowDesktop = <String, Object>{
   workFilterTypeKey: FilterType.contains.value,
 };
 
-/// aka all a11how keys
+const Map<String, Type> allA11howKeys = <String, Type>{
+  ...allEZConfigKeys,
+  developingKey: bool,
+  recentDirsKey: List<String>,
+  recentUrlsKey: List<String>,
+  removeCaseSensitiveKey: bool,
+  removeFilterTypeKey: String,
+  workCaseSensitiveKey: bool,
+  workFilterTargetKey: String,
+  workFilterTypeKey: String,
+};
+
+/// aka all (unique) a11how keys
 const Set<String> neverResetKeys = <String>{
   developingKey,
   recentDirsKey,
