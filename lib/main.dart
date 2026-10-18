@@ -12,8 +12,91 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Define the router //
+
+final List<RouteBase> routes = <RouteBase>[
+  // Home
+  GoRoute(
+    path: homePath,
+    name: homePath,
+    pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
+      configWatcher(pbc),
+      pbc,
+      pbs,
+      HomeScreen(
+        projectLink: pbs.uri.queryParameters['project'],
+        localeLink: pbs.uri.queryParameters['locale'],
+      ),
+    ),
+    routes: <RouteBase>[
+      // Select
+      GoRoute(
+        path: selectScreenPath,
+        name: selectScreenPath,
+        pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
+          configWatcher(pbc),
+          pbc,
+          pbs,
+          SelectScreen(pbs.extra as ARBDir),
+        ),
+        routes: <RouteBase>[
+          // Work
+          GoRoute(
+            path: workScreenPath,
+            name: workScreenPath,
+            pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
+              configWatcher(pbc),
+              pbc,
+              pbs,
+              WorkScreen(pbs.extra as WorkPair),
+            ),
+          ),
+        ],
+      ),
+
+      // Settings
+      GoRoute(
+        path: settingsHubPath,
+        name: settingsHubPath,
+        pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
+            ezPageBuilder(configWatcher(pbc), pbc, pbs, const SettingsHubScreen()),
+      ),
+    ],
+  ),
+];
+
+// Define the app //
+
+class A11how extends StatelessWidget {
+  final Locale storedLocale;
+  final OUILang storedOUILang;
+  final Lang storedLang;
+
+  const A11how(
+    this.storedLocale,
+    this.storedOUILang,
+    this.storedLang, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) => EzConfigurableApp(
+        localizationsDelegates: ezLocalizationsDelegates(Lang.localizationsDelegates),
+        supportedLocales: Lang.supportedLocales,
+        locale: storedLocale,
+        el10n: storedOUILang,
+        appCache: A11howCache(storedLocale, storedLang),
+        routerConfig: GoRouter(
+          navigatorKey: ezRootNav,
+          initialLocation: homePath,
+          errorBuilder: (_, __) => const ErrorScreen(),
+          routes: routes,
+        ),
+      );
+}
+
 void main() async {
-  // Configure the app //
+  // Configure the environment //
 
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
@@ -45,81 +128,4 @@ void main() async {
     storedOUILang,
     await Lang.delegate.load(storedLocale),
   ));
-}
-
-class A11how extends StatelessWidget {
-  final Locale storedLocale;
-  final OUILang storedOUILang;
-  final Lang storedLang;
-
-  const A11how(
-    this.storedLocale,
-    this.storedOUILang,
-    this.storedLang, {
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) => EzConfigurableApp(
-        localizationsDelegates: ezLocalizationsDelegates(Lang.localizationsDelegates),
-        supportedLocales: Lang.supportedLocales,
-        locale: storedLocale,
-        el10n: storedOUILang,
-        appCache: A11howCache(storedLocale, storedLang),
-        routerConfig: GoRouter(
-          navigatorKey: ezRootNav,
-          initialLocation: homePath,
-          errorBuilder: (_, __) => const ErrorScreen(),
-          routes: <RouteBase>[
-            // Home
-            GoRoute(
-              path: homePath,
-              name: homePath,
-              pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
-                configWatcher(pbc),
-                pbc,
-                pbs,
-                HomeScreen(
-                  projectLink: pbs.uri.queryParameters['project'],
-                  localeLink: pbs.uri.queryParameters['locale'],
-                ),
-              ),
-              routes: <RouteBase>[
-                // Select
-                GoRoute(
-                  path: selectScreenPath,
-                  name: selectScreenPath,
-                  pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
-                    configWatcher(pbc),
-                    pbc,
-                    pbs,
-                    SelectScreen(pbs.extra as ARBDir),
-                  ),
-                  routes: <RouteBase>[
-                    // Work
-                    GoRoute(
-                      path: workScreenPath,
-                      name: workScreenPath,
-                      pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
-                        configWatcher(pbc),
-                        pbc,
-                        pbs,
-                        WorkScreen(pbs.extra as WorkPair),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Settings
-                GoRoute(
-                  path: settingsHubPath,
-                  name: settingsHubPath,
-                  pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
-                      ezPageBuilder(configWatcher(pbc), pbc, pbs, const SettingsHubScreen()),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
 }
