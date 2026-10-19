@@ -72,7 +72,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
     } else {
       (truth == null)
           ? setState(() => truth = arb)
-          : context.pushNamed(workScreenPath, extra: WorkPair(truth: truth!, compare: arb));
+          : context.pushNamed(workScreenName, extra: WorkPair(truth: truth!, compare: arb));
     }
   }
 
@@ -378,7 +378,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                     HybridAction(
                       label: config.ezL10n.gSettings,
                       icon: Icons.settings,
-                      onPressed: () => context.goNamed(settingsHubPath),
+                      onPressed: () => context.goNamed(settingsScreenName),
                     ),
                   ],
           );

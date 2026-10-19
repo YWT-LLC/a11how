@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
         if (mounted) {
           context.goNamed(
-            selectScreenPath,
+            selectScreenName,
             extra: ARBDir(path: selectedDirectory, local: developing, files: loadedFiles),
           );
         }
@@ -220,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
         if (mounted) {
           context.goNamed(
-            selectScreenPath,
+            selectScreenName,
             extra: ARBDir(
               path: url,
               preselected: widget.localeLink,
@@ -481,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
           HybridAction(
             label: config.ezL10n.gSettings,
             icon: Icons.settings,
-            onPressed: () => context.goNamed(settingsHubPath),
+            onPressed: () => context.goNamed(settingsScreenName),
           ),
         ],
       ),

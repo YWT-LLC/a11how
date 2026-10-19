@@ -13,9 +13,14 @@ export 'work.dart';
 
 // Route names //
 
-const String homePath = 'a11how';
+const String homePath = '/';
+const String homeName = 'a11how-home';
 
-const String selectScreenPath = 'select-screen';
-const String workScreenPath = 'work-screen';
+const String settingsScreenPath = 'settings';
+const String settingsScreenName = 'a11how-settings';
 
-const String settingsHubPath = 'settings-hub';
+const String selectScreenPath = 'select';
+const String selectScreenName = 'a11how-select';
+
+const String workScreenPath = 'work';
+const String workScreenName = 'a11how-work';
