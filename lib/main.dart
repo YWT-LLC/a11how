@@ -15,53 +15,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Define the router //
 
 final List<RouteBase> routes = <RouteBase>[
-  // Home
+  // Select
   GoRoute(
-    path: homePath,
-    name: homeName,
+    path: selectScreenPath,
+    name: selectScreenName,
     pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
       configWatcher(pbc),
       pbc,
       pbs,
-      HomeScreen(
-        projectLink: pbs.uri.queryParameters['project'],
-        localeLink: pbs.uri.queryParameters['locale'],
-      ),
+      SelectScreen(pbs.extra as ARBDir),
     ),
     routes: <RouteBase>[
-      // Select
+      // Work
       GoRoute(
-        path: selectScreenPath,
-        name: selectScreenName,
+        path: workScreenPath,
+        name: workScreenName,
         pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
           configWatcher(pbc),
           pbc,
           pbs,
-          SelectScreen(pbs.extra as ARBDir),
+          WorkScreen(pbs.extra as WorkPair),
         ),
-        routes: <RouteBase>[
-          // Work
-          GoRoute(
-            path: workScreenPath,
-            name: workScreenName,
-            pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
-              configWatcher(pbc),
-              pbc,
-              pbs,
-              WorkScreen(pbs.extra as WorkPair),
-            ),
-          ),
-        ],
-      ),
-
-      // Settings
-      GoRoute(
-        path: settingsScreenPath,
-        name: settingsScreenName,
-        pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
-            ezPageBuilder(configWatcher(pbc), pbc, pbs, const SettingsHubScreen()),
       ),
     ],
+  ),
+
+  // Settings
+  GoRoute(
+    path: settingsScreenPath,
+    name: settingsScreenName,
+    pageBuilder: (BuildContext pbc, GoRouterState pbs) =>
+        ezPageBuilder(configWatcher(pbc), pbc, pbs, const SettingsHubScreen()),
   ),
 ];
 
@@ -90,7 +74,22 @@ class A11how extends StatelessWidget {
           navigatorKey: ezRootNav,
           initialLocation: homePath,
           errorBuilder: (_, __) => const ErrorScreen(),
-          routes: routes,
+          routes: <RouteBase>[
+            GoRoute(
+              path: homePath,
+              name: homeName,
+              pageBuilder: (BuildContext pbc, GoRouterState pbs) => ezPageBuilder(
+                configWatcher(pbc),
+                pbc,
+                pbs,
+                HomeScreen(
+                  projectLink: pbs.uri.queryParameters['project'],
+                  localeLink: pbs.uri.queryParameters['locale'],
+                ),
+              ),
+              routes: routes,
+            ),
+          ],
         ),
       );
 }
