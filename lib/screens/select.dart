@@ -86,8 +86,8 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                     children: files
                         .where((ARBFile arb) =>
                             filter.isEmpty ? true : arb.localeCode.contains(filter))
-                        .map((ARBFile arb) => Padding(
-                              padding: EzInsets.wrap(config.spacing),
+                        .map((ARBFile arb) => ezWrap(
+                              config,
                               child: MouseRegion(
                                 onHover: (_) => hoverOption(arb),
                                 child: EzElevatedIconButton(
@@ -593,8 +593,8 @@ class _AddEntryAction extends HybridAction {
                                           : !completed
                                               .map((_AddCache cache) => cache.file)
                                               .contains(arb))
-                                      .map((ARBFile arb) => Padding(
-                                            padding: EzInsets.wrap(config.spacing),
+                                      .map((ARBFile arb) => ezWrap(
+                                            config,
                                             child: EzElevatedIconButton(
                                               config,
                                               label: arb.localeCode,
@@ -639,8 +639,8 @@ class _AddEntryAction extends HybridAction {
                                   ),
                                   EzWrap(
                                     children: completed
-                                        .map((_AddCache cache) => Padding(
-                                              padding: EzInsets.wrap(config.spacing),
+                                        .map((_AddCache cache) => ezWrap(
+                                              config,
                                               child: EzElevatedIconButton(
                                                 config,
                                                 fauxDisabled: true,
@@ -943,8 +943,8 @@ class _RemoveEntryAction extends HybridAction {
                                 ),
                                 EzWrap(
                                   children: files
-                                      .map((ARBFile arb) => Padding(
-                                            padding: EzInsets.wrap(config.spacing),
+                                      .map((ARBFile arb) => ezWrap(
+                                            config,
                                             child: EzElevatedButton(
                                               config,
                                               text: arb.localeCode,
@@ -970,8 +970,8 @@ class _RemoveEntryAction extends HybridAction {
                                     ? config.margin
                                     : EzWrap(
                                         children: choppingBlock
-                                            .map((String key) => Padding(
-                                                  padding: EzInsets.wrap(config.spacing),
+                                            .map((String key) => ezWrap(
+                                                  config,
                                                   child: EzTextButton(
                                                     config,
                                                     key: ValueKey<String>(key),
@@ -1041,8 +1041,8 @@ class _RemoveEntryAction extends HybridAction {
                                       children: keySource!.entries.keys
                                           .where((String key) =>
                                               !key.contains('@@locale') && checkFilter(key))
-                                          .map((String key) => Padding(
-                                                padding: EzInsets.wrap(config.spacing),
+                                          .map((String key) => ezWrap(
+                                                config,
                                                 child: EzTextIconButton(
                                                   config,
                                                   key: ValueKey<String>(key),
