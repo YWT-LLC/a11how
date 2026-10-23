@@ -377,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
             },
           ),
         ]),
-        EzSpacer(config.spacing / 2),
+        config.halfSpacer,
 
         // Projects
         ...(developing ? recentDirs : recentUrls).map((String path) => Padding(

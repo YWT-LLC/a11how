@@ -159,8 +159,6 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
   @override
   Widget build(BuildContext context) => Consumer<EzCP>(
         builder: (_, EzCP config, __) {
-          final Widget halfSpacer = EzSpacer(config.spacing / 2);
-
           final BoxConstraints filterConstraints = BoxConstraints.tightFor(
             width: ezTextSize(
               config,
@@ -252,7 +250,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                         ),
                       ]),
                     ),
-                    halfSpacer,
+                    config.halfSpacer,
                   ]),
                 ),
 
@@ -289,11 +287,11 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                     ]),
                   ),
                 ),
-                halfSpacer,
+                config.halfSpacer,
 
                 // Choices/options
                 buildOptions(config),
-                halfSpacer,
+                config.halfSpacer,
               ]),
             ),
             actions: removing
@@ -987,7 +985,7 @@ class _RemoveEntryAction extends HybridAction {
                                       ),
                                 if (choppingBlock.isNotEmpty) ...<Widget>[
                                   EzDivider(height: config.marginVal),
-                                  EzSpacer(config.spacing / 2),
+                                  config.halfSpacer,
                                 ],
 
                                 // Filter
