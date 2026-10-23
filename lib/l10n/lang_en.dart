@@ -103,7 +103,7 @@ class LangEn extends Lang {
 
   @override
   String get gPolicyPolicy =>
-      'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...';
+      'Only submit your own (human) work.\nYWT is fully capable of LLM translation on its own.\n\nSpeaking of, YWT will use an LLM to compare your submission with the current values.\nIf it\'s unclear which should be kept, YWT will reach out for clarification via GitHub.\n\nAny malicious submissions/submitters will be immediately and permanently blocked.';
 
   @override
   String get gPolicyTitle => 'Contribution policy';
@@ -371,7 +371,7 @@ class LangEnUs extends LangEn {
 
   @override
   String get gPolicyPolicy =>
-      'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...';
+      'Only submit your own (human) work.\nYWT is fully capable of LLM translation on its own.\n\nSpeaking of, YWT will use an LLM to compare your submission with the current values.\nIf it\'s unclear which should be kept, YWT will reach out for clarification via GitHub.\n\nAny malicious submissions/submitters will be immediately and permanently blocked.';
 
   @override
   String get gPolicyTitle => 'Contribution policy';
