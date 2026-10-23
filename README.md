@@ -11,7 +11,7 @@ Please reach out to the [community](mailto:community@ywt.llc?subject=Becoming%20
 
 ### <br>Translations
 
-If you speak a language we don't support yet, or see a mistake in one we do, please [contribute](https://ywt.llc/a11how/#/).
+If you speak a language a11how doesn't support yet, or see a mistake in one it does, please [contribute](https://ywt.llc/a11how/#/).
 
 As long as you have a GitHub account, you can commit your fixes with one paste & click.
 
