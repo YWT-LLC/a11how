@@ -42,7 +42,6 @@ class ErrorScreen extends StatelessWidget {
                 style: config.labelStyle,
                 textAlign: TextAlign.center,
               ),
-              EzFooter(config, spacing: 0, a11howPath: null),
             ]),
           ),
         ),
