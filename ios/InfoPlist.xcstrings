@@ -1,0 +1,94 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how" } },
+        "en" : { "stringUnit" : { "state" : "new", "value" : "a11how" } }    
+      }
+    },
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how" } },
+        "en" : { "stringUnit" : { "state" : "new", "value" : "a11how" } }
+      }
+    },
+    "NSCameraUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how benötigt Zugriff auf Ihre Kamera, um Fotos/Videos mit Ihren Notfallkontakten zu teilen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "a11how needs access to your camera to share photos/videos with your emergency contacts." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "a11how necesita acceso a la cámara para compartir fotos y vídeos con tus contactos de emergencia." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "a11how a besoin d'accéder à votre appareil photo pour partager des photos/vidéos avec vos contacts d'urgence." } }
+      }
+    },
+    "NSContactsUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how muss Ihre Notfallkontakte speichern können." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "a11how needs to be able to save your emergency contacts." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "a11how necesita poder guardar tus contactos de emergencia." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "a11how doit pouvoir enregistrer vos contacts d'urgence." } }
+      }
+    },
+    "NSLocationAlwaysAndWhenInUseUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how benötigt Zugriff auf Ihren Standort, um ihn mit Ihren Notfallkontakten zu teilen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "a11how needs access to your location to share it with your emergency contacts." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "a11how necesita acceso a tu ubicación para compartirla con tus contactos de emergencia." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "a11how a besoin d'accéder à votre localisation pour la partager avec vos contacts d'urgence." } }        
+      }
+    },
+    "NSLocationAlwaysUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how benötigt Zugriff auf Ihren Standort, um ihn mit Ihren Notfallkontakten zu teilen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "a11how needs access to your location to share it with your emergency contacts." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "a11how necesita acceso a tu ubicación para compartirla con tus contactos de emergencia." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "a11how a besoin d'accéder à votre localisation pour la partager avec vos contacts d'urgence." } }
+      }
+    },
+    "NSLocationUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how benötigt Zugriff auf Ihren Standort, um ihn mit Ihren Notfallkontakten zu teilen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "a11how needs access to your location to share it with your emergency contacts." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "a11how necesita acceso a tu ubicación para compartirla con tus contactos de emergencia." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "a11how a besoin d'accéder à votre localisation pour la partager avec vos contacts d'urgence." } }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how benötigt Zugriff auf Ihren Standort, um ihn mit Ihren Notfallkontakten zu teilen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "a11how needs access to your location to share it with your emergency contacts." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "a11how necesita acceso a tu ubicación para compartirla con tus contactos de emergencia." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "a11how a besoin d'accéder à votre localisation pour la partager avec vos contacts d'urgence." } }
+      }
+    },
+    "NSMicrophoneUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how benötigt Zugriff auf Ihr Mikrofon, um Videos mit Ton aufzunehmen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "a11how needs access to your microphone to record videos with audio." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "a11how necesita acceso al micrófono para grabar vídeos con audio." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "a11how a besoin d'accéder à votre microphone pour enregistrer des vidéos avec audio." } }
+      }
+    },
+    "NSPhotoLibraryUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "a11how benötigt Zugriff auf Ihre Fotomediathek, um Fotos/Videos zu speichern." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "a11how needs access to your photo library to save photos/videos." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "a11how necesita acceso a tu galería para guardar fotos y vídeos." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "a11how a besoin d'accéder à votre galerie pour enregistrer des photos/vidéos." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
