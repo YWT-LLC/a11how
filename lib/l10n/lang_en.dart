@@ -168,7 +168,7 @@ class LangEn extends Lang {
 
   @override
   String hsSkippedInvalid(Object path) {
-    return 'Skipped invalid ARB file: \$$path';
+    return 'Skipped invalid ARB file: $path';
   }
 
   @override
@@ -436,7 +436,7 @@ class LangEnUs extends LangEn {
 
   @override
   String hsSkippedInvalid(Object path) {
-    return 'Skipped invalid ARB file: \$$path';
+    return 'Skipped invalid ARB file: $path';
   }
 
   @override

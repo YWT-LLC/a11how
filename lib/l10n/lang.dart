@@ -380,7 +380,7 @@ abstract class Lang {
   /// No description provided for @hsSkippedInvalid.
   ///
   /// In en, this message translates to:
-  /// **'Skipped invalid ARB file: \${path}'**
+  /// **'Skipped invalid ARB file: {path}'**
   String hsSkippedInvalid(Object path);
 
   /// No description provided for @ssAddEntries.

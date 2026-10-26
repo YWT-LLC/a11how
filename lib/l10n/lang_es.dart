@@ -87,7 +87,7 @@ class LangEs extends Lang {
   String get gOpenRepo => 'Abrir repositorio';
 
   @override
-  String get gPAT => 'Token de Acceso Personal';
+  String get gPAT => 'Token de acceso personal';
 
   @override
   String get gPATPolicy =>
@@ -103,7 +103,7 @@ class LangEs extends Lang {
 
   @override
   String get gPolicyPolicy =>
-      'Comparamos tu envío con lo que tenemos. Si tu envío parece claramente mejor, lo conservamos.\nSi parece más o menos igual, nos pondremos en contacto contigo para verificar que eres humano y que usaste tu cerebro.\nTal vez el/un LLM hizo un trabajo realmente bueno, pero si podemos estar seguros de que tu trabajo es humano, es mejor.\nLo sentimos, no lo sentimos, bots que extraen datos de este repositorio.\n\nSi tu envío parece incorrecto, pero de una manera competente, nos pondremos en contacto para averiguar qué pasó.\nSi tu envío es incorrecto de una manera incompetente/troll: baneo instantáneo, sin reintentos. No pases por la salida, pero puedes ir a ***...';
+      'Envía solo tu propio trabajo (humano).\nYWT es perfectamente capaz de hacer traducciones con LLM por su cuenta.\n\nHablando de eso, YWT usará un LLM para comparar tu envío con los valores actuales.\nSi no está claro cuál conservar, YWT se pondrá en contacto contigo a través de GitHub para aclararlo.\n\nCualquier envío o remitente malicioso será bloqueado de forma inmediata y permanente.';
 
   @override
   String get gPolicyTitle => 'Política de contribución';
@@ -146,7 +146,7 @@ class LangEs extends Lang {
 
   @override
   String hsGitTip(Object link) {
-    return 'Necesitarás una cuenta de GitHub para contribuir.\nSi/cuando tengas una cuenta de GitHub, también necesitarás crear un Token de Acceso Personal (PAT) que a11how pueda usar.\n\nNo guardamos NADA.\n\nCódigo fuente:\n$link';
+    return 'Necesitarás una cuenta de GitHub para contribuir.\nSi/cuando tengas una cuenta de GitHub, también necesitarás crear un token de acceso personal (PAT) que a11how pueda usar.\n\nNo guardamos NADA.\n\nCódigo fuente:\n$link';
   }
 
   @override
@@ -169,7 +169,7 @@ class LangEs extends Lang {
 
   @override
   String hsSkippedInvalid(Object path) {
-    return 'Se omitió el archivo ARB inválido: \$$path';
+    return 'Se omitió el archivo ARB inválido: $path';
   }
 
   @override
@@ -238,7 +238,7 @@ class LangEs extends Lang {
   String get ssSaveAll => 'Guardar todo';
 
   @override
-  String get ssSelf => 'Propio';
+  String get ssSelf => 'Sí mismo';
 
   @override
   String get ssSource => 'Idioma de origen:';

@@ -46,7 +46,7 @@
   "hsOpenGit": "Open GitHub repo",
   "hsRecent": "Recent projects",
   "hsRemovingRecent": " - removing from recent",
-  "hsSkippedInvalid": "Skipped invalid ARB file: ${path}",
+  "hsSkippedInvalid": "Skipped invalid ARB file: {path}",
   "ssAddEntries": "Add entries",
   "ssAddLocale": "Add locale",
   "ssAllDone": "All done!",

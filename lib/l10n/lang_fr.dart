@@ -105,7 +105,7 @@ class LangFr extends Lang {
 
   @override
   String get gPolicyPolicy =>
-      'Nous comparons votre soumission à ce que nous avons. Si votre soumission semble nettement meilleure, nous la gardons.\nSi elle semble à peu près identique, nous vous contacterons pour vérifier que vous êtes un humain et que vous avez utilisé votre cerveau.\nPeut-être qu\'un LLM a fait du très bon travail, mais si nous pouvons être certains que votre travail est humain, c\'est mieux.\nDésolé pour les bots qui récupèrent ce dépôt, mais pas désolé.\n\nSi votre soumission semble incorrecte, mais d\'une manière compétente, nous vous contacterons pour comprendre ce qui s\'est passé.\nSi votre soumission est incorrecte d\'une manière incompétente/troll : bannissement instantané, aucun nouvel essai. Ne passez pas par la case départ, mais vous pouvez aller vous ***...';
+      'Ne soumettez que votre propre travail (humain).\nYWT est tout à fait capable de faire des traductions par LLM de son côté.\n\nÀ ce propos, YWT utilisera un LLM pour comparer votre soumission aux valeurs actuelles.\nS\'il n\'est pas clair laquelle conserver, YWT vous contactera via GitHub pour obtenir des précisions.\n\nToute soumission ou tout contributeur malveillant sera bloqué immédiatement et définitivement.';
 
   @override
   String get gPolicyTitle => 'Politique de contribution';
@@ -172,7 +172,7 @@ class LangFr extends Lang {
 
   @override
   String hsSkippedInvalid(Object path) {
-    return 'Fichier ARB invalide ignoré : \$$path';
+    return 'Fichier ARB invalide ignoré : $path';
   }
 
   @override
