@@ -62,10 +62,30 @@ class SettingsHubScreen extends StatelessWidget {
                 ),
               ),
 
-              // Color //
+              // Audio //
 
               EzSettingsSection(
                 position: 1,
+                title: 'Audio', // TODO: l10n
+                icon: EzIcon(
+                  config,
+                  Icons.volume_up,
+                  semanticLabel: 'Audio',
+                ),
+                subSettings: <EzSubSetting>[
+                  EzSubSetting.qckAudio,
+                  EzSubSetting.advAudio,
+                ],
+                fromStorage: () => EzCM.get(advancedAudioKey) == true
+                    ? EzSubSetting.advAudio
+                    : EzSubSetting.qckAudio,
+                build: (EzSubSetting subSec) => EzAudioSettings(config, target: subSec),
+              ),
+
+              // Color //
+
+              EzSettingsSection(
+                position: 2,
                 title: config.ezL10n.gColor,
                 icon: EzIcon(
                   config,
@@ -85,7 +105,7 @@ class SettingsHubScreen extends StatelessWidget {
               // Design //
 
               EzSettingsSection(
-                position: 2,
+                position: 3,
                 title: config.ezL10n.gDesign,
                 icon: EzIcon(
                   config,
@@ -104,7 +124,7 @@ class SettingsHubScreen extends StatelessWidget {
               // Text //
 
               EzSettingsSection(
-                position: 3,
+                position: 4,
                 title: config.ezL10n.gText,
                 icon: EzIcon(
                   config,
