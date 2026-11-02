@@ -984,7 +984,7 @@ class _RemoveEntryAction extends HybridAction {
                                             .toList(),
                                       ),
                                 if (choppingBlock.isNotEmpty) ...<Widget>[
-                                  EzDivider(height: config.marginVal),
+                                  EzDivider(config, height: config.marginVal),
                                   config.halfSpacer,
                                 ],
 
@@ -1462,7 +1462,7 @@ class _AddLocaleAction extends HybridAction {
                                   await launchUrl(service.url);
                                 },
                         ),
-                        config.divider,
+                        EzDivider(config),
                       ],
 
                       // Value/Field
