@@ -297,7 +297,7 @@ class _WorkScreenState extends State<WorkScreen> {
             errorMaxLines: 1,
             border: OutlineInputBorder(
               borderSide: BorderSide(
-                color: config.colors.onSurface.withValues(alpha: focusOpacity),
+                color: config.onSurface.withValues(alpha: focusOpacity),
                 width: config.borderWidth / 2,
               ),
               borderRadius: BorderRadius.zero,
@@ -313,7 +313,7 @@ class _WorkScreenState extends State<WorkScreen> {
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: config.colors.onSurface.withValues(alpha: focusOpacity),
+                color: config.onSurface.withValues(alpha: focusOpacity),
                 width: config.borderWidth / 2,
               ),
               borderRadius: BorderRadius.zero,

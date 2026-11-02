@@ -397,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                     label: developing ? path : Uri.parse(path).pathSegments[1],
                     tooltip: developing ? null : path,
                     textAlign: TextAlign.start,
-                    textColor: config.colors.onSurface,
+                    textColor: config.onSurface,
                     hint: config.ezL10n.gOpen,
                     onTap: () async => developing
                         ? await processPath(config, path)
@@ -407,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                     config,
                     tooltip: config.ezL10n.gRemove,
                     icon: Icons.remove_circle_outline,
-                    color: config.colors.error,
+                    fill: config.errorFill,
                     onPressed: () async {
                       final List<String> recentProjects = developing ? recentDirs : recentUrls;
                       recentProjects.remove(path);
