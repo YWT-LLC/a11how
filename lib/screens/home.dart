@@ -441,9 +441,9 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
               config.spacer,
               openButton(config),
               EzDivider(
-                height: config.spacing * 3,
+                config,
                 width: widthOf(context) * 0.667,
-                color: config.colors.secondaryContainer,
+                fill: config.secondaryContainerFill,
               ),
               ...displayRecent(config),
               EzFooter(config, a11howPath: ywt.a11howContributeA11),
@@ -458,12 +458,11 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   openButton(config),
-                  SizedBox(
+                  EzVerticalDivider(
+                    config,
                     height: heightOf(context) * 0.667,
-                    child: VerticalDivider(
-                      width: config.spacing * 3,
-                      color: config.colors.secondaryContainer,
-                    ),
+                    width: config.spacing * 3,
+                    fill: config.secondaryContainerFill,
                   ),
                   EzCol(
                     mainAxisAlignment: MainAxisAlignment.center,

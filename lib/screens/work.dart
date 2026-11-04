@@ -250,7 +250,7 @@ class _WorkScreenState extends State<WorkScreen> {
         index: index,
         child: MouseRegion(
           cursor: SystemMouseCursors.grab,
-          child: EzIcon(config, Icons.drag_handle, color: config.colors.outline),
+          child: EzIcon(config, Icons.drag_handle, fill: config.outlineFill),
         ),
       );
 
@@ -452,22 +452,25 @@ class _WorkScreenState extends State<WorkScreen> {
                         label: l10n(config).wsHighlight,
                         icon: EzRow(config, children: <Widget>[
                           if (!showEmpty && !showIdentical)
-                            Icon(
+                            EzIcon(
+                              config,
                               Icons.circle_outlined,
                               size: config.iconSize / 2,
-                              color: config.colors.outline,
+                              fill: config.outlineFill,
                             ),
                           if (showEmpty)
-                            Icon(
+                            EzIcon(
+                              config,
                               Icons.circle,
                               size: config.iconSize / 2,
-                              color: config.colors.secondary,
+                              fill: config.secondaryFill,
                             ),
                           if (showIdentical)
-                            Icon(
+                            EzIcon(
+                              config,
                               Icons.circle,
                               size: config.iconSize / 2,
-                              color: config.colors.tertiary,
+                              fill: config.tertiaryFill,
                             ),
                         ]),
                         onPressed: () => toggleMenu(highlightMC),
