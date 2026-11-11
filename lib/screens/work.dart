@@ -296,7 +296,7 @@ class _WorkScreenState extends State<WorkScreen> {
             errorStyle: config.labelStyle?.copyWith(color: config.errorFill.asColor),
             errorMaxLines: 1,
             border: ezOutInBorder(
-              EzSwitchColor(color: config.onSurface),
+              config.onSurfaceFiller,
               borderWidth: config.borderWidth / 2,
               borderRadius: BorderRadius.zero,
               opacity: focusOpacity,
@@ -308,7 +308,7 @@ class _WorkScreenState extends State<WorkScreen> {
               opacity: focusOpacity,
             ),
             enabledBorder: ezOutInBorder(
-              EzSwitchColor(color: config.onSurface),
+              config.onSurfaceFiller,
               borderWidth: config.borderWidth / 2,
               borderRadius: BorderRadius.zero,
               opacity: focusOpacity,
