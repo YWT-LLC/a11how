@@ -7,7 +7,7 @@ import 'package:ywt_private/ywt_private.dart' as ywt;
 
 import 'dart:math';
 import 'package:open_ui/open_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class A11howScaffold extends StatelessWidget {
   final EzCP config;
@@ -87,6 +87,7 @@ class A11howScaffold extends StatelessWidget {
       small: EzScaffold(
         config,
         body: body,
+        footer: null,
         fabs: <Widget>[
           updater(config),
           ...fabActions(),
@@ -113,6 +114,7 @@ class A11howScaffold extends StatelessWidget {
           ),
         ),
         body: body,
+        footer: null,
         fabs: <Widget>[
           updater(config),
           if (settingsFABs != null) ...settingsFABs!,
