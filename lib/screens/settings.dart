@@ -62,26 +62,6 @@ class SettingsHubScreen extends StatelessWidget {
                 ),
               ),
 
-              // Audio //
-
-              EzSettingsSection(
-                position: 1,
-                title: 'Audio', // TODO: l10n
-                icon: EzIcon(
-                  config,
-                  Icons.volume_up,
-                  semanticLabel: 'Audio',
-                ),
-                subSettings: <EzSubSetting>[
-                  EzSubSetting.qckAudio,
-                  EzSubSetting.advAudio,
-                ],
-                fromStorage: () => EzCM.get(advancedAudioKey) == true
-                    ? EzSubSetting.advAudio
-                    : EzSubSetting.qckAudio,
-                build: (EzSubSetting subSec) => EzAudioSettings(config, target: subSec),
-              ),
-
               // Color //
 
               EzSettingsSection(
