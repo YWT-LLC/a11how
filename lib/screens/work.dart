@@ -504,7 +504,8 @@ class _WorkScreenState extends State<WorkScreen> {
                                 : config.boxDeco(
                                     fill: (selfCompare || !local)
                                         ? config.surfaceContainerFill
-                                        : config.surfaceFill),
+                                        : config.surfaceFill,
+                                  ),
                             child: EzTextField(
                               constraints: BoxConstraints.tightFor(width: editMax * 0.425),
                               readOnly: selfCompare,
@@ -523,8 +524,10 @@ class _WorkScreenState extends State<WorkScreen> {
                                 ? config.boxDeco(fill: config.tertiaryFill, opacity: focusOpacity)
                                 : ((showEmpty && row.key.isEmpty)
                                     ? config.boxDeco(
-                                        fill: config.secondaryFill, opacity: focusOpacity)
-                                    : config.boxDeco(fill: config.surfaceFill)),
+                                        fill: config.secondaryFill,
+                                        opacity: focusOpacity,
+                                      )
+                                    : config.boxDeco()),
                             child: EzTextField(
                               constraints: BoxConstraints.tightFor(width: editMax * 0.425),
                               hintText: row.compare,
