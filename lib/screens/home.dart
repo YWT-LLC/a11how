@@ -446,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                 fill: config.secondaryContainerFill,
               ),
               ...displayRecent(config),
-              EzFooter(config, a11howPath: ywt.a11howContributeA11),
+              config.separator,
             ]),
             expanded: EzScrollView(config, children: <Widget>[
               if (!kIsWeb) toggle(config),
@@ -471,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                   ),
                 ],
               ),
-              EzFooter(config, a11howPath: ywt.a11howContributeA11),
+              config.separator,
             ]),
           ),
         ),
