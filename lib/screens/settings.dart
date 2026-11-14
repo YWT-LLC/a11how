@@ -11,9 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:material_ui/material_ui.dart';
 
 class SettingsHubScreen extends StatelessWidget {
-  final int? targetPass;
-
-  const SettingsHubScreen({super.key, this.targetPass});
+  const SettingsHubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +118,6 @@ class SettingsHubScreen extends StatelessWidget {
                 build: (EzSubSetting subSec) => EzTextSettings(config, target: subSec),
               ),
             ],
-            target: targetPass,
           ),
         ),
         actions: <HybridAction>[
