@@ -327,6 +327,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
             enabled: (developing ? recentDirs : recentUrls).isNotEmpty,
             tooltip: config.ezL10n.ssSaveConfig,
             icon: Icons.save,
+            backgroundFill: config.surfaceContainerFill,
             onPressed: () async {
               try {
                 await FileSaver.instance.saveAs(
@@ -346,6 +347,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
             config,
             tooltip: config.ezL10n.ssLoadConfig,
             icon: Icons.upload,
+            backgroundFill: config.surfaceContainerFill,
             onPressed: () async {
               final PlatformFile? result = await FilePicker.pickFile(
                 type: FileType.custom,
@@ -407,6 +409,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                     config,
                     tooltip: config.ezL10n.gRemove,
                     icon: Icons.remove_circle_outline,
+                    backgroundFill: config.surfaceContainerFill,
                     iconFill: config.errorFill,
                     onPressed: () async {
                       final List<String> recentProjects = developing ? recentDirs : recentUrls;
