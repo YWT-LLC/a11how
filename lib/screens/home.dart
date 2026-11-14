@@ -285,7 +285,6 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
           config,
           label: l10n(config).hsOpenDir,
           icon: EzIcon(config, Icons.folder_open),
-          style: TextButton.styleFrom(backgroundColor: config.surfaceContainerFill.asColor),
           onPressed: () async => await processPath(config, null),
         )
       : EzCol(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
@@ -304,7 +303,6 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
               label: l10n(config).hsOpenGit,
               textAlign: TextAlign.end,
               icon: EzIcon(config, Icons.folder_open),
-              style: TextButton.styleFrom(backgroundColor: config.surfaceContainerFill.asColor),
               onPressed: () async => await processUrl(config, null),
             ),
             EzToolTipper(
