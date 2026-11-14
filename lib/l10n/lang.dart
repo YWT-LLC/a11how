@@ -209,6 +209,12 @@ abstract class Lang {
   /// **'Key'**
   String get gKey;
 
+  /// No description provided for @gLLMShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder: LLMs are a shortcut.\nAnd inherently, mathematically, unreliable.\n\nDisclose you\'re using machine translation until you can afford proper translations <3\nThere\'s no shame in it.\n\nThe shame is for those who choose to take a short cut, that will yield objectively worse results, AND take away a job that could have been\n...to save a couple of bucks...\nBut actually not, because you\'re still spending your privacy/data and our Earth\'s resources. Oh, and a subscription/token fee.\n\nLARPing has a time and place: the forest, and the bedroom.\nLet\'s keep it out of our resumes though, shall we?\n\n...unless you have a ren-fair resume, then pop-off my liege.'**
+  String get gLLMShortcut;
+
   /// No description provided for @gNeedPAT.
   ///
   /// In en, this message translates to:

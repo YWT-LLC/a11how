@@ -18,6 +18,7 @@
   "gInvalidRegex": "Ungültig; {regex}",
   "gInvalidURL": "Ungültige URL",
   "gKey": "Schlüssel",
+  "gLLMShortcut": "Zur Erinnerung: LLMs sind eine Abkürzung.\nUnd von Natur aus, mathematisch bedingt, unzuverlässig.\n\nLegen Sie offen, dass Sie maschinelle Übersetzung verwenden, bis Sie sich richtige Übersetzungen leisten können <3\nDas ist keine Schande.\n\nDie Schande gilt denen, die sich für eine Abkürzung entscheiden, die objektiv schlechtere Ergebnisse liefert UND einen Job vernichtet, den es hätte geben können\n...um ein paar Euro zu sparen...\nAber eigentlich nicht einmal das, denn Sie bezahlen trotzdem mit Ihrer Privatsphäre/Ihren Daten und den Ressourcen unserer Erde. Ach ja, und mit einer Abo-/Token-Gebühr.\n\nLARP hat seine Zeit und seinen Ort: den Wald und das Schlafzimmer.\nAber aus unseren Lebensläufen halten wir es lieber heraus, oder?\n\n...es sei denn, Sie haben einen Mittelaltermarkt-Lebenslauf, dann nur zu, mein Lehnsherr.",
   "gNeedPAT": "Git PAT erforderlich, um Änderungen einzureichen.",
   "gNoEmpty": "Darf nicht leer sein",
   "gOpenDocs": "Dokumentation öffnen",

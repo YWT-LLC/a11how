@@ -75,6 +75,10 @@ class LangEs extends Lang {
   String get gKey => 'Clave';
 
   @override
+  String get gLLMShortcut =>
+      'Recordatorio: los LLM son un atajo.\nY son inherentemente, matemáticamente, poco fiables.\n\nAvisa de que usas traducción automática hasta que puedas permitirte traducciones de verdad <3\nNo hay nada de qué avergonzarse.\n\nLa vergüenza es para quienes eligen tomar un atajo que dará resultados objetivamente peores, Y ADEMÁS quitan un trabajo que podría haber existido\n...para ahorrarse unas monedas...\nPero en realidad no, porque sigues gastando tu privacidad/tus datos y los recursos de nuestra Tierra. Ah, y una cuota de suscripción/tokens.\n\nEl rol en vivo tiene su momento y su lugar: el bosque y el dormitorio.\nPero mejor lo dejamos fuera de nuestros currículums, ¿no?\n\n...a menos que tengas un currículum de feria medieval; en ese caso, adelante, mi señor.';
+
+  @override
   String get gNeedPAT => 'Se requiere un PAT de Git para enviar los cambios.';
 
   @override

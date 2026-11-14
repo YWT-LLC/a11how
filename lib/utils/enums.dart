@@ -181,25 +181,8 @@ $json
         _ => false,
       };
 
-  Widget twoCents(EzCP config) => human
-      ? const SizedBox.shrink()
-      : EzToolTipper(
-          config,
-          message: """Reminder: LLMs are a shortcut.
-And inherently, mathematically, unreliable.
-
-Disclose you're using machine translation until you can afford proper translations <3
-There's no shame in it.
-
-The shame is for those who choose to take a short cut, that will yield objectively worse results, AND take away a job that could have been
-...to save a couple of bucks...
-But actually not, because you're still spending your privacy/data and our Earth's resources. Oh, and a subscription/token fee.
-
-LARPing has a time and place: the forest, and the bedroom.
-Let's keep it out of our resumes though, shall we?
-
-...unless you have a ren-fair resume, then pop-off my liege.""",
-        );
+  Widget twoCents(EzCP config) =>
+      human ? const SizedBox.shrink() : EzToolTipper(config, message: l10n(config).gLLMShortcut);
 
   static TranslationService? lookup(String? value) => switch (value) {
         esProZ => TranslationService.proZ,

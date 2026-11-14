@@ -18,6 +18,7 @@
   "gInvalidRegex": "Invalide ; {regex}",
   "gInvalidURL": "URL invalide",
   "gKey": "Clé",
+  "gLLMShortcut": "Rappel : les LLM sont un raccourci.\nEt ils sont intrinsèquement, mathématiquement, peu fiables.\n\nIndiquez que vous utilisez la traduction automatique jusqu'à ce que vous puissiez vous offrir de vraies traductions <3\nIl n'y a aucune honte à cela.\n\nLa honte est pour ceux qui choisissent de prendre un raccourci qui donnera des résultats objectivement moins bons, ET qui suppriment un emploi qui aurait pu exister\n...pour économiser quelques sous...\nMais en fait non, car vous dépensez quand même votre vie privée/vos données et les ressources de notre Terre. Ah, et un abonnement/des frais de tokens.\n\nLe GN a son moment et son lieu : la forêt et la chambre à coucher.\nMais gardons-le hors de nos CV, d'accord ?\n\n...sauf si vous avez un CV de fête médiévale, auquel cas faites-vous plaisir, mon seigneur.",
   "gNeedPAT": "Un PAT Git est requis pour soumettre les modifications.",
   "gNoEmpty": "Ne peut pas être vide",
   "gOpenDocs": "Ouvrir la documentation",
