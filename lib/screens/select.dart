@@ -376,7 +376,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                     HybridAction(
                       label: config.ezL10n.gSettings,
                       icon: Icons.settings,
-                      onPressed: () => context.goNamed(settingsScreenName),
+                      onPressed: () => context.pushNamed(settingsScreenName),
                     ),
                   ],
           );

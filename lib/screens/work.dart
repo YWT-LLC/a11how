@@ -558,7 +558,7 @@ class _WorkScreenState extends State<WorkScreen> {
             HybridAction(
               label: config.ezL10n.gSettings,
               icon: Icons.settings,
-              onPressed: () => context.goNamed(settingsScreenName),
+              onPressed: () => context.pushNamed(settingsScreenName),
             ),
           ],
         );
