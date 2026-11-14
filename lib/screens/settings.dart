@@ -65,7 +65,7 @@ class SettingsHubScreen extends StatelessWidget {
               // Color //
 
               EzSettingsSection(
-                position: 2,
+                position: 1,
                 title: config.ezL10n.gColor,
                 icon: EzIcon(
                   config,
@@ -85,7 +85,7 @@ class SettingsHubScreen extends StatelessWidget {
               // Design //
 
               EzSettingsSection(
-                position: 3,
+                position: 2,
                 title: config.ezL10n.gDesign,
                 icon: EzIcon(
                   config,
@@ -104,7 +104,7 @@ class SettingsHubScreen extends StatelessWidget {
               // Text //
 
               EzSettingsSection(
-                position: 4,
+                position: 3,
                 title: config.ezL10n.gText,
                 icon: EzIcon(
                   config,
