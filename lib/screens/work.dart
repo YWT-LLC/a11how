@@ -282,6 +282,7 @@ class _WorkScreenState extends State<WorkScreen> {
     return Consumer<EzCP>(
       builder: (_, EzCP config, __) {
         final double editMax = widthOf(context) - (config.marginVal * 2);
+        final double halfWidth = config.borderWidth / 2;
 
         return A11howScaffold(
           config,
@@ -299,37 +300,37 @@ class _WorkScreenState extends State<WorkScreen> {
             errorMaxLines: 1,
             border: ezOutInBorder(
               config.onSurfaceFiller,
-              borderWidth: config.borderWidth / 2,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
               opacity: focusOpacity,
             ),
             disabledBorder: ezOutInBorder(
               const EzSwitchColor(color: Colors.transparent),
-              borderWidth: config.borderWidth / 2,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
               opacity: focusOpacity,
             ),
             enabledBorder: ezOutInBorder(
               config.onSurfaceFiller,
-              borderWidth: config.borderWidth / 2,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
               opacity: focusOpacity,
             ),
             errorBorder: ezOutInBorder(
               config.errorFill,
-              borderWidth: config.borderWidth / 2,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
               opacity: focusOpacity,
             ),
             focusedBorder: ezOutInBorder(
               config.primaryFill,
-              borderWidth: config.borderWidth / 2,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
               opacity: focusOpacity * 2,
             ),
             focusedErrorBorder: ezOutInBorder(
               config.errorFill,
-              borderWidth: config.borderWidth / 2,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
               opacity: focusOpacity * 3,
             ),
@@ -486,8 +487,15 @@ class _WorkScreenState extends State<WorkScreen> {
                           // Key
                           Container(
                             decoration: (showEmpty && row.key.isEmpty)
-                                ? config.boxDeco(fill: config.secondaryFill, opacity: focusOpacity)
-                                : config.boxDeco(fill: config.surfaceContainerFill),
+                                ? config.boxDeco(
+                                    fill: config.secondaryFill,
+                                    borderRadius: BorderRadius.zero,
+                                    opacity: focusOpacity,
+                                  )
+                                : config.boxDeco(
+                                    fill: config.surfaceContainerFill,
+                                    borderRadius: BorderRadius.zero,
+                                  ),
                             child: EzTextField(
                               constraints: BoxConstraints.tightFor(width: editMax * 0.15),
                               readOnly: true,
@@ -502,11 +510,16 @@ class _WorkScreenState extends State<WorkScreen> {
                           // Truth
                           Container(
                             decoration: (showEmpty && row.key.isEmpty)
-                                ? config.boxDeco(fill: config.secondaryFill, opacity: focusOpacity)
+                                ? config.boxDeco(
+                                    fill: config.secondaryFill,
+                                    borderRadius: BorderRadius.zero,
+                                    opacity: focusOpacity,
+                                  )
                                 : config.boxDeco(
                                     fill: (selfCompare || !local)
                                         ? config.surfaceContainerFill
                                         : config.surfaceFill,
+                                    borderRadius: BorderRadius.zero,
                                   ),
                             child: EzTextField(
                               constraints: BoxConstraints.tightFor(width: editMax * 0.425),
@@ -523,13 +536,18 @@ class _WorkScreenState extends State<WorkScreen> {
                           // Work
                           Container(
                             decoration: (showIdentical && row.compare == row.truth)
-                                ? config.boxDeco(fill: config.tertiaryFill, opacity: focusOpacity)
+                                ? config.boxDeco(
+                                    fill: config.tertiaryFill,
+                                    borderRadius: BorderRadius.zero,
+                                    opacity: focusOpacity,
+                                  )
                                 : ((showEmpty && row.key.isEmpty)
                                     ? config.boxDeco(
                                         fill: config.secondaryFill,
+                                        borderRadius: BorderRadius.zero,
                                         opacity: focusOpacity,
                                       )
-                                    : config.boxDeco()),
+                                    : config.boxDeco(borderRadius: BorderRadius.zero)),
                             child: EzTextField(
                               constraints: BoxConstraints.tightFor(width: editMax * 0.425),
                               hintText: row.compare,
