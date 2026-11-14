@@ -3,6 +3,7 @@
  * See LICENSE for distribution and usage details.
  */
 
+import './export.dart';
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
@@ -11,6 +12,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:open_ui/open_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 class WorkScreen extends StatefulWidget {
@@ -552,6 +554,11 @@ class _WorkScreenState extends State<WorkScreen> {
               label: config.ezL10n.gSave,
               onPressed: () async =>
                   saving ? doNothing() : await ezNoTouch(config, () async => await save(config)),
+            ),
+            HybridAction(
+              label: config.ezL10n.gSettings,
+              icon: Icons.settings,
+              onPressed: () => context.goNamed(settingsScreenName),
             ),
           ],
         );
