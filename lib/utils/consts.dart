@@ -62,7 +62,17 @@ const Map<String, Type> allA11howKeys = <String, Type>{
   workFilterTypeKey: String,
 };
 
-/// aka all (unique) a11how keys
+const Set<String> uniqueKeys = <String>{
+  developingKey,
+  recentDirsKey,
+  recentUrlsKey,
+  removeCaseSensitiveKey,
+  removeFilterTypeKey,
+  workCaseSensitiveKey,
+  workFilterTargetKey,
+  workFilterTypeKey,
+};
+
 const Set<String> neverResetKeys = <String>{
   developingKey,
   recentDirsKey,
