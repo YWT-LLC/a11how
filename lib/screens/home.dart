@@ -52,11 +52,15 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
     setState(() {});
   }
 
-  Future<void> processPath(EzCP config, String? preSelected) async {
+  Future<void> processPath(EzCP config, Uri? preSelected) async {
     await ezNoTouch(config, () async {
       // Valid dir?
-      final String? selectedDirectory = preSelected ?? await FilePicker.getDirectoryPath();
-      if (selectedDirectory == null) return;
+      final Uri? selectedUri = preSelected ?? await FilePicker.pickDirectory();
+      if (selectedUri == null) return;
+
+      // dart:io can only read file URIs (Android returns a content:// tree URI)
+      final String selectedDirectory =
+          selectedUri.isScheme('file') ? selectedUri.toFilePath() : selectedUri.toString();
 
       // Get files
       final Directory dir = Directory(selectedDirectory);
@@ -112,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
         }
         if (preSelected != null) {
           final List<String> recentProjects = developing ? recentDirs : recentUrls;
-          recentProjects.remove(preSelected);
+          recentProjects.remove(selectedDirectory);
           await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
         }
       }
@@ -402,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                     textColor: config.onSurface,
                     hint: config.ezL10n.gOpen,
                     onTap: () async => developing
-                        ? await processPath(config, path)
+                        ? await processPath(config, Uri.file(path))
                         : await processUrl(config, path),
                   ),
                   EzIconTouch(
