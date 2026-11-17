@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2026-11-17
+### Updated
+- Open UI
+  - Gradients!
+
 ## [1.1.0] - 2026-09-28
 ### Added
 - a11how integration-ception (EzFooter)
