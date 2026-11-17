@@ -1,5 +1,5 @@
 /* a11how
- * Copyright (c) 2026 YWT. All rights reserved.
+ * Copyright (c) 2026 YWT (Empathetech LLC). All rights reserved.
  * See LICENSE for distribution and usage details.
  */
 
@@ -13,11 +13,14 @@ export 'work.dart';
 
 // Route names //
 
-/// select-screen
-const String selectScreenPath = 'select-screen';
+const String homePath = '/';
+const String homeName = 'a11how-home';
 
-/// settings-hub
-const String settingsHubPath = 'settings-hub';
+const String settingsScreenPath = 'settings';
+const String settingsScreenName = 'a11how-settings';
 
-/// work-screen
-const String workScreenPath = 'work-screen';
+const String selectScreenPath = 'select';
+const String selectScreenName = 'a11how-select';
+
+const String workScreenPath = 'work';
+const String workScreenName = 'a11how-work';

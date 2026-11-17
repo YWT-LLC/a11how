@@ -1,5 +1,5 @@
 /* a11how
- * Copyright (c) 2026 YWT. All rights reserved.
+ * Copyright (c) 2026 YWT (Empathetech LLC). All rights reserved.
  * See LICENSE for distribution and usage details.
  */
 
@@ -50,7 +50,29 @@ final Map<String, Object> a11HowDesktop = <String, Object>{
   workFilterTypeKey: FilterType.contains.value,
 };
 
-/// aka all a11how keys
+const Map<String, Type> allA11howKeys = <String, Type>{
+  ...allEZConfigKeys,
+  developingKey: bool,
+  recentDirsKey: List<String>,
+  recentUrlsKey: List<String>,
+  removeCaseSensitiveKey: bool,
+  removeFilterTypeKey: String,
+  workCaseSensitiveKey: bool,
+  workFilterTargetKey: String,
+  workFilterTypeKey: String,
+};
+
+const Set<String> uniqueKeys = <String>{
+  developingKey,
+  recentDirsKey,
+  recentUrlsKey,
+  removeCaseSensitiveKey,
+  removeFilterTypeKey,
+  workCaseSensitiveKey,
+  workFilterTargetKey,
+  workFilterTypeKey,
+};
+
 const Set<String> neverResetKeys = <String>{
   developingKey,
   recentDirsKey,

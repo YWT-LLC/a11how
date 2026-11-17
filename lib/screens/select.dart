@@ -1,5 +1,5 @@
 /* a11how
- * Copyright (c) 2026 YWT. All rights reserved.
+ * Copyright (c) 2026 YWT (Empathetech LLC). All rights reserved.
  * See LICENSE for distribution and usage details.
  */
 
@@ -13,10 +13,10 @@ import 'package:http/http.dart';
 import 'package:path/path.dart' as p;
 import 'package:archive/archive.dart';
 import 'package:open_ui/open_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
@@ -72,7 +72,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
     } else {
       (truth == null)
           ? setState(() => truth = arb)
-          : context.pushNamed(workScreenPath, extra: WorkPair(truth: truth!, compare: arb));
+          : context.pushNamed(workScreenName, extra: WorkPair(truth: truth!, compare: arb));
     }
   }
 
@@ -86,8 +86,8 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                     children: files
                         .where((ARBFile arb) =>
                             filter.isEmpty ? true : arb.localeCode.contains(filter))
-                        .map((ARBFile arb) => Padding(
-                              padding: EzInsets.wrap(config.spacing),
+                        .map((ARBFile arb) => ezWrap(
+                              config,
                               child: MouseRegion(
                                 onHover: (_) => hoverOption(arb),
                                 child: EzElevatedIconButton(
@@ -100,7 +100,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                                         ? arb.entries.length.toString()
                                         : ezLocaleName(ezLocale(arb.localeCode), context),
                                     style: config.labelStyle?.copyWith(
-                                      color: config.colors.outline,
+                                      color: config.outline,
                                     ),
                                   ),
                                   onPressed: () async => await chooseOption(config, arb),
@@ -159,8 +159,6 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
   @override
   Widget build(BuildContext context) => Consumer<EzCP>(
         builder: (_, EzCP config, __) {
-          final Widget halfSpacer = EzSpacer(config.spacing / 2);
-
           final BoxConstraints filterConstraints = BoxConstraints.tightFor(
             width: ezTextSize(
               config,
@@ -180,7 +178,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                 EzText(
                   config,
                   text: workPath,
-                  style: config.labelStyle?.copyWith(color: config.colors.outline),
+                  style: config.labelStyle?.copyWith(color: config.outline),
                   textAlign: TextAlign.center,
                 ),
 
@@ -208,12 +206,12 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                                     text: l10n(config).ssSource,
                                     style: config.titleStyle?.copyWith(
                                       decoration: TextDecoration.underline,
-                                      decorationColor: config.colors.primary,
+                                      decorationColor: config.primaryFill.asColor,
                                     ),
                                   ),
                                   EzPlainText(
                                     text: ' $truthPreview',
-                                    style: config.bodyStyle?.copyWith(color: config.colors.outline),
+                                    style: config.bodyStyle?.copyWith(color: config.outline),
                                   ),
                                 ])
                               : EzRichText(config, children: <InlineSpan>[
@@ -241,18 +239,18 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                                     text: l10n(config).ssCompare,
                                     style: config.titleStyle?.copyWith(
                                       decoration: TextDecoration.underline,
-                                      decorationColor: config.colors.primary,
+                                      decorationColor: config.primaryFill.asColor,
                                     ),
                                   ),
                                   EzPlainText(
                                     text: ' $comparePreview',
-                                    style: config.bodyStyle?.copyWith(color: config.colors.outline),
+                                    style: config.bodyStyle?.copyWith(color: config.outline),
                                   ),
                                 ]),
                         ),
                       ]),
                     ),
-                    halfSpacer,
+                    config.halfSpacer,
                   ]),
                 ),
 
@@ -289,11 +287,11 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                     ]),
                   ),
                 ),
-                halfSpacer,
+                config.halfSpacer,
 
                 // Choices/options
                 buildOptions(config),
-                halfSpacer,
+                config.halfSpacer,
               ]),
             ),
             actions: removing
@@ -375,7 +373,11 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
                     ],
 
                     // Settings
-                    settingsAction(config, context),
+                    HybridAction(
+                      label: config.ezL10n.gSettings,
+                      icon: Icons.settings,
+                      onPressed: () => context.pushNamed(settingsScreenName),
+                    ),
                   ],
           );
         },
@@ -462,7 +464,7 @@ class _AddEntryAction extends HybridAction {
 
             final Widget div = ConstrainedBox(
               constraints: BoxConstraints.tight(Size.square(config.marginVal)),
-              child: VerticalDivider(color: config.colors.outline),
+              child: VerticalDivider(color: config.outline),
             );
 
             await ezFullScreenModal(
@@ -589,15 +591,15 @@ class _AddEntryAction extends HybridAction {
                                           : !completed
                                               .map((_AddCache cache) => cache.file)
                                               .contains(arb))
-                                      .map((ARBFile arb) => Padding(
-                                            padding: EzInsets.wrap(config.spacing),
+                                      .map((ARBFile arb) => ezWrap(
+                                            config,
                                             child: EzElevatedIconButton(
                                               config,
                                               label: arb.localeCode,
                                               icon: Text(
                                                 arb.entries.length.toString(),
                                                 style: config.labelStyle?.copyWith(
-                                                  color: config.colors.outline,
+                                                  color: config.outline,
                                                 ),
                                               ),
                                               onPressed: () => setModal(() => adding = arb),
@@ -635,8 +637,8 @@ class _AddEntryAction extends HybridAction {
                                   ),
                                   EzWrap(
                                     children: completed
-                                        .map((_AddCache cache) => Padding(
-                                              padding: EzInsets.wrap(config.spacing),
+                                        .map((_AddCache cache) => ezWrap(
+                                              config,
                                               child: EzElevatedIconButton(
                                                 config,
                                                 fauxDisabled: true,
@@ -645,7 +647,7 @@ class _AddEntryAction extends HybridAction {
                                                   (cache.file.entries.length + cache.entries.length)
                                                       .toString(),
                                                   style: config.labelStyle?.copyWith(
-                                                    color: config.colors.outline,
+                                                    color: config.outline,
                                                   ),
                                                 ),
                                                 onPressed: doNothing,
@@ -661,9 +663,9 @@ class _AddEntryAction extends HybridAction {
                                   // Preview toggle
                                   EzTitledDivider(
                                     config,
-                                    color: showPreview
-                                        ? config.colors.secondaryContainer
-                                        : Colors.transparent,
+                                    fill: showPreview
+                                        ? config.secondaryContainerFill
+                                        : const EzSwitchColor(color: Colors.transparent),
                                     height: config.spacing * 2,
                                     width: 250,
                                     title: EzSwitchPair(
@@ -689,7 +691,8 @@ class _AddEntryAction extends HybridAction {
                                         label: l10n(config).ssPreviewTruth,
                                         initialSelection: previewTruth,
                                         dropdownMenuEntries: completed
-                                            .map((_AddCache cache) => DropdownMenuEntry<_AddCache>(
+                                            .map((_AddCache cache) => EzDropMenuEntry<_AddCache>(
+                                                  config,
                                                   label: cache.file.localeCode,
                                                   value: cache,
                                                 ))
@@ -707,7 +710,8 @@ class _AddEntryAction extends HybridAction {
                                             .where((ARBFile file) => !completed
                                                 .map((_AddCache cache) => cache.file)
                                                 .contains(file))
-                                            .map((ARBFile arb) => DropdownMenuEntry<ARBFile>(
+                                            .map((ARBFile arb) => EzDropMenuEntry<ARBFile>(
+                                                  config,
                                                   label: arb.localeCode,
                                                   value: arb,
                                                 ))
@@ -743,7 +747,7 @@ class _AddEntryAction extends HybridAction {
                                         ),
                                         EzTextBackground(
                                           config,
-                                          backgroundColor: config.colors.surface,
+                                          replaceFill: config.surfaceFill,
                                           text: EzCol(
                                             children: missingPreview
                                                 .map((MapEntry<String, dynamic> entry) =>
@@ -939,8 +943,8 @@ class _RemoveEntryAction extends HybridAction {
                                 ),
                                 EzWrap(
                                   children: files
-                                      .map((ARBFile arb) => Padding(
-                                            padding: EzInsets.wrap(config.spacing),
+                                      .map((ARBFile arb) => ezWrap(
+                                            config,
                                             child: EzElevatedButton(
                                               config,
                                               text: arb.localeCode,
@@ -966,8 +970,8 @@ class _RemoveEntryAction extends HybridAction {
                                     ? config.margin
                                     : EzWrap(
                                         children: choppingBlock
-                                            .map((String key) => Padding(
-                                                  padding: EzInsets.wrap(config.spacing),
+                                            .map((String key) => ezWrap(
+                                                  config,
                                                   child: EzTextButton(
                                                     config,
                                                     key: ValueKey<String>(key),
@@ -982,8 +986,8 @@ class _RemoveEntryAction extends HybridAction {
                                             .toList(),
                                       ),
                                 if (choppingBlock.isNotEmpty) ...<Widget>[
-                                  EzDivider(height: config.marginVal),
-                                  EzSpacer(config.spacing / 2),
+                                  EzDivider(config, height: config.marginVal),
+                                  config.halfSpacer,
                                 ],
 
                                 // Filter
@@ -1037,8 +1041,8 @@ class _RemoveEntryAction extends HybridAction {
                                       children: keySource!.entries.keys
                                           .where((String key) =>
                                               !key.contains('@@locale') && checkFilter(key))
-                                          .map((String key) => Padding(
-                                                padding: EzInsets.wrap(config.spacing),
+                                          .map((String key) => ezWrap(
+                                                config,
                                                 child: EzTextIconButton(
                                                   config,
                                                   key: ValueKey<String>(key),
@@ -1332,7 +1336,8 @@ class _AddLocaleAction extends HybridAction {
                           label: l10n(config).ssSource,
                           initialSelection: sourceCode,
                           dropdownMenuEntries: files
-                              .map((ARBFile arb) => DropdownMenuEntry<String>(
+                              .map((ARBFile arb) => EzDropMenuEntry<String>(
+                                    config,
                                     label: arb.localeCode,
                                     value: arb.localeCode,
                                   ))
@@ -1370,8 +1375,8 @@ class _AddLocaleAction extends HybridAction {
                             label: l10n(config).ssChooseService,
                             initialSelection: service,
                             dropdownMenuEntries: TranslationService.values
-                                .map((TranslationService ts) =>
-                                    DropdownMenuEntry<TranslationService>(
+                                .map((TranslationService ts) => EzDropMenuEntry<TranslationService>(
+                                      config,
                                       label: ts.name(config),
                                       value: ts,
                                     ))
@@ -1460,7 +1465,7 @@ class _AddLocaleAction extends HybridAction {
                                   await launchUrl(service.url);
                                 },
                         ),
-                        config.divider,
+                        EzDivider(config),
                       ],
 
                       // Value/Field

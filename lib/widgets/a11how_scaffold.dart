@@ -1,14 +1,13 @@
 /* a11how
- * Copyright (c) 2026 YWT. All rights reserved.
+ * Copyright (c) 2026 YWT (Empathetech LLC). All rights reserved.
  * See LICENSE for distribution and usage details.
  */
 
-import '../utils/export.dart';
 import 'package:ywt_private/ywt_private.dart' as ywt;
 
 import 'dart:math';
 import 'package:open_ui/open_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class A11howScaffold extends StatelessWidget {
   final EzCP config;
@@ -28,6 +27,8 @@ class A11howScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Define the build data //
+
     final double toolbarHeight = max(
             config.iconSize,
             ezTextSize(
@@ -38,7 +39,10 @@ class A11howScaffold extends StatelessWidget {
             ).height) +
         config.padding;
 
-    Iterable<Widget> fabActions() => actions.map((HybridAction action) {
+    // Define custom functions //
+
+    Iterable<Widget> fabActions() =>
+        actions.where((HybridAction action) => action.onPressed != null).map((HybridAction action) {
           final Widget core = Padding(
             padding: EdgeInsets.only(top: config.spacing),
             child: FloatingActionButton(
@@ -77,15 +81,18 @@ class A11howScaffold extends StatelessWidget {
                 );
         }).toList();
 
+    // Return the build //
+
     return EzAdaptiveParent(
       small: EzScaffold(
         config,
         body: body,
+        footer: null,
         fabs: <Widget>[
           updater(config),
           ...fabActions(),
           if (settingsFABs != null) ...settingsFABs!,
-          ...config.backFABs(isHome),
+          ...config.backFABs(isHome: isHome, override: (!isHome && !isMobile())),
         ],
       ),
       medium: EzScaffold(
@@ -107,10 +114,11 @@ class A11howScaffold extends StatelessWidget {
           ),
         ),
         body: body,
+        footer: null,
         fabs: <Widget>[
           updater(config),
           if (settingsFABs != null) ...settingsFABs!,
-          ...config.backFABs(isHome),
+          ...config.backFABs(isHome: isHome),
         ],
       ),
     );
@@ -119,7 +127,7 @@ class A11howScaffold extends StatelessWidget {
 
 EzUpdaterFAB updater(EzCP config) => EzUpdaterFAB(
       config,
-      appVersion: '1.1.0',
+      appVersion: '1.1.1',
       versionSource: 'https://raw.githubusercontent.com/YWT-LLC/a11how/refs/heads/main/APP_VERSION',
       gPlay: ywt.a11howGPlay,
       appStore: ywt.a11howAppStore,

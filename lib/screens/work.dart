@@ -1,18 +1,19 @@
 /* a11how
- * Copyright (c) 2026 YWT. All rights reserved.
+ * Copyright (c) 2026 YWT (Empathetech LLC). All rights reserved.
  * See LICENSE for distribution and usage details.
  */
 
+import './export.dart';
 import '../utils/export.dart';
 import '../widgets/export.dart';
 
 import 'dart:io';
-import 'dart:math';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:open_ui/open_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 class WorkScreen extends StatefulWidget {
   final WorkPair workPair;
@@ -247,12 +248,15 @@ class _WorkScreenState extends State<WorkScreen> {
   // Define custom Widgets //
 
   Widget dragHandle(EzCP config, int index) => ReorderableDragStartListener(
-        index: index,
-        child: MouseRegion(
-          cursor: SystemMouseCursors.grab,
-          child: EzIcon(config, Icons.drag_handle, color: config.colors.outline),
+      index: index,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.grab,
+        child: EzIcon(
+          config,
+          Icons.drag_handle,
+          fill: config.outlineFiller,
         ),
-      );
+      ));
 
   // Init //
 
@@ -278,70 +282,57 @@ class _WorkScreenState extends State<WorkScreen> {
     return Consumer<EzCP>(
       builder: (_, EzCP config, __) {
         final double editMax = widthOf(context) - (config.marginVal * 2);
+        final double halfWidth = config.borderWidth / 2;
 
         return A11howScaffold(
           config,
           body: InputDecorationTheme(
             filled: false,
             contentPadding: EdgeInsets.all(config.marginVal),
-            fillColor: config.colors.surface.withValues(
-              alpha: max(config.colors.surface.a, focusOpacity),
-            ),
-            prefixIconColor: config.colors.primary,
-            iconColor: config.colors.primary,
-            suffixIconColor: config.colors.primary,
-            hintStyle: config.bodyStyle?.copyWith(color: config.colors.outline),
+            fillColor: config.surfaceFill.asColor,
+            prefixIconColor: config.primaryFill.asColor,
+            iconColor: config.primaryFill.asColor,
+            suffixIconColor: config.primaryFill.asColor,
+            hintStyle: config.bodyStyle?.copyWith(color: config.outline),
             labelStyle: config.labelStyle,
             helperStyle: config.labelStyle,
-            errorStyle: config.labelStyle?.copyWith(color: config.colors.error),
+            errorStyle: config.labelStyle?.copyWith(color: config.errorFill.asColor),
             errorMaxLines: 1,
-            border: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: config.colors.onSurface.withValues(alpha: focusOpacity),
-                width: config.borderWidth / 2,
-              ),
+            border: ezOutInBorder(
+              config.onSurfaceFiller,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
-              gapPadding: 0,
+              opacity: focusOpacity,
             ),
-            disabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.transparent,
-                width: config.borderWidth / 2,
-              ),
+            disabledBorder: ezOutInBorder(
+              const EzSwitchColor(color: Colors.transparent),
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
-              gapPadding: 0,
+              opacity: focusOpacity,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: config.colors.onSurface.withValues(alpha: focusOpacity),
-                width: config.borderWidth / 2,
-              ),
+            enabledBorder: ezOutInBorder(
+              config.onSurfaceFiller,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
-              gapPadding: 0,
+              opacity: focusOpacity,
             ),
-            errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: config.colors.error.withValues(alpha: focusOpacity),
-                width: config.borderWidth / 2,
-              ),
+            errorBorder: ezOutInBorder(
+              config.errorFill,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
-              gapPadding: 0,
+              opacity: focusOpacity,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: config.colors.primary.withValues(alpha: focusOpacity * 2),
-                width: config.borderWidth / 2,
-              ),
+            focusedBorder: ezOutInBorder(
+              config.primaryFill,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
-              gapPadding: 0,
+              opacity: focusOpacity * 2,
             ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: config.colors.error.withValues(alpha: focusOpacity * 3),
-                width: config.borderWidth / 2,
-              ),
+            focusedErrorBorder: ezOutInBorder(
+              config.errorFill,
+              borderWidth: halfWidth,
               borderRadius: BorderRadius.zero,
-              gapPadding: 0,
+              opacity: focusOpacity * 3,
             ),
             child: EzScreen(
               config,
@@ -428,10 +419,11 @@ class _WorkScreenState extends State<WorkScreen> {
                           config,
                           label: l10n(config).wsShowEmpty,
                           textAlign: TextAlign.start,
-                          icon: Icon(
+                          icon: EzIcon(
+                            config,
                             Icons.circle,
                             size: config.iconSize / 2,
-                            color: config.colors.secondary,
+                            fill: config.secondaryFill,
                           ),
                           onPressed: () => setState(() => showEmpty = !showEmpty),
                         ),
@@ -439,10 +431,11 @@ class _WorkScreenState extends State<WorkScreen> {
                           config,
                           label: l10n(config).wsShowIdentical,
                           textAlign: TextAlign.start,
-                          icon: Icon(
+                          icon: EzIcon(
+                            config,
                             Icons.circle,
                             size: config.iconSize / 2,
-                            color: config.colors.tertiary,
+                            fill: config.tertiaryFill,
                           ),
                           onPressed: () => setState(() => showIdentical = !showIdentical),
                         ),
@@ -452,22 +445,25 @@ class _WorkScreenState extends State<WorkScreen> {
                         label: l10n(config).wsHighlight,
                         icon: EzRow(config, children: <Widget>[
                           if (!showEmpty && !showIdentical)
-                            Icon(
+                            EzIcon(
+                              config,
                               Icons.circle_outlined,
                               size: config.iconSize / 2,
-                              color: config.colors.outline,
+                              fill: config.outlineFiller,
                             ),
                           if (showEmpty)
-                            Icon(
+                            EzIcon(
+                              config,
                               Icons.circle,
                               size: config.iconSize / 2,
-                              color: config.colors.secondary,
+                              fill: config.secondaryFill,
                             ),
                           if (showIdentical)
-                            Icon(
+                            EzIcon(
+                              config,
                               Icons.circle,
                               size: config.iconSize / 2,
-                              color: config.colors.tertiary,
+                              fill: config.tertiaryFill,
                             ),
                         ]),
                         onPressed: () => toggleMenu(highlightMC),
@@ -490,11 +486,16 @@ class _WorkScreenState extends State<WorkScreen> {
                         children: <Widget>[
                           // Key
                           Container(
-                            decoration: BoxDecoration(
-                              color: (showEmpty && row.key.isEmpty)
-                                  ? config.colors.secondary.withValues(alpha: focusOpacity)
-                                  : config.colors.surfaceContainer,
-                            ),
+                            decoration: (showEmpty && row.key.isEmpty)
+                                ? config.boxDeco(
+                                    fill: config.secondaryFill,
+                                    borderRadius: BorderRadius.zero,
+                                    opacity: focusOpacity,
+                                  )
+                                : config.boxDeco(
+                                    fill: config.surfaceContainerFill,
+                                    borderRadius: BorderRadius.zero,
+                                  ),
                             child: EzTextField(
                               constraints: BoxConstraints.tightFor(width: editMax * 0.15),
                               readOnly: true,
@@ -508,13 +509,18 @@ class _WorkScreenState extends State<WorkScreen> {
 
                           // Truth
                           Container(
-                            decoration: BoxDecoration(
-                              color: (showEmpty && row.key.isEmpty)
-                                  ? config.colors.secondary.withValues(alpha: focusOpacity)
-                                  : ((selfCompare || !local)
-                                      ? config.colors.surfaceContainer
-                                      : config.colors.surface),
-                            ),
+                            decoration: (showEmpty && row.key.isEmpty)
+                                ? config.boxDeco(
+                                    fill: config.secondaryFill,
+                                    borderRadius: BorderRadius.zero,
+                                    opacity: focusOpacity,
+                                  )
+                                : config.boxDeco(
+                                    fill: (selfCompare || !local)
+                                        ? config.surfaceContainerFill
+                                        : config.surfaceFill,
+                                    borderRadius: BorderRadius.zero,
+                                  ),
                             child: EzTextField(
                               constraints: BoxConstraints.tightFor(width: editMax * 0.425),
                               readOnly: selfCompare,
@@ -529,13 +535,19 @@ class _WorkScreenState extends State<WorkScreen> {
 
                           // Work
                           Container(
-                            decoration: BoxDecoration(
-                              color: (showIdentical && row.compare == row.truth)
-                                  ? config.colors.tertiary.withValues(alpha: focusOpacity)
-                                  : ((showEmpty && row.key.isEmpty)
-                                      ? config.colors.secondary.withValues(alpha: focusOpacity)
-                                      : config.colors.surface),
-                            ),
+                            decoration: (showIdentical && row.compare == row.truth)
+                                ? config.boxDeco(
+                                    fill: config.tertiaryFill,
+                                    borderRadius: BorderRadius.zero,
+                                    opacity: focusOpacity,
+                                  )
+                                : ((showEmpty && row.key.isEmpty)
+                                    ? config.boxDeco(
+                                        fill: config.secondaryFill,
+                                        borderRadius: BorderRadius.zero,
+                                        opacity: focusOpacity,
+                                      )
+                                    : config.boxDeco(borderRadius: BorderRadius.zero)),
                             child: EzTextField(
                               constraints: BoxConstraints.tightFor(width: editMax * 0.425),
                               hintText: row.compare,
@@ -560,6 +572,11 @@ class _WorkScreenState extends State<WorkScreen> {
               label: config.ezL10n.gSave,
               onPressed: () async =>
                   saving ? doNothing() : await ezNoTouch(config, () async => await save(config)),
+            ),
+            HybridAction(
+              label: config.ezL10n.gSettings,
+              icon: Icons.settings,
+              onPressed: () => context.pushNamed(settingsScreenName),
             ),
           ],
         );

@@ -75,6 +75,10 @@ class LangDe extends Lang {
   String get gKey => 'Schlüssel';
 
   @override
+  String get gLLMShortcut =>
+      'Zur Erinnerung: LLMs sind eine Abkürzung.\nUnd von Natur aus, mathematisch bedingt, unzuverlässig.\n\nLegen Sie offen, dass Sie maschinelle Übersetzung verwenden, bis Sie sich richtige Übersetzungen leisten können <3\nDas ist keine Schande.\n\nDie Schande gilt denen, die sich für eine Abkürzung entscheiden, die objektiv schlechtere Ergebnisse liefert UND einen Job vernichtet, den es hätte geben können\n...um ein paar Euro zu sparen...\nAber eigentlich nicht einmal das, denn Sie bezahlen trotzdem mit Ihrer Privatsphäre/Ihren Daten und den Ressourcen unserer Erde. Ach ja, und mit einer Abo-/Token-Gebühr.\n\nLARP hat seine Zeit und seinen Ort: den Wald und das Schlafzimmer.\nAber aus unseren Lebensläufen halten wir es lieber heraus, oder?\n\n...es sei denn, Sie haben einen Mittelaltermarkt-Lebenslauf, dann nur zu, mein Lehnsherr.';
+
+  @override
   String get gNeedPAT => 'Git PAT erforderlich, um Änderungen einzureichen.';
 
   @override
@@ -103,7 +107,7 @@ class LangDe extends Lang {
 
   @override
   String get gPolicyPolicy =>
-      'Wir vergleichen Ihre Einreichung mit dem, was wir haben. Wenn Ihre Einreichung eindeutig besser erscheint, behalten wir sie.\nWenn sie in etwa gleichwertig ist, werden wir uns bei Ihnen melden, um zu überprüfen, ob Sie ein Mensch sind und Ihr Gehirn benutzt haben.\nVielleicht hat das/ein LLM sehr gute Arbeit geleistet, aber wenn wir sicher sein können, dass Ihre Arbeit menschlich ist, ist das besser.\nSorry not sorry an alle Bots, die dieses Repo scrapen.\n\nWenn Ihre Einreichung falsch erscheint, aber auf eine kompetente Art und Weise, werden wir uns melden, um herauszufinden, was passiert ist.\nWenn Ihre Einreichung auf inkompetente/Troll-Art falsch ist: sofortiger Bann, keine neuen Versuche. Gehen Sie nicht über Los, aber Sie können sich ***...';
+      'Reichen Sie nur Ihre eigene (menschliche) Arbeit ein.\nYWT kann LLM-Übersetzungen problemlos selbst erstellen.\n\nApropos: YWT wird ein LLM verwenden, um Ihre Einreichung mit den aktuellen Werten zu vergleichen.\nWenn unklar ist, welche Version beibehalten werden soll, meldet sich YWT über GitHub bei Ihnen, um dies zu klären.\n\nBöswillige Einreichungen bzw. Einreichende werden sofort und dauerhaft gesperrt.';
 
   @override
   String get gPolicyTitle => 'Richtlinie für Mitwirkende';
@@ -165,11 +169,11 @@ class LangDe extends Lang {
   String get hsRecent => 'Zuletzt verwendete Projekte';
 
   @override
-  String get hsRemovingRecent => ' - aus dem Verlauf entfernen';
+  String get hsRemovingRecent => ' - wird aus dem Verlauf entfernt';
 
   @override
   String hsSkippedInvalid(Object path) {
-    return 'Ungültige ARB-Datei übersprungen: \$$path';
+    return 'Ungültige ARB-Datei übersprungen: $path';
   }
 
   @override
@@ -185,7 +189,7 @@ class LangDe extends Lang {
   String get ssChooseService => 'Dienst auswählen';
 
   @override
-  String get ssCompare => 'Vergleichs-Sprache:';
+  String get ssCompare => 'Vergleichssprache:';
 
   @override
   String get ssCopyJSON => '.json kopieren';
@@ -202,7 +206,7 @@ class LangDe extends Lang {
   String get ssInvalidJSON => 'Ungültiges JSON-Format';
 
   @override
-  String get ssKeySource => 'Schlüssel-Quelle';
+  String get ssKeySource => 'Schlüsselquelle';
 
   @override
   String get ssList => 'Liste';
@@ -238,10 +242,10 @@ class LangDe extends Lang {
   String get ssSaveAll => 'Alle speichern';
 
   @override
-  String get ssSelf => 'Selbst';
+  String get ssSelf => 'Sich selbst';
 
   @override
-  String get ssSource => 'Quell-Sprache:';
+  String get ssSource => 'Quellsprache:';
 
   @override
   String get ssTODO => 'TODO:';

@@ -76,6 +76,10 @@ class LangFr extends Lang {
   String get gKey => 'Clé';
 
   @override
+  String get gLLMShortcut =>
+      'Rappel : les LLM sont un raccourci.\nEt ils sont intrinsèquement, mathématiquement, peu fiables.\n\nIndiquez que vous utilisez la traduction automatique jusqu\'à ce que vous puissiez vous offrir de vraies traductions <3\nIl n\'y a aucune honte à cela.\n\nLa honte est pour ceux qui choisissent de prendre un raccourci qui donnera des résultats objectivement moins bons, ET qui suppriment un emploi qui aurait pu exister\n...pour économiser quelques sous...\nMais en fait non, car vous dépensez quand même votre vie privée/vos données et les ressources de notre Terre. Ah, et un abonnement/des frais de tokens.\n\nLe GN a son moment et son lieu : la forêt et la chambre à coucher.\nMais gardons-le hors de nos CV, d\'accord ?\n\n...sauf si vous avez un CV de fête médiévale, auquel cas faites-vous plaisir, mon seigneur.';
+
+  @override
   String get gNeedPAT =>
       'Un PAT Git est requis pour soumettre les modifications.';
 
@@ -105,7 +109,7 @@ class LangFr extends Lang {
 
   @override
   String get gPolicyPolicy =>
-      'Nous comparons votre soumission à ce que nous avons. Si votre soumission semble nettement meilleure, nous la gardons.\nSi elle semble à peu près identique, nous vous contacterons pour vérifier que vous êtes un humain et que vous avez utilisé votre cerveau.\nPeut-être qu\'un LLM a fait du très bon travail, mais si nous pouvons être certains que votre travail est humain, c\'est mieux.\nDésolé pour les bots qui récupèrent ce dépôt, mais pas désolé.\n\nSi votre soumission semble incorrecte, mais d\'une manière compétente, nous vous contacterons pour comprendre ce qui s\'est passé.\nSi votre soumission est incorrecte d\'une manière incompétente/troll : bannissement instantané, aucun nouvel essai. Ne passez pas par la case départ, mais vous pouvez aller vous ***...';
+      'Ne soumettez que votre propre travail (humain).\nYWT est tout à fait capable de faire des traductions par LLM de son côté.\n\nÀ ce propos, YWT utilisera un LLM pour comparer votre soumission aux valeurs actuelles.\nS\'il n\'est pas clair laquelle conserver, YWT vous contactera via GitHub pour obtenir des précisions.\n\nToute soumission ou tout contributeur malveillant sera bloqué immédiatement et définitivement.';
 
   @override
   String get gPolicyTitle => 'Politique de contribution';
@@ -172,7 +176,7 @@ class LangFr extends Lang {
 
   @override
   String hsSkippedInvalid(Object path) {
-    return 'Fichier ARB invalide ignoré : \$$path';
+    return 'Fichier ARB invalide ignoré : $path';
   }
 
   @override

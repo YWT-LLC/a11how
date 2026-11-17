@@ -1,12 +1,12 @@
 /* a11how
- * Copyright (c) 2026 YWT. All rights reserved.
+ * Copyright (c) 2026 YWT (Empathetech LLC). All rights reserved.
  * See LICENSE for distribution and usage details.
  */
 
 import './export.dart';
 
-import 'package:flutter/material.dart';
 import 'package:open_ui/open_ui.dart';
+import 'package:material_ui/material_ui.dart';
 
 class A11howCache extends EzAppCache {
   Locale _locale;

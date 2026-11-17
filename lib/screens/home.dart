@@ -1,5 +1,5 @@
 /* a11how
- * Copyright (c) 2026 YWT. All rights reserved.
+ * Copyright (c) 2026 YWT (Empathetech LLC). All rights reserved.
  * See LICENSE for distribution and usage details.
  */
 
@@ -12,12 +12,12 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:after_layout/after_layout.dart';
 
@@ -52,11 +52,15 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
     setState(() {});
   }
 
-  Future<void> processPath(EzCP config, String? preSelected) async {
+  Future<void> processPath(EzCP config, Uri? preSelected) async {
     await ezNoTouch(config, () async {
       // Valid dir?
-      final String? selectedDirectory = preSelected ?? await FilePicker.getDirectoryPath();
-      if (selectedDirectory == null) return;
+      final Uri? selectedUri = preSelected ?? await FilePicker.pickDirectory();
+      if (selectedUri == null) return;
+
+      // dart:io can only read file URIs (Android returns a content:// tree URI)
+      final String selectedDirectory =
+          selectedUri.isScheme('file') ? selectedUri.toFilePath() : selectedUri.toString();
 
       // Get files
       final Directory dir = Directory(selectedDirectory);
@@ -97,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
         if (mounted) {
           context.goNamed(
-            selectScreenPath,
+            selectScreenName,
             extra: ARBDir(path: selectedDirectory, local: developing, files: loadedFiles),
           );
         }
@@ -112,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
         }
         if (preSelected != null) {
           final List<String> recentProjects = developing ? recentDirs : recentUrls;
-          recentProjects.remove(preSelected);
+          recentProjects.remove(selectedDirectory);
           await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
         }
       }
@@ -220,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
         if (mounted) {
           context.goNamed(
-            selectScreenPath,
+            selectScreenName,
             extra: ARBDir(
               path: url,
               preselected: widget.localeLink,
@@ -327,6 +331,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
             enabled: (developing ? recentDirs : recentUrls).isNotEmpty,
             tooltip: config.ezL10n.ssSaveConfig,
             icon: Icons.save,
+            backgroundFill: config.surfaceContainerFill,
             onPressed: () async {
               try {
                 await FileSaver.instance.saveAs(
@@ -346,6 +351,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
             config,
             tooltip: config.ezL10n.ssLoadConfig,
             icon: Icons.upload,
+            backgroundFill: config.surfaceContainerFill,
             onPressed: () async {
               final PlatformFile? result = await FilePicker.pickFile(
                 type: FileType.custom,
@@ -377,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
             },
           ),
         ]),
-        EzSpacer(config.spacing / 2),
+        config.halfSpacer,
 
         // Projects
         ...(developing ? recentDirs : recentUrls).map((String path) => Padding(
@@ -397,17 +403,18 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                     label: developing ? path : Uri.parse(path).pathSegments[1],
                     tooltip: developing ? null : path,
                     textAlign: TextAlign.start,
-                    textColor: config.colors.onSurface,
+                    textColor: config.onSurface,
                     hint: config.ezL10n.gOpen,
                     onTap: () async => developing
-                        ? await processPath(config, path)
+                        ? await processPath(config, Uri.file(path))
                         : await processUrl(config, path),
                   ),
                   EzIconTouch(
                     config,
                     tooltip: config.ezL10n.gRemove,
                     icon: Icons.remove_circle_outline,
-                    color: config.colors.error,
+                    backgroundFill: config.surfaceContainerFill,
+                    iconFill: config.errorFill,
                     onPressed: () async {
                       final List<String> recentProjects = developing ? recentDirs : recentUrls;
                       recentProjects.remove(path);
@@ -441,12 +448,12 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
               config.spacer,
               openButton(config),
               EzDivider(
-                height: config.spacing * 3,
+                config,
                 width: widthOf(context) * 0.667,
-                color: config.colors.secondaryContainer,
+                fill: config.secondaryContainerFill,
               ),
               ...displayRecent(config),
-              EzFooter(config, a11howPath: ywt.a11howContributeA11),
+              config.separator,
             ]),
             expanded: EzScrollView(config, children: <Widget>[
               if (!kIsWeb) toggle(config),
@@ -458,12 +465,11 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   openButton(config),
-                  SizedBox(
+                  EzVerticalDivider(
+                    config,
                     height: heightOf(context) * 0.667,
-                    child: VerticalDivider(
-                      width: config.spacing * 3,
-                      color: config.colors.secondaryContainer,
-                    ),
+                    width: config.spacing * 3,
+                    fill: config.secondaryContainerFill,
                   ),
                   EzCol(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -472,12 +478,18 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                   ),
                 ],
               ),
-              EzFooter(config, a11howPath: ywt.a11howContributeA11),
+              config.separator,
             ]),
           ),
         ),
         isHome: true,
-        actions: <HybridAction>[settingsAction(config, context)],
+        actions: <HybridAction>[
+          HybridAction(
+            label: config.ezL10n.gSettings,
+            icon: Icons.settings,
+            onPressed: () => context.goNamed(settingsScreenName),
+          ),
+        ],
       ),
     );
   }

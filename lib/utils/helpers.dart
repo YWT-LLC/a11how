@@ -1,5 +1,5 @@
 /* a11how
- * Copyright (c) 2026 YWT. All rights reserved.
+ * Copyright (c) 2026 YWT (Empathetech LLC). All rights reserved.
  * See LICENSE for distribution and usage details.
  */
 
@@ -10,7 +10,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 Future<String?> getPAT(EzCP config, BuildContext context) async => await showDialog<String?>(
     context: context,

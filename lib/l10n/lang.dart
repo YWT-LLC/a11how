@@ -209,6 +209,12 @@ abstract class Lang {
   /// **'Key'**
   String get gKey;
 
+  /// No description provided for @gLLMShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder: LLMs are a shortcut.\nAnd inherently, mathematically, unreliable.\n\nDisclose you\'re using machine translation until you can afford proper translations <3\nThere\'s no shame in it.\n\nThe shame is for those who choose to take a short cut, that will yield objectively worse results, AND take away a job that could have been\n...to save a couple of bucks...\nBut actually not, because you\'re still spending your privacy/data and our Earth\'s resources. Oh, and a subscription/token fee.\n\nLARPing has a time and place: the forest, and the bedroom.\nLet\'s keep it out of our resumes though, shall we?\n\n...unless you have a ren-fair resume, then pop-off my liege.'**
+  String get gLLMShortcut;
+
   /// No description provided for @gNeedPAT.
   ///
   /// In en, this message translates to:
@@ -260,7 +266,7 @@ abstract class Lang {
   /// No description provided for @gPolicyPolicy.
   ///
   /// In en, this message translates to:
-  /// **'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...'**
+  /// **'Only submit your own (human) work.\nYWT is fully capable of LLM translation on its own.\n\nSpeaking of, YWT will use an LLM to compare your submission with the current values.\nIf it\'s unclear which should be kept, YWT will reach out for clarification via GitHub.\n\nAny malicious submissions/submitters will be immediately and permanently blocked.'**
   String get gPolicyPolicy;
 
   /// No description provided for @gPolicyTitle.
@@ -380,7 +386,7 @@ abstract class Lang {
   /// No description provided for @hsSkippedInvalid.
   ///
   /// In en, this message translates to:
-  /// **'Skipped invalid ARB file: \${path}'**
+  /// **'Skipped invalid ARB file: {path}'**
   String hsSkippedInvalid(Object path);
 
   /// No description provided for @ssAddEntries.

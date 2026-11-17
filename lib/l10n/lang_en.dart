@@ -75,6 +75,10 @@ class LangEn extends Lang {
   String get gKey => 'Key';
 
   @override
+  String get gLLMShortcut =>
+      'Reminder: LLMs are a shortcut.\nAnd inherently, mathematically, unreliable.\n\nDisclose you\'re using machine translation until you can afford proper translations <3\nThere\'s no shame in it.\n\nThe shame is for those who choose to take a short cut, that will yield objectively worse results, AND take away a job that could have been\n...to save a couple of bucks...\nBut actually not, because you\'re still spending your privacy/data and our Earth\'s resources. Oh, and a subscription/token fee.\n\nLARPing has a time and place: the forest, and the bedroom.\nLet\'s keep it out of our resumes though, shall we?\n\n...unless you have a ren-fair resume, then pop-off my liege.';
+
+  @override
   String get gNeedPAT => 'Git PAT required to submit changes.';
 
   @override
@@ -103,7 +107,7 @@ class LangEn extends Lang {
 
   @override
   String get gPolicyPolicy =>
-      'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...';
+      'Only submit your own (human) work.\nYWT is fully capable of LLM translation on its own.\n\nSpeaking of, YWT will use an LLM to compare your submission with the current values.\nIf it\'s unclear which should be kept, YWT will reach out for clarification via GitHub.\n\nAny malicious submissions/submitters will be immediately and permanently blocked.';
 
   @override
   String get gPolicyTitle => 'Contribution policy';
@@ -168,7 +172,7 @@ class LangEn extends Lang {
 
   @override
   String hsSkippedInvalid(Object path) {
-    return 'Skipped invalid ARB file: \$$path';
+    return 'Skipped invalid ARB file: $path';
   }
 
   @override
@@ -343,6 +347,10 @@ class LangEnUs extends LangEn {
   String get gKey => 'Key';
 
   @override
+  String get gLLMShortcut =>
+      'Reminder: LLMs are a shortcut.\nAnd inherently, mathematically, unreliable.\n\nDisclose you\'re using machine translation until you can afford proper translations <3\nThere\'s no shame in it.\n\nThe shame is for those who choose to take a short cut, that will yield objectively worse results, AND take away a job that could have been\n...to save a couple of bucks...\nBut actually not, because you\'re still spending your privacy/data and our Earth\'s resources. Oh, and a subscription/token fee.\n\nLARPing has a time and place: the forest, and the bedroom.\nLet\'s keep it out of our resumes though, shall we?\n\n...unless you have a ren-fair resume, then pop-off my liege.';
+
+  @override
   String get gNeedPAT => 'Git PAT required to submit changes.';
 
   @override
@@ -371,7 +379,7 @@ class LangEnUs extends LangEn {
 
   @override
   String get gPolicyPolicy =>
-      'We compare your submission against what we have. If your submission seems clearly better, we keep it.\nIf it seems about the same, we\'ll reach out to verify that you are a human and used your brain.\nMaybe the/an LLM did a really good job, but if we can be certain your work is human, it\'s better.\nSorry not sorry, bots scraping this repo.\n\nIf your submission seems wrong, but in a competent way, we\'ll reach out to figure out what happened.\nIf your submission is wrong in an incompetent/troll way: instant ban, no retries. Do not pass go, but you can go ***...';
+      'Only submit your own (human) work.\nYWT is fully capable of LLM translation on its own.\n\nSpeaking of, YWT will use an LLM to compare your submission with the current values.\nIf it\'s unclear which should be kept, YWT will reach out for clarification via GitHub.\n\nAny malicious submissions/submitters will be immediately and permanently blocked.';
 
   @override
   String get gPolicyTitle => 'Contribution policy';
@@ -436,7 +444,7 @@ class LangEnUs extends LangEn {
 
   @override
   String hsSkippedInvalid(Object path) {
-    return 'Skipped invalid ARB file: \$$path';
+    return 'Skipped invalid ARB file: $path';
   }
 
   @override
