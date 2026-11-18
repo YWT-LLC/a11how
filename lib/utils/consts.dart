@@ -37,26 +37,16 @@ const Map<String, Type> uniquePairs = <String, Type>{
   workFilterTypeKey: String,
 };
 
-const Map<String, Type> neverResetPairs = <String, Type>{
-  developingKey: bool,
-  recentDirsKey: List<String>,
-  recentUrlsKey: List<String>,
-  removeCaseSensitiveKey: bool,
-  removeFilterTypeKey: String,
-  workCaseSensitiveKey: bool,
-  workFilterTargetKey: String,
-  workFilterTypeKey: String,
-};
+const Map<String, Type> neverResetPairs = uniquePairs;
 
 const Map<String, Type> allA11howPairs = <String, Type>{
   ...allEzConfigPairs,
   ...uniquePairs,
 };
 
-// Config //
+// Runtime //
 
-final Map<String, Object> a11HowMobile = <String, Object>{
-  ...ywtMobileConfig,
+final Map<String, Object> uniqueDefaults = <String, Object>{
   developingKey: false,
   recentDirsKey: <String>[],
   recentUrlsKey: <String>[],
@@ -67,14 +57,12 @@ final Map<String, Object> a11HowMobile = <String, Object>{
   workFilterTypeKey: FilterType.contains.value,
 };
 
+final Map<String, Object> a11HowMobile = <String, Object>{
+  ...ywtMobileConfig,
+  ...uniqueDefaults,
+};
+
 final Map<String, Object> a11HowDesktop = <String, Object>{
   ...ywtDesktopConfig,
-  developingKey: false,
-  recentDirsKey: <String>[],
-  recentUrlsKey: <String>[],
-  removeCaseSensitiveKey: false,
-  removeFilterTypeKey: FilterType.contains.value,
-  workCaseSensitiveKey: false,
-  workFilterTargetKey: FilterTarget.compare.value,
-  workFilterTypeKey: FilterType.contains.value,
+  ...uniqueDefaults,
 };
