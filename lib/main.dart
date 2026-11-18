@@ -109,11 +109,11 @@ void main() async {
     l10nFallback: await OUILang.delegate.load(americanEnglish),
     preferences: await SharedPreferencesWithCache.create(
       cacheOptions: SharedPreferencesWithCacheOptions(
-        allowList: allA11howKeys.keys.toSet(),
+        allowList: allA11howPairs.keys.toSet(),
       ),
     ),
     defaults: isMobile() ? a11HowMobile : a11HowDesktop,
-    neverReset: neverResetKeys,
+    neverReset: neverResetPairs.keys.toSet(),
   );
 
   await setMinWindow();

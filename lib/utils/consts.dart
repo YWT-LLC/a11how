@@ -7,7 +7,7 @@ import '../utils/export.dart';
 
 import 'package:open_ui/open_ui.dart';
 
-//* App config *//
+// Setup //
 
 /// a11how
 const String appName = 'a11how';
@@ -25,6 +25,35 @@ const String removeFilterTypeKey = 'removeFilterType';
 const String workCaseSensitiveKey = 'workCaseSensitive';
 const String workFilterTargetKey = 'workFilterTarget';
 const String workFilterTypeKey = 'workFilterType';
+
+const Map<String, Type> uniquePairs = <String, Type>{
+  developingKey: bool,
+  recentDirsKey: List<String>,
+  recentUrlsKey: List<String>,
+  removeCaseSensitiveKey: bool,
+  removeFilterTypeKey: String,
+  workCaseSensitiveKey: bool,
+  workFilterTargetKey: String,
+  workFilterTypeKey: String,
+};
+
+const Map<String, Type> neverResetPairs = <String, Type>{
+  developingKey: bool,
+  recentDirsKey: List<String>,
+  recentUrlsKey: List<String>,
+  removeCaseSensitiveKey: bool,
+  removeFilterTypeKey: String,
+  workCaseSensitiveKey: bool,
+  workFilterTargetKey: String,
+  workFilterTypeKey: String,
+};
+
+const Map<String, Type> allA11howPairs = <String, Type>{
+  ...allEzConfigPairs,
+  ...uniquePairs,
+};
+
+// Config //
 
 final Map<String, Object> a11HowMobile = <String, Object>{
   ...ywtMobileConfig,
@@ -48,38 +77,4 @@ final Map<String, Object> a11HowDesktop = <String, Object>{
   workCaseSensitiveKey: false,
   workFilterTargetKey: FilterTarget.compare.value,
   workFilterTypeKey: FilterType.contains.value,
-};
-
-const Map<String, Type> allA11howKeys = <String, Type>{
-  ...allEZConfigKeys,
-  developingKey: bool,
-  recentDirsKey: List<String>,
-  recentUrlsKey: List<String>,
-  removeCaseSensitiveKey: bool,
-  removeFilterTypeKey: String,
-  workCaseSensitiveKey: bool,
-  workFilterTargetKey: String,
-  workFilterTypeKey: String,
-};
-
-const Set<String> uniqueKeys = <String>{
-  developingKey,
-  recentDirsKey,
-  recentUrlsKey,
-  removeCaseSensitiveKey,
-  removeFilterTypeKey,
-  workCaseSensitiveKey,
-  workFilterTargetKey,
-  workFilterTypeKey,
-};
-
-const Set<String> neverResetKeys = <String>{
-  developingKey,
-  recentDirsKey,
-  recentUrlsKey,
-  removeCaseSensitiveKey,
-  removeFilterTypeKey,
-  workCaseSensitiveKey,
-  workFilterTargetKey,
-  workFilterTypeKey,
 };
