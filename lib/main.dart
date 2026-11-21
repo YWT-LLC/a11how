@@ -100,7 +100,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
 
-  EzCM.init(
+  EzManager.init(
     appName: appName,
     androidPackage: androidPackage,
     assetPaths: <String>{},

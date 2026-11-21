@@ -15,8 +15,8 @@ class SettingsHubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EzCP>(
-      builder: (_, EzCP config, __) => A11howScaffold(
+    return Consumer<EzProvider>(
+      builder: (_, EzProvider config, __) => A11howScaffold(
         config,
         body: EzScreen(
           config,
@@ -29,8 +29,8 @@ class SettingsHubScreen extends StatelessWidget {
               title: config.ezL10n.gGlobal,
               icon: EzIcon(
                 config,
-                EzCM.onMobile
-                    ? EzCM.platform == TargetPlatform.iOS
+                EzManager.onMobile
+                    ? EzManager.platform == TargetPlatform.iOS
                         ? Icons.phone_iphone
                         : Icons.phone_android
                     : Icons.computer,
@@ -72,7 +72,7 @@ class SettingsHubScreen extends StatelessWidget {
                 EzSubSetting.qckColor,
                 EzSubSetting.advColor,
               ],
-              fromStorage: () => EzCM.get(advancedColorsKey) == true
+              fromStorage: () => EzManager.get(advancedColorsKey) == true
                   ? EzSubSetting.advColor
                   : EzSubSetting.qckColor,
               build: (EzSubSetting subSec) => EzColorSettings(config, target: subSec),
@@ -92,8 +92,9 @@ class SettingsHubScreen extends StatelessWidget {
                 EzSubSetting.butDesign,
                 EzSubSetting.pagDesign,
               ],
-              fromStorage: () =>
-                  EzCM.get(pageTabKey) == true ? EzSubSetting.pagDesign : EzSubSetting.butDesign,
+              fromStorage: () => EzManager.get(pageTabKey) == true
+                  ? EzSubSetting.pagDesign
+                  : EzSubSetting.butDesign,
               build: (EzSubSetting subSec) => EzDesignSettings(config, target: subSec),
             ),
 
@@ -111,8 +112,9 @@ class SettingsHubScreen extends StatelessWidget {
                 EzSubSetting.qckText,
                 EzSubSetting.advText,
               ],
-              fromStorage: () =>
-                  EzCM.get(advancedTextKey) == true ? EzSubSetting.advText : EzSubSetting.qckText,
+              fromStorage: () => EzManager.get(advancedTextKey) == true
+                  ? EzSubSetting.advText
+                  : EzSubSetting.qckText,
               build: (EzSubSetting subSec) => EzTextSettings(config, target: subSec),
             ),
           ]),

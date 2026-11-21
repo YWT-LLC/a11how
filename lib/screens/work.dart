@@ -33,10 +33,10 @@ class _WorkScreenState extends State<WorkScreen> {
   late final bool local = widget.workPair.truth.local;
   late final bool selfCompare = widget.workPair.truth == widget.workPair.compare;
 
-  bool caseSensitive = EzCM.get(workCaseSensitiveKey) ?? false;
-  FilterTarget filterTarget = FTargetCon.safeLookup(EzCM.get(workFilterTypeKey));
+  bool caseSensitive = EzManager.get(workCaseSensitiveKey) ?? false;
+  FilterTarget filterTarget = FTargetCon.safeLookup(EzManager.get(workFilterTypeKey));
   final MenuController fTargetMC = MenuController();
-  FilterType filterType = FTypeCon.safeLookup(EzCM.get(workFilterTypeKey));
+  FilterType filterType = FTypeCon.safeLookup(EzManager.get(workFilterTypeKey));
   final MenuController fTypeMC = MenuController();
 
   final MenuController highlightMC = MenuController();
@@ -60,7 +60,7 @@ class _WorkScreenState extends State<WorkScreen> {
             ))
       .toList();
 
-  String? validateField(EzCP config, String? check) =>
+  String? validateField(EzProvider config, String? check) =>
       (check == null || check.isEmpty) ? l10n(config).gNoEmpty : null;
 
   bool checkFilter({required String check, required String filter}) => switch (filterType) {
@@ -75,7 +75,7 @@ class _WorkScreenState extends State<WorkScreen> {
             : check.toLowerCase().endsWith(filter.toLowerCase()),
       };
 
-  Future<void> save(EzCP config) async {
+  Future<void> save(EzProvider config) async {
     if (saving) return;
     setState(() => saving = true);
 
@@ -128,7 +128,7 @@ class _WorkScreenState extends State<WorkScreen> {
     if (mounted) setState(() => saving = false);
   }
 
-  Future<void> _openPR(EzCP config, Map<String, dynamic> updatedCompare) async {
+  Future<void> _openPR(EzProvider config, Map<String, dynamic> updatedCompare) async {
     final String? token = await getPAT(config, context);
     if (token == null || token.isEmpty) {
       if (mounted) {
@@ -247,7 +247,7 @@ class _WorkScreenState extends State<WorkScreen> {
 
   // Define custom Widgets //
 
-  Widget dragHandle(EzCP config, int index) => ReorderableDragStartListener(
+  Widget dragHandle(EzProvider config, int index) => ReorderableDragStartListener(
       index: index,
       child: MouseRegion(
         cursor: SystemMouseCursors.grab,
@@ -279,8 +279,8 @@ class _WorkScreenState extends State<WorkScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EzCP>(
-      builder: (_, EzCP config, __) {
+    return Consumer<EzProvider>(
+      builder: (_, EzProvider config, __) {
         final double editMax = widthOf(context) - (config.marginVal * 2);
         final double halfWidth = config.borderWidth / 2;
 

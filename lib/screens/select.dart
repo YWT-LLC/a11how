@@ -53,7 +53,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
   void hoverOption(ARBFile arb) => setState(
       () => (truth == null) ? truthPreview = arb.localeCode : comparePreview = arb.localeCode);
 
-  Future<void> chooseOption(EzCP config, ARBFile arb) async {
+  Future<void> chooseOption(EzProvider config, ARBFile arb) async {
     if (removing) {
       try {
         final File file = File(arb.path);
@@ -76,7 +76,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
     }
   }
 
-  Widget buildOptions(EzCP config) => Expanded(
+  Widget buildOptions(EzProvider config) => Expanded(
         child: wrap
             ? EzScrollView(
                 config,
@@ -157,8 +157,8 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
   // Return the build //
 
   @override
-  Widget build(BuildContext context) => Consumer<EzCP>(
-        builder: (_, EzCP config, __) {
+  Widget build(BuildContext context) => Consumer<EzProvider>(
+        builder: (_, EzProvider config, __) {
           final BoxConstraints filterConstraints = BoxConstraints.tightFor(
             width: ezTextSize(
               config,
@@ -387,7 +387,7 @@ class _SelectScreenState extends State<SelectScreen> with AfterLayoutMixin<Selec
 //* Fancy actions *//
 
 class _AddEntryAction extends HybridAction {
-  final EzCP config;
+  final EzProvider config;
   final BuildContext context;
   final bool local;
   final List<ARBFile> files;
@@ -847,7 +847,7 @@ class _AddCache {
 }
 
 class _RemoveEntryAction extends HybridAction {
-  final EzCP config;
+  final EzProvider config;
   final BuildContext context;
   final bool local;
   final List<ARBFile> files;
@@ -873,8 +873,8 @@ class _RemoveEntryAction extends HybridAction {
             String filterString = '';
             final MenuController filterMC = MenuController();
 
-            bool caseSensitive = EzCM.get(removeCaseSensitiveKey) ?? false;
-            FilterType filterType = FTypeCon.safeLookup(EzCM.get(removeFilterTypeKey));
+            bool caseSensitive = EzManager.get(removeCaseSensitiveKey) ?? false;
+            FilterType filterType = FTypeCon.safeLookup(EzManager.get(removeFilterTypeKey));
 
             // Define custom functions //
 
@@ -1071,7 +1071,7 @@ class _RemoveEntryAction extends HybridAction {
 }
 
 class _AddLocaleAction extends HybridAction {
-  final EzCP config;
+  final EzProvider config;
   final BuildContext context;
   final bool local;
   final List<ARBFile> files;

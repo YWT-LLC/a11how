@@ -48,11 +48,11 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
   Future<void> flippityFloppity(bool choice) async {
     developing = choice;
-    await EzCM.setBool(developingKey, choice);
+    await EzManager.setBool(developingKey, choice);
     setState(() {});
   }
 
-  Future<void> processPath(EzCP config, Uri? preSelected) async {
+  Future<void> processPath(EzProvider config, Uri? preSelected) async {
     await ezNoTouch(config, () async {
       // Valid dir?
       final Uri? selectedUri = preSelected ?? await FilePicker.pickDirectory();
@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
         recentProjects.remove(selectedDirectory);
         recentProjects.insert(0, selectedDirectory);
 
-        await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
+        await EzManager.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
 
         if (mounted) {
           context.goNamed(
@@ -117,21 +117,21 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
         if (preSelected != null) {
           final List<String> recentProjects = developing ? recentDirs : recentUrls;
           recentProjects.remove(selectedDirectory);
-          await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
+          await EzManager.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
         }
       }
     });
     setState(() {});
   }
 
-  String? validateUrl(EzCP config, String? check) {
+  String? validateUrl(EzProvider config, String? check) {
     if (check == null || check.isEmpty) {
       return l10n(config).gNoEmpty;
     }
     return Uri.parse(check).isAbsolute ? null : l10n(config).gInvalidURL;
   }
 
-  Future<void> processUrl(EzCP config, String? preSelected) async {
+  Future<void> processUrl(EzProvider config, String? preSelected) async {
     await ezNoTouch(config, () async {
       // Valid url?
       final String url = preSelected ?? urlController.text;
@@ -220,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
         recentProjects.remove(url);
         recentProjects.insert(0, url);
 
-        await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
+        await EzManager.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
 
         if (mounted) {
           context.goNamed(
@@ -245,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
         if (preSelected != null) {
           final List<String> recentProjects = developing ? recentDirs : recentUrls;
           recentProjects.remove(preSelected);
-          await EzCM.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
+          await EzManager.setStringList(developing ? recentDirsKey : recentUrlsKey, recentProjects);
         }
       }
     });
@@ -255,9 +255,9 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
   // Init //
 
   Future<void> gatherRecent() async {
-    developing = await EzCM.getBool(developingKey) ?? false;
-    recentDirs = await EzCM.getStringList(recentDirsKey) ?? <String>[];
-    recentUrls = await EzCM.getStringList(recentUrlsKey) ?? <String>[];
+    developing = await EzManager.getBool(developingKey) ?? false;
+    recentDirs = await EzManager.getStringList(recentDirsKey) ?? <String>[];
+    recentUrls = await EzManager.getStringList(recentUrlsKey) ?? <String>[];
     setState(() {});
   }
 
@@ -275,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
   // Define the build //
 
-  Widget toggle(EzCP config) => EzFlipFlop(
+  Widget toggle(EzProvider config) => EzFlipFlop(
         config,
         key: ValueKey<bool>(developing),
         init: developing,
@@ -284,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
         onChanged: flippityFloppity,
       );
 
-  Widget openButton(EzCP config) => developing
+  Widget openButton(EzProvider config) => developing
       ? EzTextIconButton(
           config,
           label: l10n(config).hsOpenDir,
@@ -316,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
           ]),
         ]);
 
-  List<Widget> displayRecent(EzCP config) => <Widget>[
+  List<Widget> displayRecent(EzProvider config) => <Widget>[
         // Title & options
         EzRow(config, reverseHands: false, children: <Widget>[
           EzText(
@@ -365,11 +365,11 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
                 if (developing) {
                   final List<String> newDirs = fileContent.split(',');
-                  await EzCM.setStringList(recentDirsKey, newDirs);
+                  await EzManager.setStringList(recentDirsKey, newDirs);
                   recentDirs = newDirs;
                 } else {
                   final List<String> newUrls = fileContent.split(',');
-                  await EzCM.setStringList(recentUrlsKey, newUrls);
+                  await EzManager.setStringList(recentUrlsKey, newUrls);
                   recentUrls = newUrls;
                 }
 
@@ -418,7 +418,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
                     onPressed: () async {
                       final List<String> recentProjects = developing ? recentDirs : recentUrls;
                       recentProjects.remove(path);
-                      await EzCM.setStringList(
+                      await EzManager.setStringList(
                           developing ? recentDirsKey : recentUrlsKey, recentProjects);
                       setState(() {});
                     },
@@ -432,8 +432,8 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EzCP>(
-      builder: (_, EzCP config, __) => A11howScaffold(
+    return Consumer<EzProvider>(
+      builder: (_, EzProvider config, __) => A11howScaffold(
         config,
         body: EzScreen(
           config,

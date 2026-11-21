@@ -10,7 +10,7 @@ import 'package:open_ui/open_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
 class A11howScaffold extends StatelessWidget {
-  final EzCP config;
+  final EzProvider config;
   final Widget body;
   final List<HybridAction> actions;
   final List<Widget>? settingsFABs;
@@ -125,7 +125,7 @@ class A11howScaffold extends StatelessWidget {
   }
 }
 
-EzUpdaterFAB updater(EzCP config) => EzUpdaterFAB(
+EzUpdaterFAB updater(EzProvider config) => EzUpdaterFAB(
       config,
       appVersion: '1.1.1',
       versionSource: 'https://raw.githubusercontent.com/YWT-LLC/a11how/refs/heads/main/APP_VERSION',

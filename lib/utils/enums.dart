@@ -23,13 +23,13 @@ extension FTargetCon on FilterTarget {
         FilterTarget.compare => esCompare,
       };
 
-  Widget icon(EzCP config) => switch (this) {
+  Widget icon(EzProvider config) => switch (this) {
         FilterTarget.key => EzIcon(config, Icons.key),
         FilterTarget.truth => EzIcon(config, Icons.balance),
         FilterTarget.compare => EzIcon(config, Icons.compare),
       };
 
-  String name(EzCP config) => switch (this) {
+  String name(EzProvider config) => switch (this) {
         FilterTarget.key => l10n(config).gKey,
         FilterTarget.truth => l10n(config).gTruth,
         FilterTarget.compare => l10n(config).gCompare,
@@ -65,7 +65,7 @@ extension FTypeCon on FilterType {
         FilterType.endsWith => esEnds,
       };
 
-  String name(EzCP config) => switch (this) {
+  String name(EzProvider config) => switch (this) {
         FilterType.startsWith => l10n(config).gStarts,
         FilterType.contains => l10n(config).gContains,
         FilterType.endsWith => l10n(config).gEnds,
@@ -123,7 +123,7 @@ extension TSConfig on TranslationService {
         TranslationService.claude => esClaude,
       };
 
-  String name(EzCP config) => switch (this) {
+  String name(EzProvider config) => switch (this) {
         TranslationService.proZ => 'ProZ',
         TranslationService.cafe => 'Translators Cafe',
         TranslationService.gengo => 'Gengo',
@@ -181,7 +181,7 @@ $json
         _ => false,
       };
 
-  Widget twoCents(EzCP config) =>
+  Widget twoCents(EzProvider config) =>
       human ? const SizedBox.shrink() : EzToolTipper(config, message: l10n(config).gLLMShortcut);
 
   static TranslationService? lookup(String? value) => switch (value) {

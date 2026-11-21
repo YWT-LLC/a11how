@@ -12,7 +12,7 @@ import 'dart:convert';
 import 'package:open_ui/open_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
-Future<String?> getPAT(EzCP config, BuildContext context) async => await showDialog<String?>(
+Future<String?> getPAT(EzProvider config, BuildContext context) async => await showDialog<String?>(
     context: context,
     builder: (BuildContext dCon) {
       final TextEditingController patController = TextEditingController();
@@ -80,7 +80,7 @@ Future<String?> getPAT(EzCP config, BuildContext context) async => await showDia
 
 const JsonEncoder a11howEncoder = JsonEncoder.withIndent('  ');
 
-Future<void> writeSortedJson(EzCP config, {required File file, required ARBFile arb}) async {
+Future<void> writeSortedJson(EzProvider config, {required File file, required ARBFile arb}) async {
   try {
     final List<String> sortedKeys = arb.entries.keys.toList()
       ..remove('@@locale')
